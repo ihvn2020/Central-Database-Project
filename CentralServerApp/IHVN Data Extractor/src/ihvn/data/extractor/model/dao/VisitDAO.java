@@ -188,13 +188,13 @@ public class VisitDAO {
         EncounterType encounterType = new EncounterType();
         
         encounterType.setVisitId(rs.getInt("visit_id"));
-        encounterType.setEncounterUUID(rs.getString("uuid"));
+        encounterType.setEncounterUuid(rs.getString("uuid"));
         encounterType.setEncounterId(rs.getInt("encounter_id"));
         encounterType.setEncounterTypeId(rs.getInt("encounter_type"));
-        encounterType.setPatient_id(rs.getInt("patient_id"));
+        encounterType.setPatientId(rs.getInt("patient_id"));
         encounterType.setFormId(rs.getInt("form_id"));
         
-        encounterType.setEncounterDateTime(Misc.getXMLdateTime(rs.getDate("encounter_datetime")));
+        encounterType.setEncounterDatetime(Misc.getXMLdateTime(rs.getDate("encounter_datetime")));
         
         
         encounterType.setCreator(rs.getInt("creator"));
@@ -206,13 +206,13 @@ public class VisitDAO {
         }
         encounterType.setVoided(rs.getInt("voided"));
         encounterType.setVoidedBy(rs.getInt("voided_by"));
-        encounterType.setVoidedByName("");
+        //encounterType.setVoidedByName("");
         if(rs.getString("date_voided") != null)
         {
              encounterType.setDateVoided(Misc.getXMLdateTime(rs.getDate("date_voided")));
         }
         
-        encounterType.setObsList(this.getAllObs(encounterType.getEncounterId()));
+        encounterType.getObs().addAll(this.getAllObs(encounterType.getEncounterId()));
         
         return encounterType;
         

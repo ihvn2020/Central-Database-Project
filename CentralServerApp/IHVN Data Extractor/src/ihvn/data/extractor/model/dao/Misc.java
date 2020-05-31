@@ -48,7 +48,7 @@ public class Misc {
             e.printStackTrace();
         }
     }
-    public static String encrypt(String strToEncrypt) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public static String encrypt(String strToEncrypt) {
         try
         {
             setKey(secret);
@@ -63,7 +63,7 @@ public class Misc {
         return null;
     }
 
-    public static String decrypt(String strToDecrypt) throws InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
+    public static String decrypt(String strToDecrypt) {
         try
         {
             setKey(secret);

@@ -92,7 +92,6 @@ public class PatientDAO {
                 tempMap.put("birthDateEstimated", rs.getString("birthdate_estimated"));
                 tempMap.put("dead", rs.getString("dead"));
                 tempMap.put("deadDate", rs.getString("death_date"));
-                
                 tempMap.put("causeOfDeath", rs.getString("cause_of_death"));
                 tempMap.put("creator", rs.getString("creator"));
                 tempMap.put("dateCreated", rs.getString("date_created"));
@@ -106,6 +105,8 @@ public class PatientDAO {
                 tempMap.put("phone", rs.getString("phone"));
                 tempMap.put("middleName", rs.getString("middle_name"));
                 tempMap.put("patientUUID", rs.getString("uuid"));
+                tempMap.put("address1", rs.getString("address1"));
+                tempMap.put("address2", rs.getString("address2"));
 
                 allPatients.add(tempMap);
 

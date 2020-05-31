@@ -172,14 +172,11 @@ for loading into analytical state central databases.
             <xs:element name="location_id" type="xs:int"/>
             <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="creator" type="xs:int"/>
-            <xs:element name="creator_name" type="xs:string"/>
             <xs:element name="date_created" type="xs:dateTime"/>
             <xs:element name="changed_by" type="xs:int"/>
-            <xs:element name="changed_by_name" type="xs:string"/>
             <xs:element name="date_changed" type="xs:dateTime"/>
             <xs:element name="voided" type="xs:int"/>
             <xs:element name="voided_by" type="xs:int"/>
-            <xs:element name="voided_by_name" type="xs:string"/>
             <xs:element name="date_voided" type="xs:dateTime"/>
             <xs:element name="visit_uuid" type="xs:string"/>
             <xs:element name="Encounter" type="EncounterType"

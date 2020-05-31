@@ -60,11 +60,11 @@ public class ContainerController {
         MessageHeaderType messageHeader = new MessageHeaderType();
         messageHeader.setFacilityDatimCode(MainController.datimId);
         messageHeader.setFacilityName(MainController.patientFacilityName);
-        messageHeader.setMessageCreationDateTime(null);
+        messageHeader.setMessageCreationDateTime(Misc.getXMLdateTime(new Date()));
         messageHeader.setMessageSchemaVersion(new BigDecimal("1.0"));
-        messageHeader.setMessageStatusCode("");
+        messageHeader.setMessageStatusCode("EXPORTED");
         messageHeader.setMessageUniqueID(UUID.randomUUID().toString());
-        
+        messageHeader.setMessageSource("NMRS");
         return messageHeader;
     }
     

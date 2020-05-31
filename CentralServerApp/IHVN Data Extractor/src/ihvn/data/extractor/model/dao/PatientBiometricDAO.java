@@ -46,7 +46,7 @@ public class PatientBiometricDAO {
                 biometric.setCreator(result.getInt("creator"));
                 biometric.setDateCreated(Misc.getXMLdateTime(result.getDate("date_created")));
                 biometric.setFingerPosition(result.getString("fingerPosition"));
-                biometric.setImageDPI(result.getInt("imageDPI"));
+                biometric.setImageDpi(result.getInt("imageDPI"));
                 biometric.setImageHeight(result.getInt("imageHeight"));
                 biometric.setImageQuality(result.getInt("imageQuality"));
                 biometric.setImageWidth(result.getInt("imageWidth"));

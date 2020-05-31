@@ -186,11 +186,11 @@ for loading into analytical state central databases.
     <xs:complexType name="DemographicsType">
         <xs:sequence>
             <xs:element name="PatientIdentifiers" type="PatientIdentifierType"
-                        minOccurs="0" maxOccurs="1" /> 
+                        minOccurs="0" maxOccurs="unbounded" /> 
             <xs:element name="PatientBiometric" type="PatientBiometricType"
-                        minOccurs="0" maxOccurs="1" /> 
+                        minOccurs="0" maxOccurs="unbounded" /> 
             <xs:element name="PatientProgram" type="PatientProgramType"
-                        minOccurs="0" maxOccurs="1" />     
+                        minOccurs="0" maxOccurs="unbounded" />     
             <xs:element name="patient_id" type="xs:int"/>
             <xs:element name="first_name" type="xs:string"/>
             <xs:element name="last_name" type="xs:string"/>
@@ -226,6 +226,7 @@ for loading into analytical state central databases.
           <xs:element name="datim_id" type="xs:string"/>
           <xs:element name="template" type="xs:string"/>
           <xs:element name="image_height" type="xs:int"/>
+          <xs:element name="image_width" type="xs:int"/>
           <xs:element name="image_dpi" type="xs:int"/>
           <xs:element name="image_quality" type="xs:int"/>
           <xs:element name="finger_position" type="xs:string"/>

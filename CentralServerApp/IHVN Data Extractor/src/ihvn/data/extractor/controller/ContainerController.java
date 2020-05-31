@@ -73,7 +73,7 @@ public class ContainerController {
     {
         MessageDataType messageData = new MessageDataType();
         messageData.setDemographics(this.buildDemographics());
-        messageData.setVisits(this.buildVisits());
+        messageData.getVisits().addAll(this.buildVisits());
         
         return messageData;
         
@@ -94,8 +94,8 @@ public class ContainerController {
                 dob = Misc.getXMLdate(new SimpleDateFormat("yyyy-MM-dd").parse(patientDetails.get("birthDate")));
             }
            
-            demo.setBirthDate(dob);
-            demo.setBirthDateEstimated(Integer.parseInt(patientDetails.get("birthDateEstimated")));
+            demo.setBirthdate(dob);
+            demo.setBirthdateEstimated(Integer.parseInt(patientDetails.get("birthDateEstimated")));
             demo.setCityVillage("");
             demo.setCountry("");
             demo.setDead(Integer.parseInt(patientDetails.get("dead")));
@@ -109,14 +109,14 @@ public class ContainerController {
             demo.setLastName(patientDetails.get("lastName"));
             demo.setMiddleName(patientDetails.get("middleNAme"));
             
-            demo.setPatientUUID(patientDetails.get("patientUUID"));
-            demo.setPatient_Id(Integer.parseInt(patientDetails.get("patientId")));
+            demo.setPatientUuid(patientDetails.get("patientUUID"));
+            demo.setPatientId(Integer.parseInt(patientDetails.get("patientId")));
             demo.setPhoneNumber(patientDetails.get("phone"));
             demo.setStateProvince("");
             
-            demo.setPatientBiometric(this.buildPatientBiometrics());
-            demo.setPatientIdentifiers(this.buildPatienIdentifiers());
-            demo.setPatientProgram(this.buildPatientPrograms());
+            demo.getPatientBiometric().addAll(this.buildPatientBiometrics());
+            demo.getPatientIdentifiers().addAll(this.buildPatienIdentifiers());
+            demo.getPatientProgram().addAll(this.buildPatientPrograms());
         }
         catch(Exception e)
         {

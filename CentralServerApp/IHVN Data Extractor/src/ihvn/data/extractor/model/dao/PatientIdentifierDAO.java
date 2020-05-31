@@ -69,7 +69,7 @@ public class PatientIdentifierDAO {
         idType.setIdentifierType(rs.getInt("identifier_type"));
         idType.setPreferred(rs.getInt("preferred"));
         idType.setCreator(rs.getInt("creator"));
-        idType.setPatientIdentifierUUID(rs.getString("uuid"));
+        idType.setPatientIdentifierUuid(rs.getString("uuid"));
         idType.setDateCreated(Misc.getXMLdateTime(rs.getDate("date_created")));
         idType.setChangedBy(rs.getInt("changed_by"));
         if(rs.getString("date_changed") != null)
@@ -78,7 +78,7 @@ public class PatientIdentifierDAO {
         }
         idType.setVoided(rs.getInt("voided"));
         idType.setVoidedBy(rs.getInt("voided_by"));
-        idType.setVoidedByName("");
+        //idType.setVoidedByName("");
         if(rs.getString("date_voided") != null)
         {
              idType.setDateVoided(Misc.getXMLdateTime(rs.getDate("date_voided")));

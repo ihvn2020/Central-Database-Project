@@ -87,13 +87,13 @@ public class PatientProgramDAO {
         }
         patientProgram.setVoided(rs.getInt("voided"));
         patientProgram.setVoidedBy(rs.getInt("voided_by"));
-        patientProgram.setVoidedByName("");
+        //patientProgram.setVoidedByName("");
         if(rs.getString("date_voided") != null)
         {
              patientProgram.setDateVoided(Misc.getXMLdateTime(rs.getDate("date_voided")));
         }
        
-        patientProgram.setPatientProgramUUID(rs.getString("uuid"));
+        patientProgram.setPatientProgramUuid(rs.getString("uuid"));
         
         return patientProgram;
         

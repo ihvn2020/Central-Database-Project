@@ -25,7 +25,7 @@ public class Misc {
 
     private static SecretKeySpec secretKey;
     private static byte[] key;
-    private final static String secret="IHVNPass1word";
+    private final static String SECRET="IHVNPass1word";
     public static void setKey(String myKey)
     {
         MessageDigest sha = null;
@@ -46,7 +46,7 @@ public class Misc {
     public static String encrypt(String strToEncrypt) {
         try
         {
-            setKey(secret);
+            setKey(SECRET);
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
@@ -61,7 +61,7 @@ public class Misc {
     public static String decrypt(String strToDecrypt) {
         try
         {
-            setKey(secret);
+            setKey(SECRET);
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));

@@ -299,7 +299,31 @@ for loading into analytical state central databases.
             <xs:element name="visit_uuid" type="xs:string"/>
             <xs:element name="Obs" type="ObsType"
                         minOccurs="0" maxOccurs="unbounded" /> 
+            <xs:element name="EncounterProvider" type="EncounterProviderType"
+                        minOccurs="0" maxOccurs="unbounded" />
+            
          </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="EncounterProviderType">
+        <xs:sequence>
+            <xs:element name="encounter_provider_id" type="xs:int"/>
+            <xs:element name="encounter_id" type="xs:int"/>
+            <xs:element name="provider_id" type="xs:int"/>
+            <xs:element name="encounter_role_id" type="xs:int"/>
+            <xs:element name="creator" type="xs:int"/>
+            <xs:element name="date_created" type="xs:dateTime"/>
+            <xs:element name="changed_by" type="xs:int"/>
+            <xs:element name="date_changed" type="xs:dateTime"/>
+            <xs:element name="voided" type="xs:int"/>
+            <xs:element name="date_voided" type="xs:dateTime"/>
+            <xs:element name="voided_by" type="xs:int"/>
+            <xs:element name="voided_reason" type="xs:string"/>
+            <xs:element name="encounter_provider_uuid" type="xs:string"/>
+            <xs:element name="datim_id" type="xs:string"/>
+            <xs:element name="encounter_uuid" type="xs:string"/>
+            <xs:element name="visit_uuid" type="xs:string"/>
+        </xs:sequence>
+        
     </xs:complexType>
     <xs:complexType name="ObsType">
         <xs:sequence>

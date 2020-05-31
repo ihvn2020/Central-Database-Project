@@ -170,7 +170,7 @@ public class VisitDAO {
         }
         visit.setVoided(rs.getInt("voided"));
         visit.setVoidedBy(rs.getInt("voided_by"));
-        visit.setVoidedByName("");
+        //visit.setVoidedByName("");
         if(rs.getString("date_voided") != null)
         {
              visit.setDateVoided(Misc.getXMLdateTime(rs.getDate("date_voided")));

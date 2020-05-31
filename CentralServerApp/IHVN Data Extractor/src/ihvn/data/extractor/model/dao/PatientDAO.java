@@ -41,17 +41,10 @@ public class PatientDAO {
 
             return totalCount;
         } catch (SQLException ex) {
-            //screen.updateStatus(ex.getMessage());
-            ex.printStackTrace();
+            handleException(ex);
             return 0;
         } finally {
-            try {
-                rs.close();
-                stmt.close();
-                Database.connectionPool.free(con);
-            } catch (SQLException ex) {
-                //Logger.getLogger(PatientDao.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            cleanUp(rs, stmt, con);
         }
     }
 
@@ -112,23 +105,26 @@ public class PatientDAO {
                 allPatients.add(tempMap);
 
             }
-            rs.close();
-            stmt.close();
-            Database.connectionPool.free(con);
+            cleanUp(rs, stmt, con);
             return allPatients;
         } catch (SQLException ex) {
-            //screen.updateStatus(ex.getMessage());
-            ex.printStackTrace();
+            handleException(ex);
             return null;
 
         } finally {
-            try {
-                rs.close();
-                stmt.close();
-                Database.connectionPool.free(con);
-            } catch (SQLException ex) {
-                //Logger.getLogger(PatientDao.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            cleanUp(rs, stmt, con);
+        }
+    }
+    public void handleException(Exception ex){
+        ex.printStackTrace();
+    }
+    public void cleanUp(ResultSet rs, Statement stmt, Connection con){
+        try{
+            rs.close();
+            stmt.close();
+            Database.connectionPool.free(con);
+        }catch(Exception ex){
+            handleException(ex);
         }
     }
 }

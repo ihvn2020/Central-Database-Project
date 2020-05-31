@@ -121,10 +121,10 @@ public class ContainerController {
                 deathDate = Misc.getXMLdate(new SimpleDateFormat("yyyy-MM-dd").parse(patientDetails.get("deathDate")));
             }
             demo.setDeathDate(deathDate);
-            demo.setFirstName(patientDetails.get("firstName"));
+            demo.setFirstName(Misc.encrypt(patientDetails.get("firstName")));
             demo.setGender(patientDetails.get("gender"));
-            demo.setLastName(patientDetails.get("lastName"));
-            demo.setMiddleName(patientDetails.get("middleName"));
+            demo.setLastName(Misc.encrypt(patientDetails.get("lastName")));
+            demo.setMiddleName(Misc.encrypt(patientDetails.get("middleName")));
             
             demo.setPatientUuid(patientDetails.get("patientUUID"));
             demo.setPatientId(Integer.parseInt(patientDetails.get("patientId")));

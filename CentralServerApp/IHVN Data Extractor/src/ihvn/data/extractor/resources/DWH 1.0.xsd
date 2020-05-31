@@ -290,11 +290,11 @@ for loading into analytical state central databases.
             <xs:element name="pmm_form" type="xs:string"/>
             <xs:element name="encounter_datetime" type="xs:dateTime"/>
             <xs:element name="creator" type="xs:int"/>
-            <xs:element name="creator_name" type="xs:string"/>
+            
             <xs:element name="date_created" type="xs:dateTime"/>
             <xs:element name="voided" type="xs:int"/>
             <xs:element name="voided_by" type="xs:int"/>
-            <xs:element name="voided_by_name" type="xs:string"/>
+            
             <xs:element name="changed_by" type="xs:int"/>
             <xs:element name="date_changed" type="xs:date"/>
             <xs:element name="visit_id" type="xs:int"/>

@@ -16,6 +16,7 @@ for loading into analytical state central databases.
                     <xs:element name="MessageData" type="MessageDataType"
                                 minOccurs="1" maxOccurs="1" />
                 </xs:choice>
+                
         
             </xs:sequence>
         </xs:complexType>
@@ -202,8 +203,8 @@ for loading into analytical state central databases.
             <xs:element name="birthdate_estimated" type="xs:int"/>
             <xs:element name="dead" type="xs:int"/>
             <xs:element name="death_date" type="xs:date"/>
+            <xs:element name="cause_of_death" type="xs:string"/>
             <xs:element name="creator" type="xs:int"/>
-            <xs:element name="creator_name" type="xs:string"/>
             <xs:element name="date_created" type="xs:dateTime"/>
             <xs:element name="patient_uuid" type="xs:string"/>
             <xs:element name="phone_number" type="xs:string"/>
@@ -212,6 +213,13 @@ for loading into analytical state central databases.
             <xs:element name="city_village" type="xs:string"/>
             <xs:element name="state_province" type="xs:string"/>
             <xs:element name="country" type="xs:string"/>
+            <xs:element name="changed_by" type="xs:int"/>
+            <xs:element name="date_changed" type="xs:dateTime"/>
+            <xs:element name="voided" type="xs:int"/>
+            <xs:element name="voided_by" type="xs:int"/>
+            <xs:element name="date_voided" type="xs:dateTime"/>
+            <xs:element name="voided_reason" type="xs:string"/>
+            <xs:element name="deathdate_estimated" type="xs:int"/>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="PatientBiometricType">

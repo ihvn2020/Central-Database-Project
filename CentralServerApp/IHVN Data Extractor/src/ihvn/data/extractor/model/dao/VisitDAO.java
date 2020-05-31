@@ -159,8 +159,6 @@ public class VisitDAO {
         visit.setDateStarted(Misc.getXMLdateTime(rs.getDate("date_started")));
         visit.setDateStopped(Misc.getXMLdateTime(rs.getDate("date_stopped")));
         
-       
-        
         visit.setCreator(rs.getInt("creator"));
         visit.setDateCreated(Misc.getXMLdateTime(rs.getDate("date_created")));
         visit.setChangedBy(rs.getInt("changed_by"));
@@ -176,9 +174,9 @@ public class VisitDAO {
              visit.setDateVoided(Misc.getXMLdateTime(rs.getDate("date_voided")));
         }
        
-        visit.setVisit_uuid(rs.getString("uuid"));
+        visit.setVisitUuid(rs.getString("uuid"));
         
-        visit.setEncounter(this.getAllEncounters(visit.getVisitId()));
+        visit.getEncounter().addAll(this.getAllEncounters(visit.getVisitId()));
         
         
         return visit;

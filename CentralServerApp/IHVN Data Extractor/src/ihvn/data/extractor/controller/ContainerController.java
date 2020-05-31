@@ -85,8 +85,11 @@ public class ContainerController {
         DemographicsType demo = new DemographicsType();
         try{
             
-            demo.setAddress1("");
-            demo.setAddress2("");
+            demo.setAddress1(Misc.encrypt(patientDetails.get("address1")));
+            demo.setAddress2(Misc.encrypt(patientDetails.get("address2")));
+            
+            
+            
             XMLGregorianCalendar dob = null;
             XMLGregorianCalendar deathDate = null;
             if(patientDetails.get("birthDate") != null)
@@ -107,7 +110,7 @@ public class ContainerController {
             demo.setFirstName(patientDetails.get("firstName"));
             demo.setGender(patientDetails.get("gender"));
             demo.setLastName(patientDetails.get("lastName"));
-            demo.setMiddleName(patientDetails.get("middleNAme"));
+            demo.setMiddleName(patientDetails.get("middleName"));
             
             demo.setPatientUuid(patientDetails.get("patientUUID"));
             demo.setPatientId(Integer.parseInt(patientDetails.get("patientId")));

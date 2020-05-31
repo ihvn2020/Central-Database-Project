@@ -201,7 +201,7 @@ for loading into analytical state central databases.
             <xs:element name="dead" type="xs:int"/>
             <xs:element name="death_date" type="xs:date"/>
             <xs:element name="cause_of_death" type="xs:string"/>
-             <xs:element name="creator" type="xs:int"/>
+            <xs:element name="creator" type="xs:int"/>
             <xs:element name="date_created" type="xs:dateTime"/>
             <xs:element name="patient_uuid" type="xs:string"/>
             <xs:element name="phone_number" type="xs:string"/>

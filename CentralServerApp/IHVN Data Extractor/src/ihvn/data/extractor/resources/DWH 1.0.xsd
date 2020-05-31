@@ -321,11 +321,9 @@ for loading into analytical state central databases.
             <xs:element name="value_numeric" type="xs:decimal"/>
             <xs:element name="value_text" type="xs:string"/>
             <xs:element name="creator" type="xs:int"/>
-            <xs:element name="creator_name" type="xs:string"/>
             <xs:element name="date_created" type="xs:dateTime"/>
             <xs:element name="voided" type="xs:int"/>
             <xs:element name="voided_by" type="xs:int"/>
-            <xs:element name="voided_by_name" type="xs:string"/>
             <xs:element name="date_voided" type="xs:dateTime"/>
             <xs:element name="variable_name" type="xs:string"/>
             <xs:element name="variable_value" type="xs:string"/>

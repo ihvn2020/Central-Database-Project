@@ -8,6 +8,7 @@ package ihvn.data.extractor.model.dao;
 import ihvn.data.extractor.model.xml.EncounterType;
 import ihvn.data.extractor.model.xml.ObsType;
 import ihvn.data.extractor.model.xml.VisitType;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -223,17 +224,17 @@ public class VisitDAO {
     {
         ObsType obsType = new ObsType();
         
-        obsType.setObsUUID(rs.getString("uuid"));
+        obsType.setObsUuid(rs.getString("uuid"));
         obsType.setObsId(rs.getInt("obs_id"));
         obsType.setPersonId(rs.getInt("person_id"));
         obsType.setConceptId(rs.getInt("concept_id"));
         obsType.setEncounterId(rs.getInt("encounter_id"));
        // obsType.setEncounterType(rs.getInt("encounter_type"));
-        obsType.setObsDateTime(Misc.getXMLdateTime(rs.getDate("obs_datetime")));
+        obsType.setObsDatetime(Misc.getXMLdateTime(rs.getDate("obs_datetime")));
         obsType.setObsGroupId(rs.getInt("obs_group_id"));
         obsType.setValueCoded(rs.getInt("value_coded"));
-        obsType.setValueDateTime(Misc.getXMLdateTime(rs.getDate("obs_datetime")));
-        obsType.setValueNumeric(rs.getDouble("value_numeric"));
+        obsType.setValueDatetime(Misc.getXMLdateTime(rs.getDate("obs_datetime")));
+        obsType.setValueNumeric(BigDecimal.valueOf(rs.getDouble("value_numeric")));
         obsType.setValueText(rs.getString("value_text"));
         
         obsType.setCreator(rs.getInt("creator"));
@@ -241,7 +242,7 @@ public class VisitDAO {
         
         obsType.setVoided(rs.getInt("voided"));
         obsType.setVoidedBy(rs.getInt("voided_by"));
-        obsType.setVoidedByName("");
+        //obsType.setVoidedByName("");
         if(rs.getString("date_voided") != null)
         {
              obsType.setDateVoided(Misc.getXMLdateTime(rs.getDate("date_voided")));

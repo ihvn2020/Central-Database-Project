@@ -247,6 +247,7 @@ for loading into analytical state central databases.
             <xs:element name="date_enrolled" type="xs:date"/>
             <xs:element name="date_completed" type="xs:date"/>
             <xs:element name="location_id" type="xs:int"/>
+            <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="outcome_concept_id" type="xs:int"/>
             <xs:element name="creator" type="xs:int"/>
             <xs:element name="date_created" type="xs:dateTime"/>

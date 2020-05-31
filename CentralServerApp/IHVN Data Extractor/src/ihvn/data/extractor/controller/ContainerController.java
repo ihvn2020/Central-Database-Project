@@ -87,7 +87,21 @@ public class ContainerController {
             
             demo.setAddress1(Misc.encrypt(patientDetails.get("address1")));
             demo.setAddress2(Misc.encrypt(patientDetails.get("address2")));
-            
+            demo.setCityVillage(patientDetails.get("cityVillage"));
+            demo.setStateProvince(patientDetails.get("stateProvince"));
+            demo.setCountry(patientDetails.get("country"));
+            demo.setVoided(Integer.parseInt(patientDetails.get("voided")));
+            demo.setVoidedBy(Integer.parseInt(patientDetails.get("voidedBy")));
+            if(patientDetails.get("dateVoided")!=null){
+               demo.setDateVoided(Misc.getXMLdate(new SimpleDateFormat("yyyy-MM-dd").parse(patientDetails.get("dateVoided")))); 
+            }
+            demo.setCauseOfDeath(patientDetails.get("causeOfDeath"));
+            demo.setCreator(Integer.parseInt(patientDetails.get("creator")));
+            if(patientDetails.get("dateCreated")!=null){
+               demo.setDateCreated(Misc.getXMLdate(new SimpleDateFormat("yyyy-MM-dd").parse(patientDetails.get("dateCreated"))));  
+            }
+            demo.setVoidedReason(patientDetails.get("voidedReason"));
+            demo.setDeathdateEstimated(Integer.parseInt(patientDetails.get("deathdateEstimated")));
             
             
             XMLGregorianCalendar dob = null;
@@ -114,8 +128,8 @@ public class ContainerController {
             
             demo.setPatientUuid(patientDetails.get("patientUUID"));
             demo.setPatientId(Integer.parseInt(patientDetails.get("patientId")));
-            demo.setPhoneNumber(patientDetails.get("phone"));
-            demo.setStateProvince("");
+            demo.setPhoneNumber(Misc.encrypt(patientDetails.get("phone")));
+            
             
             demo.getPatientBiometric().addAll(this.buildPatientBiometrics());
             demo.getPatientIdentifiers().addAll(this.buildPatienIdentifiers());

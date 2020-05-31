@@ -100,7 +100,7 @@ public class ContainerController {
             if(patientDetails.get("dateCreated")!=null){
                demo.setDateCreated(Misc.getXMLdate(new SimpleDateFormat("yyyy-MM-dd").parse(patientDetails.get("dateCreated"))));  
             }
-            demo.setVoidedReason(patientDetails.get("voidedReason"));
+            demo.setVoidedReason(patientDetails.get("voidReason"));
             demo.setDeathdateEstimated(Integer.parseInt(patientDetails.get("deathdateEstimated")));
             
             

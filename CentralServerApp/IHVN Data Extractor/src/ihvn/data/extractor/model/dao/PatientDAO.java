@@ -93,7 +93,7 @@ public class PatientDAO {
                 tempMap.put("voided", rs.getString("voided"));
                 tempMap.put("voidedBy", rs.getString("voided_by"));
                 tempMap.put("dateVoided", rs.getString("date_voided"));
-                tempMap.put("voidedReason", rs.getString("voided_reason"));
+                tempMap.put("voidReason", rs.getString("void_reason"));
                 tempMap.put("deathdateEstimated", rs.getString("deathdate_estimated"));
                 tempMap.put("phone", rs.getString("phone"));
                 tempMap.put("middleName", rs.getString("middle_name"));

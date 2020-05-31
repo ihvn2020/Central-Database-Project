@@ -23,7 +23,7 @@ public class PatientDAO {
     
     
     public int getTotalPatients() {
-        String query = "SELECT COUNT(patient_id) AS count  FROM patient ";
+        String query = "SELECT COUNT(patient_id) AS count  FROM patient where patient.voided=0";
         //String query = "SELECT COUNT(obs_id) AS count  FROM obs ";
         Statement stmt = null;
         ResultSet rs = null;

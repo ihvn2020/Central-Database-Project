@@ -168,6 +168,8 @@ public class XMLGeneratorController {
             marshaller = MainController.jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             //marshaller.marshal(container, new File("/home/rsuth/Documents/xmls/"+container.getMessageData().getDemographics().getPatientUUID()+"_patient.xml"));
+            String fileName=new File(this.outputLocation+"/"+container.getMessageData().getDemographics().getPatientUuid()+"_patient.xml").getAbsolutePath();
+            container.getMessageHeader().setFileName(fileName);
             marshaller.marshal(container, new File(this.outputLocation+"/"+container.getMessageData().getDemographics().getPatientUuid()+"_patient.xml"));
             marshaller = null;
             container = null;

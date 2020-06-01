@@ -26,6 +26,7 @@ public class Misc {
     private static SecretKeySpec secretKey;
     private static byte[] key;
     private final static String SECRET="IHVNPass1word";
+    
     public static void setKey(String myKey)
     {
         MessageDigest sha = null;
@@ -96,6 +97,7 @@ public class Misc {
         }
         return cal;
     }
+    
 
     
 }

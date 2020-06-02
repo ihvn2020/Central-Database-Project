@@ -12,6 +12,7 @@ import ihvn.data.extractor.model.dao.PatientProgramDAO;
 import ihvn.data.extractor.model.dao.VisitDAO;
 import ihvn.data.extractor.model.xml.Container;
 import ihvn.data.extractor.model.xml.DemographicsType;
+import ihvn.data.extractor.model.xml.EncounterProviderType;
 import ihvn.data.extractor.model.xml.EncounterType;
 import ihvn.data.extractor.model.xml.MessageDataType;
 import ihvn.data.extractor.model.xml.MessageHeaderType;
@@ -203,6 +204,10 @@ public class ContainerController {
         List<ObsType> allObs = dao.getAllObsByPatient(Integer.parseInt(patientDetails.get("patientId")));
 
         return allObs;
+    }
+    private List<EncounterProviderType> buildEncounterProviders(){
+        VisitDAO dao=new VisitDAO();
+        //List<EncounterProviderType> encounterProviderList=
     }
 
 }

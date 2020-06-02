@@ -189,13 +189,15 @@ public class ContainerController {
 
     //build encounters 
     private List<EncounterType> buildEncounters() {
-        List<EncounterType> allEncounters = new ArrayList<>();
-
+        VisitDAO dao=new VisitDAO();
+        List<EncounterType> allEncounters =dao.getAllEncountersByPatient(Integer.parseInt(patientDetails.get("patientId")));
+        
         return allEncounters;
     }
 
     //build obs 
     private List<ObsType> buildObs() {
+        VisitDAO dao=new VisitDAO();
         List<ObsType> allObs = new ArrayList<>();
 
         return allObs;

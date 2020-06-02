@@ -65,8 +65,51 @@ public class VisitDAO {
             }
     }
     
+    public List<EncounterType> getAllEncountersByPatient(int patientId)
+    {
+        StringBuilder query = new StringBuilder("SELECT encounter.* FROM encounter WHERE patient_id=");
+        query.append(patientId);
+              
+            Statement stmt = null;
+            ResultSet rs = null;
+            Connection con = null;
+            EncounterType encounter=null;
+            List<EncounterType> allEncounters = new ArrayList<>();
+            //System.out.println("Connection list "+Database.connectionPool.totalConnections());
+            try {
+                con = Database.connectionPool.getConnection();
+                stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+                
+                stmt.setFetchSize(Integer.MIN_VALUE);
+                rs = stmt.executeQuery(query.toString());
+                while (rs.next()) {
+                    encounter = buildEncounter(rs);
+                   
+                    allEncounters.add(encounter);
+                    
+                }
+                //rs.close();
+                //stmt.close();
+                return allEncounters;
+            } catch (SQLException ex) {
+                //screen.updateStatus(ex.getMessage());
+                ex.printStackTrace();
+                return null;
+                
+            } finally {
+                try {
+                    rs.close();
+                    stmt.close();
+                    Database.connectionPool.free(con);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    //Logger.getLogger(PatientDao.class.getName()).log(Level.SEVERE, null, ex);
+                 }
+            }
+    }
     
-    public List<EncounterType> getAllEncounters(int visitId)
+    
+    public List<EncounterType> getAllEncountersByVisit(int visitId)
     {
         StringBuilder query = new StringBuilder("SELECT encounter.* FROM encounter WHERE visit_id=");
         query.append(visitId);
@@ -109,8 +152,48 @@ public class VisitDAO {
             }
     }
     
+    public List<ObsType> getAllObsByPatient(int patient_id)
+    {
+        StringBuilder query = new StringBuilder("SELECT obs.* FROM obs WHERE patient_id=");  
+         query.append(patient_id);
+            Statement stmt = null;
+            ResultSet rs = null;
+            Connection con = null;
+            List<ObsType> allObs = new ArrayList<>();
+            //System.out.println("Connection list "+Database.connectionPool.totalConnections());
+            try {
+                con = Database.connectionPool.getConnection();
+                stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+                
+                stmt.setFetchSize(Integer.MIN_VALUE);
+                rs = stmt.executeQuery(query.toString());
+                while (rs.next()) {
+                    ObsType obs = buildObs(rs);
+                   
+                    allObs.add(obs);
+                    
+                }
+                //rs.close();
+                //stmt.close();
+                return allObs;
+            } catch (SQLException ex) {
+                //screen.updateStatus(ex.getMessage());
+                ex.printStackTrace();
+                return null;
+                
+            } finally {
+                try {
+                    rs.close();
+                    stmt.close();
+                    Database.connectionPool.free(con);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    //Logger.getLogger(PatientDao.class.getName()).log(Level.SEVERE, null, ex);
+                 }
+            }
+    }
     
-    public List<ObsType> getAllObs(int encounterId)
+    public List<ObsType> getAllObsByEncounter(int encounterId)
     {
         StringBuilder query = new StringBuilder("SELECT obs.* FROM obs WHERE encounter_id=");  
          query.append(encounterId);

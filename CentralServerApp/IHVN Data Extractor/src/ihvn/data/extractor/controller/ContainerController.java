@@ -69,6 +69,8 @@ public class ContainerController {
         MessageDataType messageData = new MessageDataType();
         messageData.setDemographics(this.buildDemographics());
         messageData.getVisits().addAll(this.buildVisits());
+        messageData.getEncounters().addAll(this.buildEncounters());
+        messageData.getObs().addAll(this.buildObs());
 
         return messageData;
 
@@ -145,9 +147,9 @@ public class ContainerController {
             demo.setPatientId(Integer.parseInt(patientDetails.get("patientId")));
             
 
-            demo.getPatientBiometric().addAll(this.buildPatientBiometrics());
-            demo.getPatientIdentifiers().addAll(this.buildPatienIdentifiers());
-            demo.getPatientProgram().addAll(this.buildPatientPrograms());
+            //demo.getPatientBiometric().addAll(this.buildPatientBiometrics());
+            //demo.getPatientIdentifiers().addAll(this.buildPatienIdentifiers());
+            //demo.getPatientProgram().addAll(this.buildPatientPrograms());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -198,7 +200,7 @@ public class ContainerController {
     //build obs 
     private List<ObsType> buildObs() {
         VisitDAO dao=new VisitDAO();
-        List<ObsType> allObs = new ArrayList<>();
+        List<ObsType> allObs = dao.getAllObsByPatient(Integer.parseInt(patientDetails.get("patientId")));
 
         return allObs;
     }

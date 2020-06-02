@@ -158,8 +158,19 @@ for loading into analytical state central databases.
                         minOccurs="1" maxOccurs="1" />
             <xs:element name="Visits" type="VisitType"
                         minOccurs="0" maxOccurs="unbounded" />
-	  
-        </xs:sequence>
+            <xs:element name="Encounters" type="EncounterType"
+                        minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="Obs" type="ObsType"
+                        minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="EncounterProviders" type="EncounterProviderType"
+                        minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="PatientIdentifiers" type="PatientIdentifierType"
+                        minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="PatientBiometrics" type="PatientBiometricType"
+                        minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="PatientPrograms" type="PatientProgramType"
+                        minOccurs="0" maxOccurs="unbounded" />
+            
     </xs:complexType>
     <xs:complexType name="VisitType">
         <xs:sequence>
@@ -179,8 +190,7 @@ for loading into analytical state central databases.
             <xs:element name="voided_by" type="xs:int"/>
             <xs:element name="date_voided" type="xs:dateTime"/>
             <xs:element name="visit_uuid" type="xs:string"/>
-            <xs:element name="Encounter" type="EncounterType"
-                        minOccurs="0" maxOccurs="unbounded" />   
+               
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="DemographicsType">

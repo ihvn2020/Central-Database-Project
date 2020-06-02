@@ -72,7 +72,7 @@ public class ContainerController {
         messageData.getVisits().addAll(this.buildVisits());
         messageData.getEncounters().addAll(this.buildEncounters());
         messageData.getObs().addAll(this.buildObs());
-
+        messageData.getEncounterProviders().addAll(this.buildEncounterProviders());
         return messageData;
 
     }
@@ -161,7 +161,7 @@ public class ContainerController {
     //build visits 
     private List<VisitType> buildVisits() {
         VisitDAO visitObj = new VisitDAO();
-        List<VisitType> allVisits = visitObj.getAllVisits(Integer.parseInt(patientDetails.get("patientId")));
+        List<VisitType> allVisits = visitObj.getAllVisits(Integer.parseInt(patientDetails.get("patientId")),patientDetails.get("patientUUID"),MainController.datimId);
 
         return allVisits;
     }
@@ -193,7 +193,7 @@ public class ContainerController {
     //build encounters 
     private List<EncounterType> buildEncounters() {
         VisitDAO dao=new VisitDAO();
-        List<EncounterType> allEncounters =dao.getAllEncountersByPatient(Integer.parseInt(patientDetails.get("patientId")));
+        List<EncounterType> allEncounters =dao.getAllEncountersByPatient(Integer.parseInt(patientDetails.get("patientId")),patientDetails.get("patientUUID"),MainController.datimId);
         
         return allEncounters;
     }
@@ -201,13 +201,14 @@ public class ContainerController {
     //build obs 
     private List<ObsType> buildObs() {
         VisitDAO dao=new VisitDAO();
-        List<ObsType> allObs = dao.getAllObsByPatient(Integer.parseInt(patientDetails.get("patientId")));
+        List<ObsType> allObs = dao.getAllObsByPatient(Integer.parseInt(patientDetails.get("patientId")),patientDetails.get("patientUUID"),MainController.datimId);
 
         return allObs;
     }
     private List<EncounterProviderType> buildEncounterProviders(){
         VisitDAO dao=new VisitDAO();
-        //List<EncounterProviderType> encounterProviderList=
+        List<EncounterProviderType> encounterProviderList=dao.getAllEncountersProvidersByPatient(Integer.parseInt(patientDetails.get("patientId")),patientDetails.get("patientUUID"),MainController.datimId);
+        return encounterProviderList;
     }
 
 }

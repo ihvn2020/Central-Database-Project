@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class VisitDAO {
 
-    public List<VisitType> getAllVisits(int patientId) {
+    public List<VisitType> getAllVisits(int patientId,String patient_uuid, String datim_id) {
         StringBuilder query = new StringBuilder("SELECT visit.* FROM visit WHERE patient_id=");
         query.append(patientId);
         // String query = "SELECT visit.* FROM visit WHERE patient_id="+patientId;  
@@ -41,7 +41,8 @@ public class VisitDAO {
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 VisitType visit = buildVisit(rs);
-
+                visit.setPatientUuid(patient_uuid);
+                visit.setDatimId(datim_id);
                 allVisits.add(visit);
 
             }
@@ -58,7 +59,7 @@ public class VisitDAO {
         }
     }
 
-    public List<EncounterProviderType> getAllEncountersProvidersByPatient(int patientId) {
+    public List<EncounterProviderType> getAllEncountersProvidersByPatient(int patientId,String patient_uuid, String datim_id) {
         String sql_text = "select \n"
                 + "encounter_provider.*,\n"
                 + "encounter.patient_id,\n"
@@ -81,6 +82,8 @@ public class VisitDAO {
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 encounterProvider = buildEncounterProvider(rs);
+                encounterProvider.setPatientUuid(patient_uuid);
+                encounterProvider.setDatimId(datim_id);
                 encounterProviderTypesList.add(encounterProvider);
 
             }
@@ -109,7 +112,7 @@ public class VisitDAO {
             handleException(ex);
         }
     }
-    public List<EncounterType> getAllEncountersByPatient(int patientId) {
+    public List<EncounterType> getAllEncountersByPatient(int patientId,String patient_uuid, String datim_id) {
         StringBuilder query = new StringBuilder("SELECT encounter.* FROM encounter WHERE patient_id=");
         query.append(patientId);
 
@@ -127,7 +130,8 @@ public class VisitDAO {
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 encounter = buildEncounter(rs);
-
+                encounter.setPatientUuid(patient_uuid);
+                encounter.setDatimId(datim_id);
                 allEncounters.add(encounter);
 
             }
@@ -144,7 +148,7 @@ public class VisitDAO {
         }
     }
 
-    public List<EncounterType> getAllEncountersByVisit(int visitId) {
+    public List<EncounterType> getAllEncountersByVisit(int visitId,String patient_uuid, String datim_id) {
         StringBuilder query = new StringBuilder("SELECT encounter.* FROM encounter WHERE visit_id=");
         query.append(visitId);
 
@@ -162,7 +166,8 @@ public class VisitDAO {
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 encounter = buildEncounter(rs);
-
+                encounter.setPatientUuid(patient_uuid);
+                encounter.setDatimId(datim_id);
                 allEncounters.add(encounter);
 
             }
@@ -179,13 +184,14 @@ public class VisitDAO {
         }
     }
 
-    public List<ObsType> getAllObsByPatient(int patient_id) {
-        StringBuilder query = new StringBuilder("SELECT obs.* FROM obs WHERE patient_id=");
+    public List<ObsType> getAllObsByPatient(int patient_id,String patient_uuid, String datim_id) {
+        StringBuilder query = new StringBuilder("SELECT obs.*,encounter.uuid as encounter_uuid FROM obs INNER JOIN encounter on(encounter.encounter_id=obs.encounter_id) WHERE patient_id=");
         query.append(patient_id);
         Statement stmt = null;
         ResultSet rs = null;
         Connection con = null;
         List<ObsType> allObs = new ArrayList<>();
+        ObsType obs=null;
         //System.out.println("Connection list "+Database.connectionPool.totalConnections());
         try {
             con = Database.connectionPool.getConnection();
@@ -194,10 +200,10 @@ public class VisitDAO {
             stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
-                ObsType obs = buildObs(rs);
-
+                obs = buildObs(rs);
+                obs.setDatimId(datim_id);
+                obs.setPatientUuid(patient_uuid);
                 allObs.add(obs);
-
             }
             //rs.close();
             //stmt.close();
@@ -212,8 +218,8 @@ public class VisitDAO {
         }
     }
 
-    public List<ObsType> getAllObsByEncounter(int encounterId) {
-        StringBuilder query = new StringBuilder("SELECT obs.* FROM obs WHERE encounter_id=");
+    public List<ObsType> getAllObsByEncounter(int encounterId,String patient_uuid, String datim_id) {
+        StringBuilder query = new StringBuilder("SELECT obs.*,encounter.uuid as encounter_uuid FROM obs INNER JOIN encounter on(encounter.encounter_id=obs.encounter_id) WHERE encounter_id=");
         query.append(encounterId);
         Statement stmt = null;
         ResultSet rs = null;
@@ -339,7 +345,7 @@ public class VisitDAO {
         obsType.setValueDatetime(Misc.getXMLdateTime(rs.getDate("obs_datetime")));
         obsType.setValueNumeric(BigDecimal.valueOf(rs.getDouble("value_numeric")));
         obsType.setValueText(rs.getString("value_text"));
-
+        obsType.setEncounterUuid(rs.getString("encounter_uuid"));
         obsType.setCreator(rs.getInt("creator"));
         obsType.setDateCreated(Misc.getXMLdateTime(rs.getDate("date_created")));
 

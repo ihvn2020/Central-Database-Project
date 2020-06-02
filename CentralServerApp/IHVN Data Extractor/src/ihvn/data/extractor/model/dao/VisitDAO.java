@@ -178,7 +178,7 @@ public class VisitDAO {
        
         visit.setVisitUuid(rs.getString("uuid"));
         
-        visit.getEncounter().addAll(this.getAllEncounters(visit.getVisitId()));
+        //visit.getEncounter().addAll(this.getAllEncounters(visit.getVisitId()));
         
         
         return visit;

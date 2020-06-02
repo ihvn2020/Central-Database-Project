@@ -170,18 +170,18 @@ for loading into analytical state central databases.
                         minOccurs="0" maxOccurs="unbounded" />
             <xs:element name="PatientPrograms" type="PatientProgramType"
                         minOccurs="0" maxOccurs="unbounded" />
-        </xs:sequence>
+            
     </xs:complexType>
     <xs:complexType name="VisitType">
         <xs:sequence>
             <xs:element name="visit_id" type="xs:int"/>
             <xs:element name="patient_id" type="xs:int"/>
-            <xs:element name="location_id" type="xs:int"/>
+            <xs:element name="patient_uuid" type="xs:string"/>
             <xs:element name="visit_type_id" type="xs:int"/>
             <xs:element name="date_started" type="xs:dateTime"/>
             <xs:element name="date_stopped" type="xs:dateTime"/>
-            
-            
+            <xs:element name="location_id" type="xs:int"/>
+            <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="creator" type="xs:int"/>
             <xs:element name="date_created" type="xs:dateTime"/>
             <xs:element name="changed_by" type="xs:int"/>
@@ -189,14 +189,13 @@ for loading into analytical state central databases.
             <xs:element name="voided" type="xs:int"/>
             <xs:element name="voided_by" type="xs:int"/>
             <xs:element name="date_voided" type="xs:dateTime"/>
-            <xs:element name="patient_uuid" type="xs:string"/>
-            <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="visit_uuid" type="xs:string"/>
                
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="DemographicsType">
         <xs:sequence>
+            
             <xs:element name="patient_id" type="xs:int"/>
             <xs:element name="first_name" type="xs:string"/>
             <xs:element name="last_name" type="xs:string"/>
@@ -209,6 +208,7 @@ for loading into analytical state central databases.
             <xs:element name="cause_of_death" type="xs:string"/>
             <xs:element name="creator" type="xs:int"/>
             <xs:element name="date_created" type="xs:dateTime"/>
+            <xs:element name="patient_uuid" type="xs:string"/>
             <xs:element name="phone_number" type="xs:string"/>
             <xs:element name="address1" type="xs:string"/>
             <xs:element name="address2" type="xs:string"/>
@@ -222,14 +222,13 @@ for loading into analytical state central databases.
             <xs:element name="date_voided" type="xs:dateTime"/>
             <xs:element name="voided_reason" type="xs:string"/>
             <xs:element name="deathdate_estimated" type="xs:int"/>
-            <xs:element name="patient_uuid" type="xs:string"/>
-            <xs:element name="datim_id" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="PatientBiometricType">
         <xs:sequence>
           <xs:element name="biometric_info_id" type="xs:int"/>
           <xs:element name="patient_id" type="xs:int"/>
+          <xs:element name="datim_id" type="xs:string"/>
           <xs:element name="template" type="xs:string"/>
           <xs:element name="image_height" type="xs:int"/>
           <xs:element name="image_width" type="xs:int"/>
@@ -241,19 +240,17 @@ for loading into analytical state central databases.
           <xs:element name="manufacturer" type="xs:string"/>
           <xs:element name="creator" type="xs:int"/>
           <xs:element name="date_created" type="xs:dateTime"/>
-          <xs:element name="patient_uuid" type="xs:string"/>
-          <xs:element name="datim_id" type="xs:string"/>
       </xs:sequence>
     </xs:complexType>
     <xs:complexType name="PatientProgramType">
         <xs:sequence>
             <xs:element name="patient_program_id" type="xs:int"/>
-            <xs:element name="patient_id" type="xs:int"/>
             <xs:element name="program_id" type="xs:int"/>
-            <xs:element name="location_id" type="xs:int"/>
             <xs:element name="program_name" type="xs:string"/>
             <xs:element name="date_enrolled" type="xs:date"/>
             <xs:element name="date_completed" type="xs:date"/>
+            <xs:element name="location_id" type="xs:int"/>
+            <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="outcome_concept_id" type="xs:int"/>
             <xs:element name="creator" type="xs:int"/>
             <xs:element name="date_created" type="xs:dateTime"/>
@@ -262,10 +259,8 @@ for loading into analytical state central databases.
             <xs:element name="voided" type="xs:int"/>
             <xs:element name="voided_by" type="xs:int"/>
             <xs:element name="date_voided" type="xs:dateTime"/>
-            <xs:element name="patient_uuid" type="xs:string"/>
-            <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="patient_program_uuid" type="xs:string"/>
-         </xs:sequence>
+        </xs:sequence>
         
     </xs:complexType>
     
@@ -273,10 +268,11 @@ for loading into analytical state central databases.
         <xs:sequence>
             <xs:element name="patient_identifier_id" type="xs:int"/>
             <xs:element name="patient_id" type="xs:int"/>
-            <xs:element name="location_id" type="xs:int"/>
             <xs:element name="identifier" type="xs:string"/>
             <xs:element name="identifier_type" type="xs:int"/>
             <xs:element name="preferred" type="xs:int"/>
+            <xs:element name="location_id" type="xs:int"/>
+            <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="creator" type="xs:int"/>
             <xs:element name="date_created" type="xs:date"/>
             <xs:element name="date_changed" type="xs:date"/>
@@ -285,18 +281,17 @@ for loading into analytical state central databases.
             <xs:element name="voided_by" type="xs:int"/>
             <xs:element name="date_voided" type="xs:date"/>
             <xs:element name="patient_identifier_uuid" type="xs:string"/>
-            <xs:element name="patient_uuid" type="xs:string"/>
-            <xs:element name="datim_id" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
   
     <xs:complexType name="EncounterType">
         <xs:sequence>
-            
+            <xs:element name="encounter_uuid" type="xs:string"/>
             <xs:element name="encounter_id" type="xs:int"/>
             <xs:element name="encounter_type_id" type="xs:int"/>
             <xs:element name="patient_id" type="xs:int"/>
             <xs:element name="location_id" type="xs:int"/>
+            <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="form_id" type="xs:int"/>
             <xs:element name="pmm_form" type="xs:string"/>
             <xs:element name="encounter_datetime" type="xs:dateTime"/>
@@ -308,9 +303,6 @@ for loading into analytical state central databases.
             <xs:element name="changed_by" type="xs:int"/>
             <xs:element name="date_changed" type="xs:date"/>
             <xs:element name="visit_id" type="xs:int"/>
-            <xs:element name="patient_uuid" type="xs:string"/>
-            <xs:element name="encounter_uuid" type="xs:string"/>
-            <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="visit_uuid" type="xs:string"/>
             
            
@@ -333,7 +325,6 @@ for loading into analytical state central databases.
             <xs:element name="voided_reason" type="xs:string"/>
             <xs:element name="encounter_provider_uuid" type="xs:string"/>
             <xs:element name="datim_id" type="xs:string"/>
-            <xs:element name="patient_uuid" type="xs:string"/>
             <xs:element name="encounter_uuid" type="xs:string"/>
             <xs:element name="visit_uuid" type="xs:string"/>
         </xs:sequence>
@@ -349,10 +340,10 @@ for loading into analytical state central databases.
             <xs:element name="form_id" type="xs:int"/>
             <xs:element name="pmm_form" type="xs:string"/>
             <xs:element name="encounter_type" type="xs:int"/>
-            
+            <xs:element name="encounter_uuid" type="xs:int"/>
             <xs:element name="obs_datetime" type="xs:dateTime"/>
             <xs:element name="location_id" type="xs:int"/>
-            
+            <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="obs_group_id" type="xs:int"/>
             <xs:element name="value_coded" type="xs:int"/>
             <xs:element name="value_datetime" type="xs:dateTime"/>
@@ -365,10 +356,6 @@ for loading into analytical state central databases.
             <xs:element name="date_voided" type="xs:dateTime"/>
             <xs:element name="variable_name" type="xs:string"/>
             <xs:element name="variable_value" type="xs:string"/>
-            <xs:element name="datim_id" type="xs:string"/>
-            <xs:element name="patient_uuid" type="xs:string"/>
-            <xs:element name="encounter_uuid" type="xs:string"/>
-            <xs:element name="visit_uuid" type="xs:string"/>
         </xs:sequence>
    </xs:complexType>
    <xs:simpleType name="CodeType">

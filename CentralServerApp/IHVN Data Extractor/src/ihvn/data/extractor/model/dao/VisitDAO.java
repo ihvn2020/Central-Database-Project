@@ -54,14 +54,7 @@ public class VisitDAO {
             return null;
 
         } finally {
-            try {
-                rs.close();
-                stmt.close();
-                Database.connectionPool.free(con);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                //Logger.getLogger(PatientDao.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            cleanUp(rs, stmt, con);
         }
     }
 
@@ -80,9 +73,42 @@ public class VisitDAO {
         Connection con = null;
         EncounterProviderType encounterProvider = null;
         List<EncounterProviderType> encounterProviderTypesList = new ArrayList<>();
-        return encounterProviderTypesList;
-    }
+         try {
+            con = Database.connectionPool.getConnection();
+            stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 
+            stmt.setFetchSize(Integer.MIN_VALUE);
+            rs = stmt.executeQuery(query.toString());
+            while (rs.next()) {
+                encounterProvider = buildEncounterProvider(rs);
+                encounterProviderTypesList.add(encounterProvider);
+
+            }
+            //rs.close();
+            //stmt.close();
+             return encounterProviderTypesList;
+        } catch (SQLException ex) {
+            //screen.updateStatus(ex.getMessage());
+            ex.printStackTrace();
+            return null;
+
+        } finally {
+             cleanUp(rs, stmt, con);
+        }
+       
+    }
+    public void handleException(Exception ex){
+        ex.printStackTrace();
+    }
+    public void cleanUp(ResultSet rs, Statement stmt, Connection con){
+        try{
+            rs.close();
+            stmt.close();
+            Database.connectionPool.free(con);
+        }catch(Exception ex){
+            handleException(ex);
+        }
+    }
     public List<EncounterType> getAllEncountersByPatient(int patientId) {
         StringBuilder query = new StringBuilder("SELECT encounter.* FROM encounter WHERE patient_id=");
         query.append(patientId);
@@ -114,14 +140,7 @@ public class VisitDAO {
             return null;
 
         } finally {
-            try {
-                rs.close();
-                stmt.close();
-                Database.connectionPool.free(con);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                //Logger.getLogger(PatientDao.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            cleanUp(rs, stmt, con);
         }
     }
 
@@ -156,14 +175,7 @@ public class VisitDAO {
             return null;
 
         } finally {
-            try {
-                rs.close();
-                stmt.close();
-                Database.connectionPool.free(con);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                //Logger.getLogger(PatientDao.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            cleanUp(rs, stmt, con);
         }
     }
 
@@ -196,14 +208,7 @@ public class VisitDAO {
             return null;
 
         } finally {
-            try {
-                rs.close();
-                stmt.close();
-                Database.connectionPool.free(con);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                //Logger.getLogger(PatientDao.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            cleanUp(rs, stmt, con);
         }
     }
 
@@ -236,14 +241,7 @@ public class VisitDAO {
             return null;
 
         } finally {
-            try {
-                rs.close();
-                stmt.close();
-                Database.connectionPool.free(con);
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-                //Logger.getLogger(PatientDao.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            cleanUp(rs, stmt, con);
         }
     }
 

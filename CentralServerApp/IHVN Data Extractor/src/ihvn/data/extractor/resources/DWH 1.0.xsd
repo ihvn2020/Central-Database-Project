@@ -306,8 +306,7 @@ for loading into analytical state central databases.
             <xs:element name="visit_uuid" type="xs:string"/>
             <xs:element name="Obs" type="ObsType"
                         minOccurs="0" maxOccurs="unbounded" /> 
-            <xs:element name="EncounterProvider" type="EncounterProviderType"
-                        minOccurs="0" maxOccurs="unbounded" />
+           
             
          </xs:sequence>
     </xs:complexType>

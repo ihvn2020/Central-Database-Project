@@ -90,7 +90,7 @@ public class Misc {
         XMLGregorianCalendar cal = null;
         try {
             if (date != null) {
-                cal = DatatypeFactory.newInstance().newXMLGregorianCalendar(new SimpleDateFormat("yyyy-MM-dd'T'mm:ss").format(date));
+                cal = DatatypeFactory.newInstance().newXMLGregorianCalendar(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(date));
             }
         } catch (Exception e) {
 

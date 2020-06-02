@@ -74,6 +74,7 @@ public class VisitDAO {
             Statement stmt = null;
             ResultSet rs = null;
             Connection con = null;
+            EncounterType encounter=null;
             List<EncounterType> allEncounters = new ArrayList<>();
             //System.out.println("Connection list "+Database.connectionPool.totalConnections());
             try {
@@ -83,7 +84,7 @@ public class VisitDAO {
                 stmt.setFetchSize(Integer.MIN_VALUE);
                 rs = stmt.executeQuery(query.toString());
                 while (rs.next()) {
-                    EncounterType encounter = buildEncounter(rs);
+                    encounter = buildEncounter(rs);
                    
                     allEncounters.add(encounter);
                     
@@ -213,7 +214,7 @@ public class VisitDAO {
              encounterType.setDateVoided(Misc.getXMLdateTime(rs.getDate("date_voided")));
         }
         
-        encounterType.getObs().addAll(this.getAllObs(encounterType.getEncounterId()));
+        //encounterType.getObs().addAll(this.getAllObs(encounterType.getEncounterId()));
         
         return encounterType;
         

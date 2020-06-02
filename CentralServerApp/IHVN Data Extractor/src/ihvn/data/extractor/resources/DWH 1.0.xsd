@@ -278,8 +278,8 @@ for loading into analytical state central databases.
             <xs:element name="identifier_type" type="xs:int"/>
             <xs:element name="preferred" type="xs:int"/>
             <xs:element name="creator" type="xs:int"/>
-            <xs:element name="date_created" type="xs:date"/>
-            <xs:element name="date_changed" type="xs:date"/>
+            <xs:element name="date_created" type="xs:dateTime"/>
+            <xs:element name="date_changed" type="xs:dateTime"/>
             <xs:element name="changed_by" type="xs:int"/>
             <xs:element name="voided" type="xs:int"/>
             <xs:element name="voided_by" type="xs:int"/>
@@ -304,9 +304,9 @@ for loading into analytical state central databases.
             <xs:element name="date_created" type="xs:dateTime"/>
             <xs:element name="voided" type="xs:int"/>
             <xs:element name="voided_by" type="xs:int"/>
-            <xs:element name="date_voided" type="xs:date"/>
+            <xs:element name="date_voided" type="xs:dateTime"/>
             <xs:element name="changed_by" type="xs:int"/>
-            <xs:element name="date_changed" type="xs:date"/>
+            <xs:element name="date_changed" type="xs:dateTime"/>
             <xs:element name="visit_id" type="xs:int"/>
             <xs:element name="patient_uuid" type="xs:string"/>
             <xs:element name="encounter_uuid" type="xs:string"/>

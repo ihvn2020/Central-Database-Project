@@ -304,8 +304,7 @@ for loading into analytical state central databases.
             <xs:element name="date_changed" type="xs:date"/>
             <xs:element name="visit_id" type="xs:int"/>
             <xs:element name="visit_uuid" type="xs:string"/>
-            <xs:element name="Obs" type="ObsType"
-                        minOccurs="0" maxOccurs="unbounded" /> 
+            
            
             
          </xs:sequence>

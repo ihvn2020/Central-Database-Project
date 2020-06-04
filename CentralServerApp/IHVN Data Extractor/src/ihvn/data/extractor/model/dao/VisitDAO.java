@@ -120,7 +120,7 @@ public class VisitDAO {
     }
 
     public List<EncounterType> getAllEncountersByPatient(int patientId, String patient_uuid, String datim_id) {
-        StringBuilder query = new StringBuilder("SELECT encounter.* FROM encounter WHERE patient_id=");
+        StringBuilder query = new StringBuilder("SELECT encounter.*,form.name as pmm_form FROM encounter LEFT JOIN form on(form.form_id=encounter.form_id) WHERE patient_id=");
         query.append(patientId);
 
         Statement stmt = null;
@@ -314,7 +314,8 @@ public class VisitDAO {
         encounterType.setEncounterTypeId(rs.getInt("encounter_type"));
         encounterType.setPatientId(rs.getInt("patient_id"));
         encounterType.setFormId(rs.getInt("form_id"));
-
+        encounterType.setLocationId(rs.getInt("location_id"));
+        encounterType.setPmmForm(rs.getString("pmm_form"));
         encounterType.setEncounterDatetime(Misc.getXMLdateTime(rs.getDate("encounter_datetime")));
 
         encounterType.setCreator(rs.getInt("creator"));

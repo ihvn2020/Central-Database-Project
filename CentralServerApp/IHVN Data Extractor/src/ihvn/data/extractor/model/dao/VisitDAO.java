@@ -191,7 +191,25 @@ public class VisitDAO {
     }
 
     public List<ObsType> getAllObsByPatient(int patient_id, String patient_uuid, String datim_id) {
-        StringBuilder query = new StringBuilder("SELECT obs.*,encounter.uuid as encounter_uuid FROM obs INNER JOIN encounter on(encounter.encounter_id=obs.encounter_id) WHERE patient_id=");
+        String sql_text = "select\n"
+                + "obs.*,\n"
+                + "encounter.uuid as encounter_uuid,\n"
+                + "encounter.location_id,\n"
+                + "encounter.form_id,\n"
+                + "form.name as pmm_form,\n"
+                + "visit.uuid as visit_uuid,\n"
+                + "cn1.name as variable_name,\n"
+                + "COALESCE(value_datetime,value_text,value_numeric,cn2.name) as variable_value,\n"
+                + "concept.datatype_id\n"
+                + "from obs \n"
+                + "LEFT JOIN encounter on(encounter.encounter_id=obs.encounter_id)\n"
+                + "LEFT JOIN visit on(visit.visit_id=encounter.visit_id)\n"
+                + "LEFT JOIN form on(encounter.form_id=form.form_id)\n"
+                + "LEFT JOIN concept_name cn1 on(cn1.concept_id=obs.concept_id and cn1.locale_preferred=1 and cn1.locale='en' and cn2.voided=0)\n"
+                + "LEFT JOIN concept_name cn2 on(cn2.concept_id=obs.value_coded and cn2.locale_preferred=1 and cn2.locale='en' and cn2.voided=0)\n"
+                + "LEFT JOIN concept on(obs.concept_id=concept.concept_id)\n"
+                + "where obs.person_id=";
+        StringBuilder query = new StringBuilder(sql_text);
         query.append(patient_id);
         Statement stmt = null;
         ResultSet rs = null;
@@ -202,7 +220,6 @@ public class VisitDAO {
         try {
             con = Database.connectionPool.getConnection();
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-
             stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
@@ -355,9 +372,16 @@ public class VisitDAO {
         obsType.setEncounterUuid(rs.getString("encounter_uuid"));
         obsType.setCreator(rs.getInt("creator"));
         obsType.setDateCreated(Misc.getXMLdateTime(rs.getDate("date_created")));
-
+        obsType.setPmmForm(rs.getString("pmm_form"));
+        obsType.setFormId(rs.getInt("form_id"));
+        obsType.setVariableName(rs.getString("variable_name"));
+        obsType.setVariableValue(rs.getString("variable_value"));
+        obsType.setDatatype(rs.getInt("datatype_id"));
+        obsType.setVisitUuid(rs.getString("visit_uuid"));
+        obsType.setLocationId(rs.getInt("location_id"));
         obsType.setVoided(rs.getInt("voided"));
         obsType.setVoidedBy(rs.getInt("voided_by"));
+        
         //obsType.setVoidedByName("");
         if (rs.getString("date_voided") != null) {
             obsType.setDateVoided(Misc.getXMLdateTime(rs.getDate("date_voided")));

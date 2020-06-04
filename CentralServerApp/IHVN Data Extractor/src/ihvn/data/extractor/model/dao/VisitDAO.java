@@ -210,7 +210,7 @@ public class VisitDAO {
                 + "LEFT JOIN encounter on(encounter.encounter_id=obs.encounter_id)\n"
                 + "LEFT JOIN visit on(visit.visit_id=encounter.visit_id)\n"
                 + "LEFT JOIN form on(encounter.form_id=form.form_id)\n"
-                + "LEFT JOIN concept_name cn1 on(cn1.concept_id=obs.concept_id and cn1.locale_preferred=1 and cn1.locale='en' and cn2.voided=0)\n"
+                + "LEFT JOIN concept_name cn1 on(cn1.concept_id=obs.concept_id and cn1.locale_preferred=1 and cn1.locale='en' and cn1.voided=0)\n"
                 + "LEFT JOIN concept_name cn2 on(cn2.concept_id=obs.value_coded and cn2.locale_preferred=1 and cn2.locale='en' and cn2.voided=0)\n"
                 + "LEFT JOIN concept on(obs.concept_id=concept.concept_id)\n"
                 + "where obs.person_id=";

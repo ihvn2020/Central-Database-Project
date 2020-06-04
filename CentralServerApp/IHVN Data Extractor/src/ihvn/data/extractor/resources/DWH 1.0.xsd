@@ -331,6 +331,7 @@ for loading into analytical state central databases.
             <xs:element name="encounter_provider_id" type="xs:int"/>
             <xs:element name="encounter_id" type="xs:int"/>
             <xs:element name="provider_id" type="xs:int"/>
+            <xs:element name="location_id" type="xs:int"/>
             <xs:element name="encounter_role_id" type="xs:int"/>
             <xs:element name="creator" type="xs:int"/>
             <xs:element name="date_created" type="xs:dateTime"/>

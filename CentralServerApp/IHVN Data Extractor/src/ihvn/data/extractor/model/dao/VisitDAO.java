@@ -64,6 +64,7 @@ public class VisitDAO {
                 + "encounter_provider.*,\n"
                 + "encounter.patient_id,\n"
                 + "encounter.uuid as encounter_uuid,\n"
+                + "encounter.location_id as location_id,\n"
                 + "visit.uuid as visit_uuid\n"
                 + "from \n"
                 + "encounter_provider \n"
@@ -196,6 +197,7 @@ public class VisitDAO {
                 + "encounter.uuid as encounter_uuid,\n"
                 + "encounter.location_id,\n"
                 + "encounter.form_id,\n"
+                + "encounter.encounter_type,\n"
                 + "form.name as pmm_form,\n"
                 + "visit.uuid as visit_uuid,\n"
                 + "cn1.name as variable_name,\n"
@@ -350,7 +352,7 @@ public class VisitDAO {
         encounterProvider.setEncounterProviderUuid(rs.getString("uuid"));
         encounterProvider.setEncounterUuid(rs.getString("encounter_uuid"));
         encounterProvider.setVisitUuid(rs.getString("visit_uuid"));
-
+        encounterProvider.setLocationId(rs.getInt("location_id"));
         return encounterProvider;
     }
 
@@ -377,11 +379,12 @@ public class VisitDAO {
         obsType.setVariableName(rs.getString("variable_name"));
         obsType.setVariableValue(rs.getString("variable_value"));
         obsType.setDatatype(rs.getInt("datatype_id"));
+        obsType.setEncounterType(rs.getInt("encounter_type"));
         obsType.setVisitUuid(rs.getString("visit_uuid"));
         obsType.setLocationId(rs.getInt("location_id"));
         obsType.setVoided(rs.getInt("voided"));
         obsType.setVoidedBy(rs.getInt("voided_by"));
-        
+
         //obsType.setVoidedByName("");
         if (rs.getString("date_voided") != null) {
             obsType.setDateVoided(Misc.getXMLdateTime(rs.getDate("date_voided")));

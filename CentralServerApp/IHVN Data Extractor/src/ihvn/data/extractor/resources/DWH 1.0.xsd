@@ -180,8 +180,6 @@ for loading into analytical state central databases.
             <xs:element name="visit_type_id" type="xs:int"/>
             <xs:element name="date_started" type="xs:dateTime"/>
             <xs:element name="date_stopped" type="xs:dateTime"/>
-            
-            
             <xs:element name="creator" type="xs:int"/>
             <xs:element name="date_created" type="xs:dateTime"/>
             <xs:element name="changed_by" type="xs:int"/>
@@ -192,6 +190,8 @@ for loading into analytical state central databases.
             <xs:element name="patient_uuid" type="xs:string"/>
             <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="visit_uuid" type="xs:string"/>
+            <xs:element name="invalid" type="xs:int"/>
+            <xs:element name="validation_error" type="xs:string"/>
                
         </xs:sequence>
     </xs:complexType>
@@ -224,6 +224,8 @@ for loading into analytical state central databases.
             <xs:element name="deathdate_estimated" type="xs:int"/>
             <xs:element name="patient_uuid" type="xs:string"/>
             <xs:element name="datim_id" type="xs:string"/>
+            <xs:element name="invalid" type="xs:int"/>
+            <xs:element name="validation_error" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="PatientBiometricType">
@@ -265,6 +267,8 @@ for loading into analytical state central databases.
             <xs:element name="patient_uuid" type="xs:string"/>
             <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="patient_program_uuid" type="xs:string"/>
+            <xs:element name="invalid" type="xs:int"/>
+            <xs:element name="validation_error" type="xs:string"/>
          </xs:sequence>
         
     </xs:complexType>
@@ -287,6 +291,8 @@ for loading into analytical state central databases.
             <xs:element name="patient_identifier_uuid" type="xs:string"/>
             <xs:element name="patient_uuid" type="xs:string"/>
             <xs:element name="datim_id" type="xs:string"/>
+            <xs:element name="invalid" type="xs:int"/>
+            <xs:element name="validation_error" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
   
@@ -312,7 +318,8 @@ for loading into analytical state central databases.
             <xs:element name="encounter_uuid" type="xs:string"/>
             <xs:element name="datim_id" type="xs:string"/>
             <xs:element name="visit_uuid" type="xs:string"/>
-            
+            <xs:element name="invalid" type="xs:int"/>
+            <xs:element name="validation_error" type="xs:string"/>
            
             
          </xs:sequence>
@@ -336,6 +343,8 @@ for loading into analytical state central databases.
             <xs:element name="patient_uuid" type="xs:string"/>
             <xs:element name="encounter_uuid" type="xs:string"/>
             <xs:element name="visit_uuid" type="xs:string"/>
+            <xs:element name="invalid" type="xs:int"/>
+            <xs:element name="validation_error" type="xs:string"/>
         </xs:sequence>
         
     </xs:complexType>
@@ -349,10 +358,8 @@ for loading into analytical state central databases.
             <xs:element name="form_id" type="xs:int"/>
             <xs:element name="pmm_form" type="xs:string"/>
             <xs:element name="encounter_type" type="xs:int"/>
-            
             <xs:element name="obs_datetime" type="xs:dateTime"/>
             <xs:element name="location_id" type="xs:int"/>
-            
             <xs:element name="obs_group_id" type="xs:int"/>
             <xs:element name="value_coded" type="xs:int"/>
             <xs:element name="value_datetime" type="xs:dateTime"/>
@@ -369,6 +376,9 @@ for loading into analytical state central databases.
             <xs:element name="patient_uuid" type="xs:string"/>
             <xs:element name="encounter_uuid" type="xs:string"/>
             <xs:element name="visit_uuid" type="xs:string"/>
+            <xs:element name="datatype" type="xs:int"/>
+            <xs:element name="invalid" type="xs:int"/>
+            <xs:element name="validation_error" type="xs:string"/>
         </xs:sequence>
    </xs:complexType>
    <xs:simpleType name="CodeType">

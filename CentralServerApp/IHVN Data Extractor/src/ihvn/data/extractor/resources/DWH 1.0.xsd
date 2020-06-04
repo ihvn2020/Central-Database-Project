@@ -151,6 +151,7 @@ for loading into analytical state central databases.
             </xs:element>
             <xs:element name="invalid" type="xs:int"/>
             <xs:element name="validation_error" type="xs:string"/>
+            <xs:element name="touch_time" type="xs:dateTime"/>
         </xs:sequence>
     </xs:complexType>
     <xs:complexType name="MessageDataType">

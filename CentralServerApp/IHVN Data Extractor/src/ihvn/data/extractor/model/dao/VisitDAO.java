@@ -120,10 +120,10 @@ public class VisitDAO {
     }
 
     public List<EncounterType> getAllEncountersByPatient(int patientId, String patient_uuid, String datim_id) {
-        StringBuilder query = new StringBuilder("SELECT encounter.*,form.name,visit.uuid as visit_uuid as pmm_form FROM encounter "
+        StringBuilder query = new StringBuilder("SELECT encounter.*,form.name as pmm_form,visit.uuid as visit_uuid  FROM encounter "
                 + "LEFT JOIN form on(form.form_id=encounter.form_id) "
                 + "LEFT JOIN visit on(visit.visit_id=encounter.visit_id) "
-                + "WHERE patient_id=");
+                + "WHERE encounter.patient_id=");
         query.append(patientId);
 
         Statement stmt = null;

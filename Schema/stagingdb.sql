@@ -1,4 +1,36 @@
 
+CREATE TABLE obs (
+                obs_uuid VARCHAR(255) NOT NULL,
+                obs_id INT,
+                person_id INT,
+                concept_id INT,
+                encounter_id INT,
+                form_id INT,
+                pmm_form VARCHAR(255),
+                encounter_type INT,
+                obs_datetime DATETIME,
+                location_id INT,
+                obs_group_id INT,
+                value_coded INT,
+                value_datetime DATETIME,
+                value_numeric DECIMAL(19,4),
+                value_text VARCHAR(255),
+                creator INT,
+                date_created DATETIME,
+                voided INT,
+                voided_by INT,
+                date_voided DATETIME,
+                variable_name VARCHAR(255),
+                variable_value VARCHAR(255),
+                datim_id VARCHAR(255),
+                patient_uuid VARCHAR(255),
+                encounter_uuid VARCHAR(255),
+                visit_uuid VARCHAR(255),
+                datatype INT,
+                PRIMARY KEY (obs_uuid)
+);
+
+
 CREATE TABLE validation_error (
                 error_id INT NOT NULL,
                 patient_uuid VARCHAR(255),

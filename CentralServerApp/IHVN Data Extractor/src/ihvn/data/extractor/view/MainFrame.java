@@ -6,10 +6,15 @@
 package ihvn.data.extractor.view;
 
 import ihvn.data.extractor.controller.MainController;
+import ihvn.data.extractor.model.dao.ZipUtil;
+import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JFrame;
@@ -29,6 +34,8 @@ public class MainFrame extends javax.swing.JFrame {
     JFileChooser jfc ;
     static int totalPatient = 1;
     String outPutFolder = "";
+    static boolean zipping = false;
+    ProgessSetter progressSetter = new ProgessSetter();
     /**
      * Creates new form MainFrame
      */
@@ -46,24 +53,52 @@ public class MainFrame extends javax.swing.JFrame {
     private void startSettingProgress()
     {
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-              // Your database code here
-              //MainFrame.this.setProgress(MainController.counter);
-              MainFrame.this.setProgress(MainController.atomicCounter.get());
-              
-              if(MainController.atomicCounter.get()+10 > MainFrame.totalPatient)
-              {
-                  System.out.println(MainController.counter);
-                   MainFrame.this.setProgress(MainFrame.totalPatient);
-                   btnExtract.setEnabled(true);
-              }
-            
-              
-            }
-          }, 100, 10);
+        timer.scheduleAtFixedRate(progressSetter, 100, 10);
+    
         
+    }
+    
+    private void zipXMlFolder()
+    {
+        System.out.println("started zipping");
+       
+        String zipFileName = "IHVN_"+MainController.datimId+"_STATE DATABASE_"+new Date().getTime();
+        File toZIP = new File(this.outPutFolder);
+        if (!toZIP.exists() || toZIP.listFiles() == null || Objects.requireNonNull(toZIP.listFiles()).length == 0) {
+             JOptionPane.showMessageDialog(this, "An error occcured", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        else{
+             //Zip today's folder and name it with today's date
+            //String zipFileName = new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + ".zip";
+            ZipUtil appZip = new ZipUtil(this.outPutFolder);
+            appZip.generateFileList(toZIP);
+            // old implementation               appZip.zipIt(toZIP.getParent() + "/" + zipFileName);
+            appZip.zipIt(Paths.get(toZIP.getParent(), zipFileName).toString());
+            //zipping is complete. Open the folder
+            //this.openFolder(); this is throwing an error for now
+            MainFrame.this.txtPatientCount.setText("Zipping complete. The zipped file is at "+toZIP.getParent()+File.separator+zipFileName);
+        }
+       
+    }
+    
+    private void openFolder()
+    {
+        Desktop desktop = null;
+    // on Windows, retrieve the path of the "Program Files" folder
+        File file = new File(this.outPutFolder);
+
+        try {
+          if (Desktop.isDesktopSupported()) {
+             desktop = Desktop.getDesktop();
+             desktop.open(file.getParentFile());
+          }
+          else {
+             System.out.println("desktop is not supported");
+          }
+        }
+        catch (IOException e){  
+            e.printStackTrace();
+        }
     }
     
     public void setProgress(int patientCount)
@@ -75,13 +110,36 @@ public class MainFrame extends javax.swing.JFrame {
                 //MainFrame
                // MainFrame.this.totalPatient = patientCount;
                 //MainFrame.this.txtPatientCount.setText("Processed Patient "+patientCount+" of "+MainFrame.this.totalPatient);
-                if(patientCount -1 == MainFrame.totalPatient)
+                
+                System.out.println(MainController.atomicCounter.get());
+                System.out.println("total count"+MainFrame.totalPatient);
+                if(patientCount + 50 >= MainFrame.totalPatient && MainFrame.totalPatient != 1)//some times, the total processed files does not get to the total number of patients in the system due to errorneous data
                 {
-                    MainFrame.this.txtPatientCount.setText("Processed Patient "+patientCount+" of "+MainFrame.totalPatient);
+                    MainFrame.this.txtPatientCount.setText("Processed Patient "+MainFrame.this.totalPatient+" of "+MainFrame.totalPatient);
                 
                     int progress = 100;
                     myProgressBar.setString( "Processed Patient "+MainFrame.this.totalPatient+" of "+MainFrame.this.totalPatient + ":  "+progress +" % complete");
                     myProgressBar.setValue(progress);
+                   
+                    //set a timer to zip the output folder
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                                   @Override
+                                   public void run() {
+                                     if(MainFrame.zipping == false)
+                                     {
+                                         MainFrame.this.txtPatientCount.setText("Extraction Complete. Currently zipping");
+                                         MainFrame.this.zipXMlFolder();
+                                         MainFrame.zipping = true; 
+                                        
+                                         
+                                     }
+                                    
+                                   }
+                                }, 3000);
+                    System.out.println("zipping");
+                     progressSetter.cancel();
+                    
                 }
                 else{
                      MainFrame.this.txtPatientCount.setText("Processed Patient "+patientCount+" of "+MainFrame.totalPatient);
@@ -494,6 +552,27 @@ public class MainFrame extends javax.swing.JFrame {
                 new MainFrame().setVisible(true);
             }
         });
+    }
+    
+    class ProgessSetter extends TimerTask
+    {
+        
+        @Override
+        public void run() {
+          // Your database code here
+          //MainFrame.this.setProgress(MainController.counter);
+          MainFrame.this.setProgress(MainController.atomicCounter.get());
+
+          if(MainController.atomicCounter.get()+10 > MainFrame.totalPatient)
+          {
+              System.out.println(MainController.counter);
+              MainFrame.this.setProgress(MainFrame.totalPatient);
+              btnExtract.setEnabled(true);
+          }
+
+
+        }
+          
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

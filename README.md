@@ -7,3 +7,7 @@ java utility xjc has been used to automatically convert xsd to java classes. Usi
 
 xjc -d src -p ihvn.data.extractor.model.xml "src\ihvn\data\extractor\resources\DWH 1.0.xsd"
 
+
+XJC for Parser
+xjc -d src\main -p com.ihvn.ihvnxmlparserapp.model.xml "src\main\resources\DWH 1.0.xsd"
+

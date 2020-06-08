@@ -72,6 +72,7 @@ public class ContainerController {
         messageData.getVisits().addAll(this.buildVisits());
         messageData.getEncounters().addAll(this.buildEncounters());
         messageData.getObs().addAll(this.buildObs());
+        messageData.getPatientBiometrics().addAll(this.buildPatientBiometrics());
         messageData.getEncounterProviders().addAll(this.buildEncounterProviders());
         return messageData;
 
@@ -148,8 +149,9 @@ public class ContainerController {
             demo.setPatientId(Integer.parseInt(patientDetails.get("patientId")));
             demo.setDatimId(MainController.datimId);
             
+          
 
-            //demo.getPatientBiometric().addAll(this.buildPatientBiometrics());
+           // demo.getPatientBiometric().addAll(this.buildPatientBiometrics());
             //demo.getPatientIdentifiers().addAll(this.buildPatienIdentifiers());
             //demo.getPatientProgram().addAll(this.buildPatientPrograms());
         } catch (Exception e) {

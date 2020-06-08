@@ -37,9 +37,9 @@ public class PatientProgramDAO {
                 stmt.setFetchSize(Integer.MIN_VALUE);
                 rs = stmt.executeQuery(query);
                 while (rs.next()) {
-                    PatientProgramType patientProgram = buildPatientProgram(rs);
+                   // PatientProgramType patientProgram = buildPatientProgram(rs);
                    
-                    allIdentifiers.add(patientProgram);
+                    //allIdentifiers.add(patientProgram);
                     
                 }
                 //rs.close();
@@ -62,40 +62,5 @@ public class PatientProgramDAO {
             }
     }
     
-    private PatientProgramType buildPatientProgram(ResultSet rs) throws SQLException
-    {
-        PatientProgramType patientProgram = new PatientProgramType();
-        
-        patientProgram.setPatientProgramId(rs.getInt("patient_program_id"));
-        patientProgram.setProgramId(rs.getInt("program_id"));
-        patientProgram.setProgramName("program_name");
-        patientProgram.setDateEnrolled(Misc.getXMLdateTime(rs.getDate("date_enrolled")));
-        if(rs.getString("date_completed") != null)
-        {
-            patientProgram.setDateCompleted(Misc.getXMLdateTime(rs.getDate("date_completed")));
-        }
-        
-        patientProgram.setOutcomeConceptId(rs.getInt("outcome_concept_id"));
-        
-        
-        patientProgram.setCreator(rs.getInt("creator"));
-        patientProgram.setDateCreated(Misc.getXMLdateTime(rs.getDate("date_created")));
-        patientProgram.setChangedBy(rs.getInt("changed_by"));
-        if(rs.getString("date_changed") != null)
-        {
-            patientProgram.setDateChanged(Misc.getXMLdateTime(rs.getDate("date_changed")));
-        }
-        patientProgram.setVoided(rs.getInt("voided"));
-        patientProgram.setVoidedBy(rs.getInt("voided_by"));
-        patientProgram.setVoidedByName("");
-        if(rs.getString("date_voided") != null)
-        {
-             patientProgram.setDateVoided(Misc.getXMLdateTime(rs.getDate("date_voided")));
-        }
-       
-        patientProgram.setPatientProgramUUID(rs.getString("uuid"));
-        
-        return patientProgram;
-        
-    }
+  
 }

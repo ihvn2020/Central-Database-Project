@@ -17,33 +17,32 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * <p>Java class for EncounterType complex type.
+ * <p>Java class for EncounterProviderType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="EncounterType">
+ * &lt;complexType name="EncounterProviderType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
+ *         &lt;element name="encounter_provider_id" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="encounter_id" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="encounter_type_id" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="patient_id" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="provider_id" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="location_id" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="form_id" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="pmm_form" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="encounter_datetime" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
+ *         &lt;element name="encounter_role_id" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="creator" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="date_created" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
- *         &lt;element name="voided" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="voided_by" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="date_voided" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
  *         &lt;element name="changed_by" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="date_changed" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
- *         &lt;element name="visit_id" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="voided" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="date_voided" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
+ *         &lt;element name="voided_by" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         &lt;element name="voided_reason" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="encounter_provider_uuid" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="datim_id" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="patient_uuid" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="encounter_uuid" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="datim_id" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="visit_uuid" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -54,69 +53,81 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "EncounterType", propOrder = {
+@XmlType(name = "EncounterProviderType", propOrder = {
+    "encounterProviderId",
     "encounterId",
-    "encounterTypeId",
-    "patientId",
+    "providerId",
     "locationId",
-    "formId",
-    "pmmForm",
-    "encounterDatetime",
+    "encounterRoleId",
     "creator",
     "dateCreated",
-    "voided",
-    "voidedBy",
-    "dateVoided",
     "changedBy",
     "dateChanged",
-    "visitId",
+    "voided",
+    "dateVoided",
+    "voidedBy",
+    "voidedReason",
+    "encounterProviderUuid",
+    "datimId",
     "patientUuid",
     "encounterUuid",
-    "datimId",
     "visitUuid"
 })
-public class EncounterType {
+public class EncounterProviderType {
 
+    @XmlElement(name = "encounter_provider_id")
+    protected int encounterProviderId;
     @XmlElement(name = "encounter_id")
     protected int encounterId;
-    @XmlElement(name = "encounter_type_id")
-    protected int encounterTypeId;
-    @XmlElement(name = "patient_id")
-    protected int patientId;
+    @XmlElement(name = "provider_id")
+    protected int providerId;
     @XmlElement(name = "location_id")
     protected int locationId;
-    @XmlElement(name = "form_id")
-    protected int formId;
-    @XmlElement(name = "pmm_form", required = true)
-    protected String pmmForm;
-    @XmlElement(name = "encounter_datetime", required = true)
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar encounterDatetime;
+    @XmlElement(name = "encounter_role_id")
+    protected int encounterRoleId;
     protected int creator;
     @XmlElement(name = "date_created", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar dateCreated;
-    protected int voided;
-    @XmlElement(name = "voided_by")
-    protected int voidedBy;
-    @XmlElement(name = "date_voided", required = true)
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar dateVoided;
     @XmlElement(name = "changed_by")
     protected int changedBy;
     @XmlElement(name = "date_changed", required = true)
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar dateChanged;
-    @XmlElement(name = "visit_id")
-    protected int visitId;
+    protected int voided;
+    @XmlElement(name = "date_voided", required = true)
+    @XmlSchemaType(name = "dateTime")
+    protected XMLGregorianCalendar dateVoided;
+    @XmlElement(name = "voided_by")
+    protected int voidedBy;
+    @XmlElement(name = "voided_reason", required = true)
+    protected String voidedReason;
+    @XmlElement(name = "encounter_provider_uuid", required = true)
+    protected String encounterProviderUuid;
+    @XmlElement(name = "datim_id", required = true)
+    protected String datimId;
     @XmlElement(name = "patient_uuid", required = true)
     protected String patientUuid;
     @XmlElement(name = "encounter_uuid", required = true)
     protected String encounterUuid;
-    @XmlElement(name = "datim_id", required = true)
-    protected String datimId;
     @XmlElement(name = "visit_uuid", required = true)
     protected String visitUuid;
+
+    /**
+     * Gets the value of the encounterProviderId property.
+     * 
+     */
+    public int getEncounterProviderId() {
+        return encounterProviderId;
+    }
+
+    /**
+     * Sets the value of the encounterProviderId property.
+     * 
+     */
+    public void setEncounterProviderId(int value) {
+        this.encounterProviderId = value;
+    }
 
     /**
      * Gets the value of the encounterId property.
@@ -135,35 +146,19 @@ public class EncounterType {
     }
 
     /**
-     * Gets the value of the encounterTypeId property.
+     * Gets the value of the providerId property.
      * 
      */
-    public int getEncounterTypeId() {
-        return encounterTypeId;
+    public int getProviderId() {
+        return providerId;
     }
 
     /**
-     * Sets the value of the encounterTypeId property.
+     * Sets the value of the providerId property.
      * 
      */
-    public void setEncounterTypeId(int value) {
-        this.encounterTypeId = value;
-    }
-
-    /**
-     * Gets the value of the patientId property.
-     * 
-     */
-    public int getPatientId() {
-        return patientId;
-    }
-
-    /**
-     * Sets the value of the patientId property.
-     * 
-     */
-    public void setPatientId(int value) {
-        this.patientId = value;
+    public void setProviderId(int value) {
+        this.providerId = value;
     }
 
     /**
@@ -183,67 +178,19 @@ public class EncounterType {
     }
 
     /**
-     * Gets the value of the formId property.
+     * Gets the value of the encounterRoleId property.
      * 
      */
-    public int getFormId() {
-        return formId;
+    public int getEncounterRoleId() {
+        return encounterRoleId;
     }
 
     /**
-     * Sets the value of the formId property.
+     * Sets the value of the encounterRoleId property.
      * 
      */
-    public void setFormId(int value) {
-        this.formId = value;
-    }
-
-    /**
-     * Gets the value of the pmmForm property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPmmForm() {
-        return pmmForm;
-    }
-
-    /**
-     * Sets the value of the pmmForm property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPmmForm(String value) {
-        this.pmmForm = value;
-    }
-
-    /**
-     * Gets the value of the encounterDatetime property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getEncounterDatetime() {
-        return encounterDatetime;
-    }
-
-    /**
-     * Sets the value of the encounterDatetime property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setEncounterDatetime(XMLGregorianCalendar value) {
-        this.encounterDatetime = value;
+    public void setEncounterRoleId(int value) {
+        this.encounterRoleId = value;
     }
 
     /**
@@ -287,62 +234,6 @@ public class EncounterType {
     }
 
     /**
-     * Gets the value of the voided property.
-     * 
-     */
-    public int getVoided() {
-        return voided;
-    }
-
-    /**
-     * Sets the value of the voided property.
-     * 
-     */
-    public void setVoided(int value) {
-        this.voided = value;
-    }
-
-    /**
-     * Gets the value of the voidedBy property.
-     * 
-     */
-    public int getVoidedBy() {
-        return voidedBy;
-    }
-
-    /**
-     * Sets the value of the voidedBy property.
-     * 
-     */
-    public void setVoidedBy(int value) {
-        this.voidedBy = value;
-    }
-
-    /**
-     * Gets the value of the dateVoided property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getDateVoided() {
-        return dateVoided;
-    }
-
-    /**
-     * Sets the value of the dateVoided property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setDateVoided(XMLGregorianCalendar value) {
-        this.dateVoided = value;
-    }
-
-    /**
      * Gets the value of the changedBy property.
      * 
      */
@@ -383,19 +274,131 @@ public class EncounterType {
     }
 
     /**
-     * Gets the value of the visitId property.
+     * Gets the value of the voided property.
      * 
      */
-    public int getVisitId() {
-        return visitId;
+    public int getVoided() {
+        return voided;
     }
 
     /**
-     * Sets the value of the visitId property.
+     * Sets the value of the voided property.
      * 
      */
-    public void setVisitId(int value) {
-        this.visitId = value;
+    public void setVoided(int value) {
+        this.voided = value;
+    }
+
+    /**
+     * Gets the value of the dateVoided property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public XMLGregorianCalendar getDateVoided() {
+        return dateVoided;
+    }
+
+    /**
+     * Sets the value of the dateVoided property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setDateVoided(XMLGregorianCalendar value) {
+        this.dateVoided = value;
+    }
+
+    /**
+     * Gets the value of the voidedBy property.
+     * 
+     */
+    public int getVoidedBy() {
+        return voidedBy;
+    }
+
+    /**
+     * Sets the value of the voidedBy property.
+     * 
+     */
+    public void setVoidedBy(int value) {
+        this.voidedBy = value;
+    }
+
+    /**
+     * Gets the value of the voidedReason property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getVoidedReason() {
+        return voidedReason;
+    }
+
+    /**
+     * Sets the value of the voidedReason property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setVoidedReason(String value) {
+        this.voidedReason = value;
+    }
+
+    /**
+     * Gets the value of the encounterProviderUuid property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getEncounterProviderUuid() {
+        return encounterProviderUuid;
+    }
+
+    /**
+     * Sets the value of the encounterProviderUuid property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setEncounterProviderUuid(String value) {
+        this.encounterProviderUuid = value;
+    }
+
+    /**
+     * Gets the value of the datimId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDatimId() {
+        return datimId;
+    }
+
+    /**
+     * Sets the value of the datimId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDatimId(String value) {
+        this.datimId = value;
     }
 
     /**
@@ -444,30 +447,6 @@ public class EncounterType {
      */
     public void setEncounterUuid(String value) {
         this.encounterUuid = value;
-    }
-
-    /**
-     * Gets the value of the datimId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDatimId() {
-        return datimId;
-    }
-
-    /**
-     * Sets the value of the datimId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDatimId(String value) {
-        this.datimId = value;
     }
 
     /**

@@ -74,42 +74,54 @@ public class PatientDAO {
         return patientId;
     }
     
-    public static long insertOrUpdatePatient(long patientId, int facilityId, DemographicsType patientDemo)
+    public static String insertOrUpdatePatient(DemographicsType patientDemo, String datimId, String messageUUID)
     {
         PreparedStatement stmt = null;
         ResultSet rs = null;
         Connection con = null;
         
-        StringBuilder query = new StringBuilder("INSERT INTO  patient_demographics(patient_id, first_name, last_name, gender, birthdate, birthdate_estimated, dead, creator, date_created, patient_uuid, phone_number, state_id, lga_id, address, city_village, country_id,");
-        query.append("voided, date_voided, voided_by, changed_by, date_changed, facility_id)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-        query.append(" ON DUPLICATE KEY UPDATE first_name=VALUES(first_name), last_name=VALUES(last_name), gender=VALUES(gender), birthdate=VALUES(birthdate), birthdate_estimated=VALUES(birthdate_estimated),dead=VALUES(dead), phone_number=VALUES(phone_number), ");
-        query.append("state_id=VALUES(state_id), lga_id=VALUES(lga_id), address=VALUES(address), city_village=VALUES(city_village), changed_by=VALUES(changed_by), voided=VALUES(voided), date_voided=VALUES(date_voided), voided_by=VALUES(voided_by)");
+        StringBuilder query = new StringBuilder("INSERT INTO  demographics(patient_uuid, patient_id, first_name, last_name, middle_name, gender, birthdate, birthdate_estimated, dead, death_date, cause_of_death, creator, date_created, phone_number, address1, address2, city_village, state_province, country,");
+        query.append(" changed_by, date_changed, voided_by, voided, date_voided,  voided_reason, deathdate_estimated, datim_id, message_uuid)VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?, ?)");
+        query.append(" ON DUPLICATE KEY UPDATE patient_id=VALUES(patient_id), first_name=VALUES(first_name), last_name=VALUES(last_name), middle_name=VALUES(middle_name),  gender=VALUES(gender), birthdate=VALUES(birthdate), birthdate_estimated=VALUES(birthdate_estimated), dead=VALUES(dead), death_date=VALUES(death_date), ");
+        query.append(" cause_of_death=VALUES(cause_of_death), creator=VALUES(creator), date_created=VALUES(date_created), phone_number=VALUES(phone_number), address1=VALUES(address1), address2=VALUES(address2), city_village=VALUES(city_village), ");
+        query.append(" state_province=VALUES(state_province), country=VALUES(country), changed_by=VALUES(changed_by), date_changed=VALUES(date_changed), voided=VALUES(voided), voided_by=VALUES(voided_by), date_voided=VALUES(date_voided), voided_reason=VALUES(voided_reason), deathdate_estimated=VALUES(deathdate_estimated), message_uuid=VALUES(message_uuid)");
         try {
                 con = Database.connectionPool.getConnection();
                 stmt= con.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);  
-                stmt.setLong(1,patientId);
-                stmt.setString(2,patientDemo.getFirstName());
-                stmt.setString(3,patientDemo.getLastName());
-                stmt.setString(4,patientDemo.getGender());
-                stmt.setDate(5, new java.sql.Date(patientDemo.getBirthDate().toGregorianCalendar().getTime().getTime()));
-                stmt.setInt(6,patientDemo.getBirthDateEstimated());
-                stmt.setInt(7,patientDemo.getDead());
-                stmt.setInt(8,patientDemo.getCreator());
-                stmt.setLong(9, (patientDemo.getDateCreated() != null) ? patientDemo.getDateCreated().toGregorianCalendar().getTime().getTime() : 0);
-                stmt.setString(10,patientDemo.getPatientUUID());
-                stmt.setString(11,patientDemo.getPhoneNumber());
-                stmt.setInt(12, Misc.getStateId(patientDemo.getStateProvince()));
-                stmt.setInt(13, 0);
-                stmt.setString(14,patientDemo.getAddress1()+" "+patientDemo.getAddress2() );
-                stmt.setString(15,patientDemo.getCityVillage());
-                stmt.setInt(16,160);
-                stmt.setInt(17,patientDemo.getVoided());
-                stmt.setLong(18, (patientDemo.getDateVoided() != null) ? patientDemo.getDateVoided().toGregorianCalendar().getTime().getTime() : 0);
-                stmt.setInt(19,patientDemo.getVoidedBy());
-                stmt.setInt(20,patientDemo.getChangedBy());
-                stmt.setLong(21, (patientDemo.getDateChanged() != null) ? patientDemo.getDateChanged().toGregorianCalendar().getTime().getTime() : 0);
-               stmt.setInt(22,facilityId);
-                int affectedRows = stmt.executeUpdate();
+                
+                int i = 1;
+                stmt.setString(i++, patientDemo.getPatientUuid());
+                stmt.setLong(i++, patientDemo.getPatientId());
+                stmt.setString(i++,patientDemo.getFirstName());
+                stmt.setString(i++,patientDemo.getLastName());
+                stmt.setString(i++,patientDemo.getMiddleName());
+                stmt.setString(i++,patientDemo.getGender());
+                stmt.setDate(i++, new java.sql.Date(patientDemo.getBirthdate().toGregorianCalendar().getTime().getTime()));
+                stmt.setInt(i++,patientDemo.getBirthdateEstimated());
+                stmt.setInt(i++,patientDemo.getDead());
+                stmt.setDate(i++, (patientDemo.getDateChanged() != null) ? new java.sql.Date(patientDemo.getDeathDate().toGregorianCalendar().getTime().getTime()) : null);
+                stmt.setString(i++, patientDemo.getCauseOfDeath());//cause of death
+                stmt.setInt(i++,patientDemo.getCreator());
+                stmt.setDate(i++, (patientDemo.getDateCreated() != null) ? new java.sql.Date(patientDemo.getDateCreated().toGregorianCalendar().getTime().getTime()) : null);
+                stmt.setString(i++,patientDemo.getPhoneNumber());
+                stmt.setString(i++,patientDemo.getAddress1());
+                stmt.setString(i++,patientDemo.getAddress2());
+                stmt.setString(i++,patientDemo.getCityVillage());
+                stmt.setString(i++,patientDemo.getStateProvince());
+                stmt.setString(i++,patientDemo.getCountry());
+                stmt.setInt(i++,patientDemo.getChangedBy());
+                stmt.setDate(i++, (patientDemo.getDateChanged() != null) ? new java.sql.Date(patientDemo.getDateChanged().toGregorianCalendar().getTime().getTime()) : null);
+                stmt.setInt(i++, patientDemo.getVoidedBy());
+                stmt.setInt(i++,patientDemo.getVoided());
+                stmt.setDate(i++, (patientDemo.getDateVoided() != null) ? new java.sql.Date(patientDemo.getDateVoided().toGregorianCalendar().getTime().getTime()) : null);
+                stmt.setString(i++, patientDemo.getVoidedReason());//voided reason
+                stmt.setInt(i++, patientDemo.getDeathdateEstimated());
+                stmt.setString(i++, datimId);
+                stmt.setString(i++, messageUUID);
+               
+                stmt.executeUpdate();
+                //stmt.setInt(22,facilityId);
+                /*int affectedRows = stmt.executeUpdate();
               
                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
@@ -121,15 +133,15 @@ public class PatientDAO {
                 }catch(Exception e)
                 {
                     e.printStackTrace();
-                }
+                }*/
                
-               return patientId;
+               return patientDemo.getPatientUuid();
                
         }
         catch (SQLException ex) {
                 //screen.updateStatus(ex.getMessage());
                 ex.printStackTrace();
-                return patientId;
+                return patientDemo.getPatientUuid();
         }
         finally {
                 try {

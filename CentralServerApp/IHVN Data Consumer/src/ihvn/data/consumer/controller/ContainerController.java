@@ -26,8 +26,10 @@ import java.util.List;
 public class ContainerController {
     
     private int facilityId = 0;
+    private String datimId = "";
+    private String messageUUID = "";
     private Container container;
-    private long patientId = 0;
+    private String patientUUID = "";
     
     //visit 
     public void saveContainer(Container cnt)
@@ -36,18 +38,21 @@ public class ContainerController {
         MessageHeaderType messageHeader = this.container.getMessageHeader(); 
         MessageDataType messageData = this.container.getMessageData();
         //get the facility
+        patientUUID = messageData.getDemographics().getPatientUuid();
+        datimId = messageHeader.getFacilityDatimCode();
+        messageUUID = messageHeader.getMessageUniqueID();
         
-        facilityId = FacilityDAO.getFacilityWithDatimCode(messageHeader.getFacilityDatimCode());
+        facilityId = 0;//FacilityDAO.getFacilityWithDatimCode(messageHeader.getFacilityDatimCode());
         
         //save patient demographics details
         DemographicsType demo = messageData.getDemographics();
         
-        patientId = PatientDAO.getPatientIdWithUUID(demo.getPatientUUID());
+        //patientUUID = PatientDAO.getPatientIdWithUUID(demo.getPatientUUID());
     
-        patientId = PatientDAO.insertOrUpdatePatient(patientId, facilityId, demo);
+        PatientDAO.insertOrUpdatePatient(demo, datimId, messageUUID);
         
         //save patient biometrics
-        if(this.container.getMessageData().getDemographics().getPatientBiometric() != null){
+        if(this.container.getMessageData().getPatientBiometrics() != null){
              this.savePatientBiometrics();
         }
        
@@ -62,36 +67,36 @@ public class ContainerController {
     
     private void savePatientBiometrics()
     {
-        List<PatientBiometricType> biometrics = this.container.getMessageData().getDemographics().getPatientBiometric();
+        List<PatientBiometricType> biometrics = this.container.getMessageData().getPatientBiometrics();
         //first delete any existing biometrics record for ths patient 
-        PatientBiometricDAO.deleteExisitingBiometrics(patientId);
+        //PatientBiometricDAO.deleteExisitingBiometrics(patientId);
         //now insert the biometrics afresh
-        PatientBiometricDAO.savePatientBiometrics(patientId, biometrics);
+        PatientBiometricDAO.savePatientBiometrics(patientUUID, datimId, messageUUID,  biometrics);
     }
     
     
     
     private void savePatientIdentifiers()
     {
-        List<PatientIdentifierType> identifiers = this.container.getMessageData().getDemographics().getPatientIdentifiers();
-        PatientIdentifierDAO.deleteExisitingIdentifiers(patientId);
-        PatientIdentifierDAO.savePatientIdentifiers(patientId, identifiers);
+        List<PatientIdentifierType> identifiers = this.container.getMessageData().getPatientIdentifiers();
+        //PatientIdentifierDAO.deleteExisitingIdentifiers(patientId);
+        PatientIdentifierDAO.savePatientIdentifiers(datimId, messageUUID, identifiers);
     }
     
     private void saveVisits()
     {
         List<VisitType> allVisits = this.container.getMessageData().getVisits();
-        VisitDAO.deleteVisits(patientId);
+        //VisitDAO.deleteVisits(patientId);
       
-        long firstVisitId = VisitDAO.saveVisits(patientId, facilityId, allVisits);
+        //long firstVisitId = VisitDAO.saveVisits(patientId, facilityId, allVisits);
+        VisitDAO.saveVisits(datimId, messageUUID, allVisits);
 
         // save the encounters
 
-        long firstEncounterId = VisitDAO.saveEncounters(patientId, firstVisitId, allVisits);
+        long firstEncounterId = VisitDAO.saveEncounters(datimId, messageUUID, this.container.getMessageData().getEncounters());
 
         //save obs
-        VisitDAO.saveObs(patientId, firstEncounterId, allVisits);
-        
+        VisitDAO.saveObs(datimId, messageUUID, this.container.getMessageData().getObs());  
     }
     
    

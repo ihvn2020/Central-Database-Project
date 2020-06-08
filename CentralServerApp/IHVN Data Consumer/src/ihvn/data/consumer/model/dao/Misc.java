@@ -63,7 +63,7 @@ public class Misc {
     public static String[] getObsValue(ObsType obs)
     {
         String obsValue[] = new String[2];
-        if(obs.getValueDateTime()!= null)
+        /*if(obs.getValueDateTime()!= null)
         {
             obsValue[0] = obs.getValueDateTime().toString();
             obsValue[1] = "datetime";
@@ -82,7 +82,7 @@ public class Misc {
         {
             obsValue[0] = obs.getValueText();
             obsValue[1] = "text";
-        }
+        }*/
             
         return obsValue;
     }

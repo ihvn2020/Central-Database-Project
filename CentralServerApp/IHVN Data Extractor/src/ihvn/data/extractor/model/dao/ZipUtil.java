@@ -11,7 +11,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -94,4 +97,36 @@ public class ZipUtil {
 	private String generateZipEntry(String file) {
 		return file.substring(SOURCE_FOLDER.length() + 1, file.length());
 	}
+        
+        
+        
+        public static void zipFolder(String zippedFilePath, String folderPath)
+        {
+            try {
+                
+                File file = new File(folderPath);
+                
+                String [] srcFiles = file.list();//Arrays.asList("test1.txt", "test2.txt");
+                FileOutputStream fos = new FileOutputStream(zippedFilePath);
+                ZipOutputStream zipOut = new ZipOutputStream(fos);
+                for (String srcFile : srcFiles) {
+                    File fileToZip = new File(folderPath+File.separator+srcFile);
+                    FileInputStream fis = new FileInputStream(fileToZip);
+                    ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+                    zipOut.putNextEntry(zipEntry);
+                    
+                    byte[] bytes = new byte[1024];
+                    int length;
+                    while((length = fis.read(bytes)) >= 0) {
+                        zipOut.write(bytes, 0, length);
+                    }
+                    fis.close();
+                    System.out.println("currently zipping "+srcFile);
+                }
+                zipOut.close();
+                fos.close();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
 }

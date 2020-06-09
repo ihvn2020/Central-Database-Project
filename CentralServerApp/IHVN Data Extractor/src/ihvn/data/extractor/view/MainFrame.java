@@ -62,8 +62,10 @@ public class MainFrame extends javax.swing.JFrame {
     {
         System.out.println("started zipping");
        
-        String zipFileName = "IHVN_"+MainController.datimId+"_STATE DATABASE_"+new Date().getTime();
-        File toZIP = new File(this.outPutFolder);
+        File f = new File(this.outPutFolder);
+        String zipFileName = "IHVN_"+MainController.datimId+"_STATE DATABASE_"+new Date().getTime()+".zip";
+        ZipUtil.zipFolder(f.getParent()+File.separator+zipFileName, this.outPutFolder);
+        /*File toZIP = new File(this.outPutFolder);
         if (!toZIP.exists() || toZIP.listFiles() == null || Objects.requireNonNull(toZIP.listFiles()).length == 0) {
              JOptionPane.showMessageDialog(this, "An error occcured", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -75,9 +77,14 @@ public class MainFrame extends javax.swing.JFrame {
             // old implementation               appZip.zipIt(toZIP.getParent() + "/" + zipFileName);
             appZip.zipIt(Paths.get(toZIP.getParent(), zipFileName).toString());
             //zipping is complete. Open the folder
-            //this.openFolder(); this is throwing an error for now
-            MainFrame.this.txtPatientCount.setText("Zipping complete. The zipped file is at "+toZIP.getParent()+File.separator+zipFileName);
-        }
+            
+        }*/
+        //this.openFolder(); this is throwing an error for now
+        MainFrame.this.txtPatientCount.setText("Zipping complete. The zipped file is at "+f.getParent()+File.separator+zipFileName);
+        
+        
+        
+        
        
     }
     

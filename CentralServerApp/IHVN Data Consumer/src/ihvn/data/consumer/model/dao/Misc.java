@@ -6,8 +6,14 @@
 package ihvn.data.consumer.model.dao;
 
 import ihvn.data.consumer.model.xml.ObsType;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
@@ -85,6 +91,66 @@ public class Misc {
         }*/
             
         return obsValue;
+    }
+    
+    //unzip file
+    public static String unzipp(String zippedFilePath)
+    {
+        ZipEntry zipEntry;
+        ZipInputStream zis = null;
+        String unzippedFilePath = "";
+        try{
+            unzippedFilePath = zippedFilePath.replace(".zip", "");
+            File destDir = new File(unzippedFilePath);
+            destDir.mkdir();
+            byte[] buffer = new byte[1024];
+            zis = new ZipInputStream(new FileInputStream(zippedFilePath));
+            zipEntry = zis.getNextEntry();
+            while (zipEntry != null) {
+                File newFile = newFile(destDir, zipEntry);
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
+                zipEntry = zis.getNextEntry();
+            }
+            
+            
+            
+            
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        finally
+        {
+            try{
+                zis.closeEntry();
+                zis.close();
+            }catch(Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        
+        return unzippedFilePath ;
+        
+    }
+    
+    public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+        File destFile = new File(destinationDir, zipEntry.getName());
+         
+        String destDirPath = destinationDir.getCanonicalPath();
+        String destFilePath = destFile.getCanonicalPath();
+         
+        if (!destFilePath.startsWith(destDirPath + File.separator)) {
+            throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+        }
+         
+        return destFile;
     }
     
    

@@ -6,19 +6,20 @@
 package ihvn.data.consumer.controller;
 
 import ihvn.data.consumer.model.dao.Database;
+import ihvn.data.consumer.model.dao.Misc;
 import ihvn.data.consumer.model.xml.Container;
 import ihvn.data.consumer.view.MainFrame;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 /**
  *
@@ -28,6 +29,7 @@ public class MainController {
     
     
     private String folderPath = "";
+    private String currFolder = "";//this is the extracted folder that is being processed
     public static JAXBContext jaxbContext ;
     public MainFrame main;
     
@@ -81,17 +83,48 @@ public class MainController {
     public boolean newFilesExists()
     {
         final File folder = new File(this.folderPath);
-        if(folder.listFiles().length > 0)
+        
+        //get only zipped files in that folder
+        File[] zippedFileList = folder.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(".zip");
+            }
+        });
+        
+        if(zippedFileList.length > 0)
         {
-            MainFrame.fileCount = folder.listFiles().length;
+
+            //if there are more than one file, sort the zipped files to get the oldest ones first
+            if(zippedFileList.length > 1){
+                Arrays.sort(zippedFileList, new Comparator<File>(){
+                public int compare(File f1, File f2)
+                {
+                    return Long.valueOf(f1.lastModified()).compareTo(f2.lastModified());
+                } });
+            }
+            
+           //unzip the very first file
+           
+           this.currFolder = Misc.unzipp(zippedFileList[0].getAbsolutePath());
+           
+           //next is to delete the zipped file
+           zippedFileList[0].delete();
+           
+           
+           final File currFolder = new File(this.currFolder);
+           MainFrame.fileCount = currFolder.listFiles().length;
             return true;
         }
         else{
             MainFrame.fileCount = 0;
             return false;
         }
-              
+          
     }
+    
+    
+    
     public int readXMLs()
     {
         
@@ -104,7 +137,7 @@ public class MainController {
             { 
                
               try {
-                final File folder = new File(MainController.this.folderPath);
+                final File folder = new File(MainController.this.currFolder);
                 int patientCounter = 0;
                 File [] fileList = folder.listFiles();
                 for (final File fileEntry : fileList) {
@@ -127,7 +160,7 @@ public class MainController {
                 try {
                     //once we are done with the loop,  waiting for about 10 seconds and start checking again
                     Thread.sleep(10000);
-                    main.startCheckingForFiles();
+                    main.startCheckingForFiles();//start checking again
                     // break;
                     //System.out.println(fileEntry.getAbsolutePath());
                 } catch (InterruptedException ex) {

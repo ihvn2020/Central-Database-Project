@@ -110,7 +110,7 @@ public class MainFrame extends javax.swing.JFrame {
                 }
                 else{
                      
-                    int progress = (patientCount *100) / MainFrame.fileCount;
+                    int progress = (MainFrame.fileCount > 0) ? (patientCount *100) / MainFrame.fileCount : 0;
                     myProgressBar.setString( "Processed Patient "+patientCount+" of "+MainFrame.fileCount + ":  "+progress +" % complete");
                     myProgressBar.setValue(progress);
                      MainFrame.this.txtPatientCount.setText("Processed File "+MainFrame.currCount+" of "+MainFrame.fileCount);

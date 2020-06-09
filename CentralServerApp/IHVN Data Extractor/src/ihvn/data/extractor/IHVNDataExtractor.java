@@ -7,6 +7,7 @@ package ihvn.data.extractor;
 
 import ihvn.data.extractor.controller.MainController;
 import ihvn.data.extractor.model.dao.PatientDAO;
+import ihvn.data.extractor.model.dao.ZipUtil;
 import javax.swing.JFrame;
 import ihvn.data.extractor.view.MainFrame;
 import javax.swing.SwingUtilities;

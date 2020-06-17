@@ -48,7 +48,7 @@ public class ContainerController {
         DemographicsType demo = messageData.getDemographics();
         
         //patientUUID = PatientDAO.getPatientIdWithUUID(demo.getPatientUUID());
-    
+        
         PatientDAO.insertOrUpdatePatient(demo, datimId, messageUUID);
         
         //save patient biometrics
@@ -92,8 +92,8 @@ public class ContainerController {
         VisitDAO.saveVisits(datimId, messageUUID, allVisits);
 
         // save the encounters
-
-        long firstEncounterId = VisitDAO.saveEncounters(datimId, messageUUID, this.container.getMessageData().getEncounters());
+        String patientUUID = this.container.getMessageData().getDemographics().getPatientUuid();
+        long firstEncounterId = VisitDAO.saveEncounters(patientUUID, datimId, messageUUID, this.container.getMessageData().getEncounters());
 
         //save obs
         VisitDAO.saveObs(datimId, messageUUID, this.container.getMessageData().getObs());  

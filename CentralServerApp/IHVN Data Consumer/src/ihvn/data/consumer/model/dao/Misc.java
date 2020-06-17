@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -151,6 +152,32 @@ public class Misc {
         }
          
         return destFile;
+    }
+    
+    public static int getAge(Calendar dob)
+    {
+        Calendar today = Calendar.getInstance();
+ 
+        int curYear = today.get(Calendar.YEAR);
+        int dobYear = dob.get(Calendar.YEAR);
+ 
+        int age = curYear - dobYear;
+ 
+        // if dob is month or day is behind today's month or day
+        // reduce age by 1
+        int curMonth = today.get(Calendar.MONTH);
+        int dobMonth = dob.get(Calendar.MONTH);
+        if (dobMonth > curMonth) { // this year can't be counted!
+            age--;
+        } else if (dobMonth == curMonth) { // same month? check for day
+            int curDay = today.get(Calendar.DAY_OF_MONTH);
+            int dobDay = dob.get(Calendar.DAY_OF_MONTH);
+            if (dobDay > curDay) { // this year can't be counted!
+                age--;
+            }
+        }
+ 
+        return age;
     }
     
    

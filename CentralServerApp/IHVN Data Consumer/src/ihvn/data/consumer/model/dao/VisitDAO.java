@@ -152,7 +152,7 @@ public class VisitDAO {
     }
     
     
-    public static long saveEncounters(String datimId, String messageUUID,  List<EncounterType> encounters)
+    public static long saveEncounters(String patientUUID, String datimId, String messageUUID,  List<EncounterType> encounters)
     {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -166,6 +166,8 @@ public class VisitDAO {
              for(int j=0; j<encounters.size(); j++)
             {
                 query.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
+                //let's init the encounter validation data here
+                
             }
         }
         query.setLength(query.length() - 1);//remove the last comma

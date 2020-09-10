@@ -74,6 +74,8 @@ public class ContainerController {
         messageData.getObs().addAll(this.buildObs());
         messageData.getPatientBiometrics().addAll(this.buildPatientBiometrics());
         messageData.getEncounterProviders().addAll(this.buildEncounterProviders());
+        messageData.getPatientIdentifiers().addAll(this.buildPatienIdentifiers());
+        messageData.getPatientPrograms().addAll(this.buildPatientPrograms());
         return messageData;
 
     }
@@ -213,5 +215,7 @@ public class ContainerController {
         List<EncounterProviderType> encounterProviderList=dao.getAllEncountersProvidersByPatient(Integer.parseInt(patientDetails.get("patientId")),patientDetails.get("patientUUID"),MainController.datimId);
         return encounterProviderList;
     }
+    
+   
 
 }

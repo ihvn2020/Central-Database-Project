@@ -68,8 +68,7 @@ for loading into analytical state central databases.
                         minOccurs="1" maxOccurs="1">
                 <xs:annotation>
                     <xs:documentation xml:lang="en">
-                        Message Creation Date
-                        and Time
+                        Message Creation Date and Time
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>

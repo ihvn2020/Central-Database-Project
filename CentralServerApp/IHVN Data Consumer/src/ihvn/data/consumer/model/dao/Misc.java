@@ -17,6 +17,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.joda.time.DateTime;
+import org.joda.time.Years;
 
 /**
  *
@@ -178,6 +180,108 @@ public class Misc {
         }
  
         return age;
+    }
+    
+    public static boolean isInFuture(Calendar cal)
+    {
+        DateTime date = new DateTime(cal);
+        if(date.isAfterNow())
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public static boolean isInFuture(DateTime date)
+    {
+        if(date.isAfterNow())
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public static boolean isBefore1990(DateTime date)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(1990,0,1,1, 1,1);
+        DateTime before1990 = new DateTime(cal);
+        
+        if(date.isBefore(before1990))
+        {
+            return true;
+        }
+        return false;
+    }
+    public static boolean isBefore1990(Calendar calDate)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.set(1990,0,1,1, 1,1);
+        DateTime before1990 = new DateTime(cal);
+        
+        DateTime date = new DateTime(calDate);
+        
+        if(date.isBefore(before1990))
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public static boolean isBeforeDate(DateTime date1, DateTime date2)
+    {
+        if(date1.isBefore(date2))
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public static boolean isBeforeDate(Calendar cal1, Calendar cal2)
+    {
+        DateTime date1 = new DateTime(cal1);
+        DateTime date2 = new DateTime(cal2);
+        if(date1.isBefore(date2))
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public static boolean isAfterDate(DateTime date1, DateTime date2)
+    {
+        if(date1.isAfter(date2))
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public static boolean isAfterDate(Calendar cal1, Calendar cal2)
+    {
+        DateTime date1 = new DateTime(cal1);
+        DateTime date2 = new DateTime(cal2);
+        
+        if(date1.isAfter(date2))
+        {
+            return true;
+        }
+        return false;
+    } 
+    
+    public static boolean isGreaterThan200(Calendar cal)
+    {
+        DateTime date = new DateTime(cal);
+        DateTime now = new DateTime();
+        Years age = Years.yearsBetween(date, now);
+        if(age.getYears() > 200)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
    

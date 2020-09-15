@@ -17,7 +17,7 @@ import java.sql.SQLException;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.dbcp2.BasicDataSource;
+//import org.apache.commons.dbcp2.BasicDataSource;
 
  
 
@@ -29,7 +29,7 @@ public class ConnectionPoolBk {
 	private String driver, url, username, password;
 	
 	
-        private static BasicDataSource dataSource;
+       // private static BasicDataSource dataSource;
         private Connection connection = null;
 	
 	private boolean connectionPending = false;

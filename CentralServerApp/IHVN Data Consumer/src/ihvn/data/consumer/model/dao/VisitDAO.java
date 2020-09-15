@@ -5,9 +5,12 @@
  */
 package ihvn.data.consumer.model.dao;
 
+import ihvn.data.consumer.controller.Validator;
+import ihvn.data.consumer.model.xml.DemographicsType;
 import ihvn.data.consumer.model.xml.EncounterType;
 import ihvn.data.consumer.model.xml.ObsType;
 import ihvn.data.consumer.model.xml.VisitType;
+import ihvn.data.consumer.models.Constant;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -76,7 +79,7 @@ public class VisitDAO {
         }
     }
     
-    public static  void saveVisits(String datimId, String messageUUID,  List<VisitType> visits)
+    public static  void saveVisits(DemographicsType patientDemo, String datimId, String messageUUID,  List<VisitType> visits)
     {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -100,6 +103,12 @@ public class VisitDAO {
                     stmt= con.prepareStatement(query.toString()); 
                     int i = 1;
                     for(int j=0; j<visits.size(); j++){
+                        
+                        //this might not be the best place, but to avoid doing another loop, we'll put it here
+                        Validator.setupVisitValidation(visits.get(j).getPatientUuid(), visits.get(j).getVisitUuid());
+                        
+                        //now validate the visit
+                        Validator.validateVisit(patientDemo, visits.get(j));
                         stmt.setString(i++, visits.get(j).getVisitUuid());
                         stmt.setLong(i++, visits.get(j).getVisitId());
                         stmt.setLong(i++, visits.get(j).getPatientId());
@@ -152,7 +161,7 @@ public class VisitDAO {
     }
     
     
-    public static long saveEncounters(String patientUUID, String datimId, String messageUUID,  List<EncounterType> encounters)
+    public static long saveEncounters(DemographicsType patientDemo, String patientUUID, String datimId, String messageUUID,  List<EncounterType> encounters)
     {
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -165,6 +174,35 @@ public class VisitDAO {
         if(encounters != null){//ensure that the current visit has an encounter
              for(int j=0; j<encounters.size(); j++)
             {
+                //setup validation
+                Validator.setEncounterValidation(patientUUID, encounters.get(j));
+                //also setup other encounter validation types
+                if(encounters.get(j).getEncounterTypeId() == Constant.HIV_ENROLLMENT_FORM)
+                {
+                    Validator.setupEnrollmentFormEncounterValidation(patientUUID, encounters.get(j));
+                }else if(encounters.get(j).getEncounterTypeId() == Constant.CARE_CARD)
+                {
+                    Validator.setupClinicalEncounterValidation(patientUUID, encounters.get(j).getEncounterUuid());
+                }
+                else if(encounters.get(j).getEncounterTypeId() == Constant.ART_COMMENCEMENT_FORM)
+                {
+                    Validator.setupArtCommencementForm(patientUUID, encounters.get(j).getEncounterUuid());
+                }
+                else if(encounters.get(j).getEncounterTypeId() == Constant.PHARMACY_FORM)
+                {
+                    Validator.setupPharmacyEncounterValidation(patientUUID, encounters.get(j).getEncounterUuid());
+                }
+                else if(encounters.get(j).getEncounterTypeId() == Constant.LAB_ORDER_AND_RESULT_FORM)
+                {
+                    Validator.setupLabEncounterValidation(patientUUID, encounters.get(j).getEncounterUuid());
+                }
+                else if(encounters.get(j).getEncounterTypeId() == Constant.PED_INITIAL_EVAL_FORM || encounters.get(j).getEncounterTypeId() == Constant.ADULT_INITIAL_EVAL_FORM)
+                {
+                    Validator.setupAdultPedInitialEvaluationForm(patientUUID, encounters.get(j).getEncounterUuid());
+                }
+               
+                //perform validation
+                Validator.validateEncounter(patientDemo, encounters.get(j));
                 query.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
                 //let's init the encounter validation data here
                 
@@ -262,6 +300,9 @@ public class VisitDAO {
         if(obsList != null){
             for(int k=0; k<obsList.size(); k++)
              {
+                 
+                 //validate the obs
+                 
                  query.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?),");
              }
         }

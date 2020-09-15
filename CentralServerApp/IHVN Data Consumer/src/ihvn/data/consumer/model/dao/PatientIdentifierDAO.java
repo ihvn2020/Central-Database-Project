@@ -99,12 +99,12 @@ public class PatientIdentifierDAO {
                     stmt.setInt(index++, patientIdentifiers.get(i).getIdentifierType());
                     stmt.setInt(index++, patientIdentifiers.get(i).getPreferred());
                     stmt.setInt(index++, patientIdentifiers.get(i).getCreator());
-                    stmt.setLong(index++, (patientIdentifiers.get(i).getDateCreated() != null) ? patientIdentifiers.get(i).getDateCreated().toGregorianCalendar().getTime().getTime() : 0);
-                    stmt.setLong(index++, (patientIdentifiers.get(i).getDateChanged()!= null) ? patientIdentifiers.get(i).getDateChanged().toGregorianCalendar().getTime().getTime() : 0);
+                    stmt.setDate(index++, (patientIdentifiers.get(i).getDateCreated() != null) ? new java.sql.Date(patientIdentifiers.get(i).getDateCreated().toGregorianCalendar().getTime().getTime()): null);
+                    stmt.setDate(index++, (patientIdentifiers.get(i).getDateChanged()!= null) ? new java.sql.Date(patientIdentifiers.get(i).getDateChanged().toGregorianCalendar().getTime().getTime()) : null);
                     stmt.setInt(index++, patientIdentifiers.get(i).getChangedBy());
                     stmt.setInt(index++, patientIdentifiers.get(i).getVoided());
                     stmt.setLong(index++, patientIdentifiers.get(i).getVoidedBy());
-                    stmt.setLong(index++, (patientIdentifiers.get(i).getDateVoided() != null) ? patientIdentifiers.get(i).getDateVoided().toGregorianCalendar().getTime().getTime() : 0);
+                    stmt.setDate(index++, (patientIdentifiers.get(i).getDateVoided() != null) ? new java.sql.Date(patientIdentifiers.get(i).getDateVoided().toGregorianCalendar().getTime().getTime()) : null);
                     stmt.setString(index++, patientIdentifiers.get(i).getPatientUuid());
                     stmt.setString(index++, datimId);
                     stmt.setString(index++, messageUUID);

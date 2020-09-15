@@ -9,6 +9,7 @@ import ihvn.data.consumer.model.dao.FacilityDAO;
 import ihvn.data.consumer.model.dao.PatientBiometricDAO;
 import ihvn.data.consumer.model.dao.PatientDAO;
 import ihvn.data.consumer.model.dao.PatientIdentifierDAO;
+import ihvn.data.consumer.model.dao.PatientProgramDAO;
 import ihvn.data.consumer.model.dao.VisitDAO;
 import ihvn.data.consumer.model.xml.Container;
 import ihvn.data.consumer.model.xml.DemographicsType;
@@ -16,8 +17,12 @@ import ihvn.data.consumer.model.xml.MessageDataType;
 import ihvn.data.consumer.model.xml.MessageHeaderType;
 import ihvn.data.consumer.model.xml.PatientBiometricType;
 import ihvn.data.consumer.model.xml.PatientIdentifierType;
+import ihvn.data.consumer.model.xml.PatientProgramType;
 import ihvn.data.consumer.model.xml.VisitType;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -31,6 +36,10 @@ public class ContainerController {
     private Container container;
     private String patientUUID = "";
     
+    public static Map<String, Map<String, String>> validationData = new HashMap<>();
+    public static Map<String, JSONObject> lookupData = new HashMap<>();
+    public static Map<String, Map<String, JSONObject>> encounterValidationData = new HashMap<>();
+    public static Map<String, Map<String, String>> visitValidationData = new HashMap<>();
     //visit 
     public void saveContainer(Container cnt)
     {
@@ -49,6 +58,13 @@ public class ContainerController {
         
         //patientUUID = PatientDAO.getPatientIdWithUUID(demo.getPatientUUID());
         
+        //setup patient validation
+        Validator.setupPatientValidationData(patientUUID);
+        
+        //validate patient
+        Validator.validatePatient(demo);
+        Validator.validateProgram(demo, messageData.getPatientPrograms().size());
+        //Validate
         PatientDAO.insertOrUpdatePatient(demo, datimId, messageUUID);
         
         //save patient biometrics
@@ -58,6 +74,9 @@ public class ContainerController {
        
         //save the patient identifiers
         this.savePatientIdentifiers();
+        
+        //save the patient programs
+        this.savePatientPrograms();
         
         //save visits
         this.saveVisits();
@@ -74,13 +93,17 @@ public class ContainerController {
         PatientBiometricDAO.savePatientBiometrics(patientUUID, datimId, messageUUID,  biometrics);
     }
     
-    
-    
     private void savePatientIdentifiers()
     {
         List<PatientIdentifierType> identifiers = this.container.getMessageData().getPatientIdentifiers();
         //PatientIdentifierDAO.deleteExisitingIdentifiers(patientId);
         PatientIdentifierDAO.savePatientIdentifiers(datimId, messageUUID, identifiers);
+    }
+    private void savePatientPrograms()
+    {
+        List<PatientProgramType> programs = this.container.getMessageData().getPatientPrograms();
+        PatientProgramDAO.savePatientProgram(datimId, messageUUID, programs);
+        
     }
     
     private void saveVisits()
@@ -89,11 +112,11 @@ public class ContainerController {
         //VisitDAO.deleteVisits(patientId);
       
         //long firstVisitId = VisitDAO.saveVisits(patientId, facilityId, allVisits);
-        VisitDAO.saveVisits(datimId, messageUUID, allVisits);
+        VisitDAO.saveVisits(this.container.getMessageData().getDemographics(), datimId, messageUUID, allVisits);
 
         // save the encounters
         String patientUUID = this.container.getMessageData().getDemographics().getPatientUuid();
-        long firstEncounterId = VisitDAO.saveEncounters(patientUUID, datimId, messageUUID, this.container.getMessageData().getEncounters());
+        long firstEncounterId = VisitDAO.saveEncounters(this.container.getMessageData().getDemographics(), patientUUID, datimId, messageUUID, this.container.getMessageData().getEncounters());
 
         //save obs
         VisitDAO.saveObs(datimId, messageUUID, this.container.getMessageData().getObs());  

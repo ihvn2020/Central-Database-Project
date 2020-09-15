@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingWorker;
 import javax.xml.bind.JAXBContext;
 
@@ -54,7 +56,18 @@ public class MainController {
         FileReader reader=null;
         try {
             // TODO code application logic here
-            reader = new FileReader("connection.properties");
+            File jarPath=new File(MainController.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+            String propertiesPath=jarPath.getParentFile().getAbsolutePath();
+            //check if file exist in project .i.e we are in dev
+            if(new File(propertiesPath+"connection.properties").exists())
+            {
+                reader = new FileReader(propertiesPath+"/connection.properties");
+            }
+            else
+            {
+                reader = new FileReader("connection.properties");
+            }
+            
             Properties p=new Properties();
             p.load(reader);
             String connString = p.getProperty("connection.url");
@@ -83,7 +96,14 @@ public class MainController {
     public boolean newFilesExists()
     {
         final File folder = new File(this.folderPath);
-        
+        if(!folder.exists()){
+            try {
+                folder.createNewFile();
+            } catch (IOException ex) {
+                Logger.getLogger(MainController.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        System.out.println(this.folderPath);
         //get only zipped files in that folder
         File[] zippedFileList = folder.listFiles(new FilenameFilter() {
             @Override

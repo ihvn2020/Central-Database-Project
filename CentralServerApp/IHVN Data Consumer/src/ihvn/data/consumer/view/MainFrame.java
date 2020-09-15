@@ -59,6 +59,9 @@ public class MainFrame extends javax.swing.JFrame {
              }while(!main.newFilesExists());
             //once new files are found start processing
              main.readXMLs();//check again
+             
+             //perform ETL
+             
 
         }
         else{

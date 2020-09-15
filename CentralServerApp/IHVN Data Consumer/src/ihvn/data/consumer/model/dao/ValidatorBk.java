@@ -25,7 +25,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *
  * @author rsuth
  */
-public class Validator {
+public class ValidatorBk {
     
     //lets put the encounter map here. basically this map will be multi dimensional with the first key as the patient uuid and second key as encounter uuid
     //next keys will be all the other validations. 
@@ -165,7 +165,7 @@ public class Validator {
         StringBuilder errorQuery = new StringBuilder("");
         List<ValidatorData> errorParams = new ArrayList<>();
         
-        if(Validator.isVisitDateStartedInFuture(visit))
+        if(ValidatorBk.isVisitDateStartedInFuture(visit))
         {
             errorQuery.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
             ValidatorData data = new ValidatorData(0, demo.getPatientUuid(), demo.getDatimId(), "", "", "", "WARNING", 
@@ -173,7 +173,7 @@ public class Validator {
             
             errorParams.add(data);
         }
-        if(Validator.isVisitDateStartedBefore1900(visit))
+        if(ValidatorBk.isVisitDateStartedBefore1900(visit))
         {
             errorQuery.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
             ValidatorData data = new ValidatorData(0, demo.getPatientUuid(), demo.getDatimId(), "", "", "", "WARNING", 
@@ -182,7 +182,7 @@ public class Validator {
             errorParams.add(data);
         }
         
-        if(Validator.isVisitDateStartedBeforeDob(demo, visit))
+        if(ValidatorBk.isVisitDateStartedBeforeDob(demo, visit))
         {
             errorQuery.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
             ValidatorData data = new ValidatorData(0, demo.getPatientUuid(), demo.getDatimId(), "", "", "", "WARNING", 
@@ -190,7 +190,7 @@ public class Validator {
             
             errorParams.add(data);
         }
-        if(Validator.isVisitDateStartedEmpty( visit))
+        if(ValidatorBk.isVisitDateStartedEmpty( visit))
         {
             errorQuery.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
             ValidatorData data = new ValidatorData(0, demo.getPatientUuid(), demo.getDatimId(), "", "", "", "WARNING", 
@@ -200,7 +200,7 @@ public class Validator {
 
 
 
-        if(Validator.isVisitDateEndedInFuture(visit))
+        if(ValidatorBk.isVisitDateEndedInFuture(visit))
         {
             errorQuery.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
             ValidatorData data = new ValidatorData(0, demo.getPatientUuid(), demo.getDatimId(), "", "", "", "WARNING", 
@@ -208,7 +208,7 @@ public class Validator {
             
             errorParams.add(data);
         }
-        if(Validator.isVisitDateStoppedBefore1900(visit))
+        if(ValidatorBk.isVisitDateStoppedBefore1900(visit))
         {
             errorQuery.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
             ValidatorData data = new ValidatorData(0, demo.getPatientUuid(), demo.getDatimId(), "", "", "", "WARNING", 
@@ -217,7 +217,7 @@ public class Validator {
             errorParams.add(data);
         }
         
-        if(Validator.isVisitDateEndedBeforeDob(demo, visit))
+        if(ValidatorBk.isVisitDateEndedBeforeDob(demo, visit))
         {
             errorQuery.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
             ValidatorData data = new ValidatorData(0, demo.getPatientUuid(), demo.getDatimId(), "", "", "", "WARNING", 
@@ -225,7 +225,7 @@ public class Validator {
             
             errorParams.add(data);
         }
-        if(Validator.isVisitDateEndedEmpty( visit))
+        if(ValidatorBk.isVisitDateEndedEmpty( visit))
         {
             errorQuery.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
             ValidatorData data = new ValidatorData(0, demo.getPatientUuid(), demo.getDatimId(), "", "", "", "WARNING", 
@@ -253,7 +253,7 @@ public class Validator {
         StringBuilder errorQuery = new StringBuilder("");
         List<ValidatorData> errorParams = new ArrayList<>();
         
-        if(Validator.isEncounterDateTimeInFuture(encounter))
+        if(ValidatorBk.isEncounterDateTimeInFuture(encounter))
         {
             errorQuery.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
             ValidatorData data = new ValidatorData(0, demo.getPatientUuid(), demo.getDatimId(), "", "", "", "WARNING", 
@@ -261,7 +261,7 @@ public class Validator {
             
             errorParams.add(data);
         }
-        if(Validator.isEncounterDateBeforeDob(demo, encounter))
+        if(ValidatorBk.isEncounterDateBeforeDob(demo, encounter))
         {
             errorQuery.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
             ValidatorData data = new ValidatorData(0, demo.getPatientUuid(), demo.getDatimId(), "", "", "", "WARNING", 
@@ -271,7 +271,7 @@ public class Validator {
         }
         
        
-        if(Validator.isEncounterDateTimeEmpty(encounter))
+        if(ValidatorBk.isEncounterDateTimeEmpty(encounter))
         {
             errorQuery.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?),");
             ValidatorData data = new ValidatorData(0, demo.getPatientUuid(), demo.getDatimId(), "", "", "", "WARNING", 

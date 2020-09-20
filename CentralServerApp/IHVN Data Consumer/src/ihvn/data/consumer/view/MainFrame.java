@@ -58,6 +58,7 @@ public class MainFrame extends javax.swing.JFrame {
                 
              }while(!main.newFilesExists());
             //once new files are found start processing
+            MainFrame.currCount.set(0);
              main.readXMLs();//check again
              
              //perform ETL
@@ -109,7 +110,7 @@ public class MainFrame extends javax.swing.JFrame {
                     int progress = 100;
                     myProgressBar.setString( "Processed Files "+MainFrame.currCount+" of "+MainFrame.fileCount + ":  "+progress +" % complete");
                     myProgressBar.setValue(progress);
-                     MainFrame.this.txtPatientCount.setText("Processed file "+MainFrame.currCount+" of "+MainFrame.fileCount);
+                    MainFrame.this.txtPatientCount.setText("Processed file "+MainFrame.currCount+" of "+MainFrame.fileCount);
                 }
                 else{
                      

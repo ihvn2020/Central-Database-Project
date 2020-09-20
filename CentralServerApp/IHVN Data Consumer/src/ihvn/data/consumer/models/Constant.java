@@ -52,6 +52,7 @@ public class Constant {
     public static final String RETURN_VISIT_DATE_MISSING = "return_visit_date_missing";
     public static final String ORDER_DATE_MISSING = "order_date_missing";
     public static final String ORDER_DATE_IN_FUTURE = "order_date_in_future";
+    public static final String REPORTED_DATE_MISSING = "reported_date_missing";
     public static final String REPORTED_DATE_IN_FUTURE = "reported_date_in_future";
     public static final String REPORTED_DATE_BEFORE_ORDER_DATE = "reported_date_before_order_date";
     public static final String WEIGHT_OUT_OF_RANGE = "weight_out_of_range";
@@ -87,10 +88,17 @@ public class Constant {
     public static final int ART_START_DATE_CONCEPT = 159599;
     
     public static final int CURRENT_REGIMEN_LINE_CONCEPT = 165708;
+    public static final int REGIMEN_FOR_DURATION_CONCEPT = 165724;
     public static final int REGIMEN_DURATION_CONCEPT = 159368;
     public static final int RETURN_VISIT_DATE_CONCEPT = 5096;
+    public static final int DATE_ORDERED_CONCEPT = 164989;
+    public static final int DATE_REPORTED_CONCEPT = 165414;
+    public static final int WEIGHT_CONCEPT = 5089;
+    public static final int HEIGHT_CONCEPT = 5090;
+    public static final int WHO_CONCEPT = 5356;
+    public static final int TB_STATUS_CONCEPT = 1659;
     
-    
+    public static final int CHILD_AGE = 7;
     
     
 

@@ -5,6 +5,7 @@
  */
 package ihvn.data.consumer.controller;
 
+import ihvn.data.consumer.model.dao.ErrorDAO;
 import ihvn.data.consumer.model.dao.FacilityDAO;
 import ihvn.data.consumer.model.dao.PatientBiometricDAO;
 import ihvn.data.consumer.model.dao.PatientDAO;
@@ -15,11 +16,15 @@ import ihvn.data.consumer.model.xml.Container;
 import ihvn.data.consumer.model.xml.DemographicsType;
 import ihvn.data.consumer.model.xml.MessageDataType;
 import ihvn.data.consumer.model.xml.MessageHeaderType;
+import ihvn.data.consumer.model.xml.ObsType;
 import ihvn.data.consumer.model.xml.PatientBiometricType;
 import ihvn.data.consumer.model.xml.PatientIdentifierType;
 import ihvn.data.consumer.model.xml.PatientProgramType;
 import ihvn.data.consumer.model.xml.VisitType;
+import ihvn.data.consumer.models.ValidationError;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.json.simple.JSONObject;
@@ -38,8 +43,11 @@ public class ContainerController {
     
     public static Map<String, Map<String, String>> validationData = new HashMap<>();
     public static Map<String, JSONObject> lookupData = new HashMap<>();
-    public static Map<String, Map<String, JSONObject>> encounterValidationData = new HashMap<>();
-    public static Map<String, Map<String, String>> visitValidationData = new HashMap<>();
+    //so i had to add and extra map, to avoid the concurrent modification exception. What was happening is that because 
+    //we are multithreading, while looping through the list/map of errors, the map is also growing at tbe same time because another patient is adding to it
+    //to solve this, we add an outer map whose index will be the patient uuid.
+    public static Map<String, Map<String, Map<String, JSONObject>>> encounterValidationData = new HashMap<>();
+    public static Map<String, Map<String, Map<String, String>>> visitValidationData = new HashMap<>();
     //visit 
     public void saveContainer(Container cnt)
     {
@@ -64,6 +72,7 @@ public class ContainerController {
         //validate patient
         Validator.validatePatient(demo);
         Validator.validateProgram(demo, messageData.getPatientPrograms().size());
+        Validator.validatePEPFARID(demo, messageData.getPatientIdentifiers());
         //Validate
         PatientDAO.insertOrUpdatePatient(demo, datimId, messageUUID);
         
@@ -80,6 +89,11 @@ public class ContainerController {
         
         //save visits
         this.saveVisits();
+        
+        //save any errors we might have noticed
+        this.saveError();
+        
+        //we need to nullify stuff for this patient
         
     }
     
@@ -122,11 +136,134 @@ public class ContainerController {
         VisitDAO.saveObs(datimId, messageUUID, this.container.getMessageData().getObs());  
     }
     
-   
-    
-    
-    
-    
+   private void saveError()
+   {
+       List<ValidationError> errorList = new ArrayList<>();
+       //get this patient error data
+       Map<String, String> patientValidationData = ContainerController.validationData.get(this.container.getMessageData().getDemographics().getPatientUuid());
+       Iterator hmIterator = patientValidationData.entrySet().iterator(); 
+  
+        // Iterate through the hashmap 
+        // and add some bonus marks for every student 
+        
+        while (hmIterator.hasNext()) { 
+            Map.Entry mapElement = (Map.Entry)hmIterator.next(); 
+            ValidationError temp = new ValidationError();
+            temp.setDatimID(datimId);
+            temp.setEncounterUUID("");
+            temp.setErrorCode("");
+            temp.setErrorId(0);
+            temp.setErrorMessage(mapElement.getValue().toString());
+            temp.setIgnoreForm(0);
+            temp.setIgnorePatient(0);
+            temp.setIgnoreVariable(0);
+            temp.setMessageUUID(messageUUID);
+            temp.setObsUUID("");
+            temp.setPatientUUID(patientUUID);
+            temp.setPmmForm("");
+            temp.setVariableName("");
+            temp.setVariableValue("");
+            temp.setVisitDate(null);
+            temp.setVisitUUID("");
+            errorList.add(temp);
+        } 
+        //once done, remote the patient validation data from the map
+        ContainerController.validationData.remove(this.container.getMessageData().getDemographics().getPatientUuid());
+        
+        
+        //next up, loop through visit data and add to validation list
+         //Iterator vIterator = ContainerController.visitValidationData.entrySet().iterator();
+         Map<String, Map<String, String>> patientVisitValidation = ContainerController.visitValidationData.get(patientUUID);
+         for(Map.Entry<String,Map<String, String>> visitValidation : patientVisitValidation.entrySet())
+         {
+            String validationKey = visitValidation.getKey();
+            if(validationKey.contains(patientUUID))
+            {
+                 //split the key to get the visit uuid
+                String [] splitKeys = validationKey.split("__");
+                for(Map.Entry<String, String> visitErrors : visitValidation.getValue().entrySet())
+                {
+                    ValidationError temp = new ValidationError();
+                    temp.setDatimID(datimId);
+                    temp.setEncounterUUID("");
+                    temp.setErrorCode("");
+                    temp.setErrorId(0);
+                    temp.setErrorMessage(visitErrors.getValue());
+                    temp.setIgnoreForm(0);
+                    temp.setIgnorePatient(0);
+                    temp.setIgnoreVariable(0);
+                    temp.setMessageUUID(messageUUID);
+                    temp.setObsUUID("");
+                    temp.setPatientUUID(patientUUID);
+                    temp.setPmmForm("");
+                    temp.setVariableName("");
+                    temp.setVariableValue("");
+                    temp.setVisitDate(null);
+                    temp.setVisitUUID(splitKeys[1]);
+                    errorList.add(temp);
+                }
+            }
+            //remove the encounter validation from the map
+            
+         }
+         ContainerController.visitValidationData.remove(patientUUID);
+         
+         
+         Map<String,Map<String, JSONObject>> patientEncounterValidation = ContainerController.encounterValidationData.get(patientUUID);
+         //encounter validation
+         for(Map.Entry<String,Map<String, JSONObject>> encounterValidation : patientEncounterValidation.entrySet())
+         {
+            String validationKey = encounterValidation.getKey();
+            if(validationKey.contains(patientUUID))
+            {
+                 //split the key to get the visit uuid
+                String [] splitKeys = validationKey.split("__");
+                for(Map.Entry<String, JSONObject> encounterErrors : encounterValidation.getValue().entrySet())
+                {
+                    JSONObject errors = encounterErrors.getValue();
+                    String errorMessage = (String)errors.get("error");
+                    String obsUUID = "";
+                    if(errors.containsKey("obs"))
+                    {
+                        obsUUID = ((ObsType)errors.get("obs")).getObsUuid();
+                    }
+                    ValidationError temp = new ValidationError();
+                    temp.setDatimID(datimId);
+                    temp.setEncounterUUID(splitKeys[1]);
+                    temp.setErrorCode("");
+                    temp.setErrorId(0);
+                    temp.setErrorMessage(errorMessage);
+                    temp.setIgnoreForm(0);
+                    temp.setIgnorePatient(0);
+                    temp.setIgnoreVariable(0);
+                    temp.setMessageUUID(messageUUID);
+                    temp.setObsUUID(obsUUID);
+                    temp.setPatientUUID(patientUUID);
+                    temp.setPmmForm("");
+                    temp.setVariableName("");
+                    temp.setVariableValue("");
+                    temp.setVisitDate(null);
+                    temp.setVisitUUID("");
+                    errorList.add(temp);
+                }
+                 
+            }
+            
+         }
+         
+         //remove the patient error data
+         ContainerController.encounterValidationData.remove(patientUUID);
+          
+         //lets even see how many validation data we have at this point
+        System.out.println("Patient Error list "+errorList.size());
+        //lets save the error
+        ErrorDAO.saveErrors(patientUUID, datimId, messageUUID, errorList);
+        
+          
+        
+          
+      
+   }
     
     
 }

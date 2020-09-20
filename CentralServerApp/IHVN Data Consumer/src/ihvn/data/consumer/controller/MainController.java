@@ -134,6 +134,7 @@ public class MainController {
            
            final File currFolder = new File(this.currFolder);
            MainFrame.fileCount = currFolder.listFiles().length;
+           
             return true;
         }
         else{
@@ -163,15 +164,15 @@ public class MainController {
                 for (final File fileEntry : fileList) {
                     if(fileEntry.isFile()){ 
                         String fileExtension = fileEntry.getAbsolutePath().substring(fileEntry.getAbsolutePath().lastIndexOf(".") + 1);
-                        if(fileExtension.equalsIgnoreCase("xml"))
-                        {
+                        //if(fileExtension.equalsIgnoreCase("xml"))
+                       // {
                             System.out.println("processing patient "+patientCounter++);
                             XmlController xmlController = new XmlController(fileEntry);
                             xmlController.parseContainer();
                             MainFrame.currCount.getAndIncrement();
                             //this.marshallXML(fileEntry);
 
-                        }
+                        //}
                     }
 
 

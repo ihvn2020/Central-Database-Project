@@ -302,7 +302,7 @@ public class VisitDAO {
              {
                  
                  //validate the obs
-                 
+                 Validator.ValidateObs(obsList.get(k));
                  query.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?),");
              }
         }

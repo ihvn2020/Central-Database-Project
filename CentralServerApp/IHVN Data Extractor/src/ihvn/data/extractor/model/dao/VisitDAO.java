@@ -15,6 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,7 +23,10 @@ import java.util.List;
  * @author rsuth
  */
 public class VisitDAO {
-
+    
+    private Integer[] confidentialConcepts={159635};//Phone no(159635)
+    private List<Integer> confidentialConceptsList=new ArrayList<Integer>(Arrays.asList(confidentialConcepts));
+    
     public List<VisitType> getAllVisits(int patientId, String patient_uuid, String datim_id) {
         StringBuilder query = new StringBuilder("SELECT visit.* FROM visit WHERE patient_id=");
         query.append(patientId);
@@ -229,6 +233,7 @@ public class VisitDAO {
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 obs = buildObs(rs);
+                
                 obs.setDatimId(datim_id);
                 obs.setPatientUuid(patient_uuid);
                 allObs.add(obs);
@@ -374,16 +379,25 @@ public class VisitDAO {
         obsType.setObsDatetime(Misc.getXMLdateTime(rs.getDate("obs_datetime")));
         obsType.setObsGroupId(rs.getInt("obs_group_id"));
         obsType.setValueCoded(rs.getInt("value_coded"));
-        obsType.setValueDatetime(Misc.getXMLdateTime(rs.getDate("obs_datetime")));
+        obsType.setValueDatetime(Misc.getXMLdateTime(rs.getDate("value_datetime")));
         obsType.setValueNumeric(BigDecimal.valueOf(rs.getDouble("value_numeric")));
-        obsType.setValueText(rs.getString("value_text"));
+        if(confidentialConceptsList.contains(obsType.getConceptId())){
+            obsType.setValueText(Misc.encrypt(rs.getString("value_text")));
+        }else{
+            obsType.setValueText(rs.getString("value_text"));
+        }
+        
         obsType.setEncounterUuid(rs.getString("encounter_uuid"));
         obsType.setCreator(rs.getInt("creator"));
         obsType.setDateCreated(Misc.getXMLdateTime(rs.getDate("date_created")));
         obsType.setPmmForm(rs.getString("pmm_form"));
         obsType.setFormId(rs.getInt("form_id"));
         obsType.setVariableName(rs.getString("variable_name"));
-        obsType.setVariableValue(rs.getString("variable_value"));
+        if(confidentialConceptsList.contains(obsType.getConceptId())){
+            obsType.setVariableValue(Misc.encrypt(rs.getString("variable_value")));
+        }else{
+            obsType.setVariableValue(rs.getString("variable_value"));
+        }
         obsType.setDatatype(rs.getInt("datatype_id"));
         obsType.setEncounterType(rs.getInt("encounter_type"));
         obsType.setVisitUuid(rs.getString("visit_uuid"));

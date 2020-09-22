@@ -213,14 +213,14 @@ public class MainFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         jLabel1.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         jLabel1.setText("Database host");
 
         txtDbHost.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         txtDbHost.setText("localhost");
-        txtDbHost.setBorder(javax.swing.BorderFactory.createBevelBorder(1));
+        txtDbHost.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         txtDbHost.setMinimumSize(new java.awt.Dimension(100, 34));
 
         jLabel2.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
@@ -228,11 +228,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         txtDbPort.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         txtDbPort.setText("3316");
-        txtDbPort.setBorder(javax.swing.BorderFactory.createBevelBorder(1));
+        txtDbPort.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         txtDbPort.setMinimumSize(new java.awt.Dimension(100, 34));
 
         txtDbUsername.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
-        txtDbUsername.setBorder(javax.swing.BorderFactory.createBevelBorder(1));
+        txtDbUsername.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         txtDbUsername.setMinimumSize(new java.awt.Dimension(100, 34));
         txtDbUsername.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -244,7 +244,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel3.setText("Database username");
 
         txtDbPassword.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
-        txtDbPassword.setBorder(javax.swing.BorderFactory.createBevelBorder(1));
+        txtDbPassword.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         txtDbPassword.setMinimumSize(new java.awt.Dimension(100, 34));
 
         jLabel4.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
@@ -263,7 +263,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         txtDbName.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         txtDbName.setText("openmrs");
-        txtDbName.setBorder(javax.swing.BorderFactory.createBevelBorder(1));
+        txtDbName.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         txtDbName.setMinimumSize(new java.awt.Dimension(100, 34));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -330,7 +330,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ihvn/data/extractor/resources/ihvnlogo.png"))); // NOI18N
 
-        jpExtractionPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jpExtractionPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         btnExtract.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         btnExtract.setText("Start Extraction");
@@ -404,7 +404,7 @@ public class MainFrame extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(29, 29, 29)
-                        .addComponent(jpExtractionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jpExtractionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(30, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -425,7 +425,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jpExtractionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jpExtractionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(60, 60, 60))
         );
 

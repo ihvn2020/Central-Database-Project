@@ -7,13 +7,17 @@ package ihvn.data.consumer.controller;
 
 import ihvn.data.consumer.model.dao.Database;
 import ihvn.data.consumer.model.dao.Misc;
+import ihvn.data.consumer.model.dao.PatientDAO;
 import ihvn.data.consumer.model.xml.Container;
+import ihvn.data.consumer.models.Patient;
+import ihvn.data.consumer.models.Radet;
 import ihvn.data.consumer.view.MainFrame;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -177,6 +181,14 @@ public class MainController {
 
 
                  }
+                ArrayList<Patient> patientList = new ArrayList<>(ContainerController.allPatients.values());
+                ArrayList<Radet> radetList = new ArrayList<>(ContainerController.allRadet.values());
+                //lets save the patient and radet here
+                PatientDAO.savePatient(patientList);
+                System.out.println("Patient List:::"+patientList.size());
+                PatientDAO.saveRadet(radetList);
+                
+                //we can empty the patient list and radet list
 
                 try {
                     //once we are done with the loop,  waiting for about 10 seconds and start checking again

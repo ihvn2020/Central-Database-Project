@@ -10,14 +10,18 @@ import ihvn.data.consumer.model.xml.DemographicsType;
 import ihvn.data.consumer.model.xml.EncounterType;
 import ihvn.data.consumer.model.xml.ObsType;
 import ihvn.data.consumer.model.xml.PatientIdentifierType;
+import ihvn.data.consumer.model.xml.PatientProgramType;
 import ihvn.data.consumer.model.xml.VisitType;
 import ihvn.data.consumer.models.Constant;
 import ihvn.data.consumer.models.Constant;
+import ihvn.data.consumer.models.Patient;
+import ihvn.data.consumer.models.Radet;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 
 /**
@@ -47,6 +51,32 @@ public class Validator {
         //setup a few other things here
         JSONObject obj = new JSONObject();
         obj.put("encounters", new JSONObject());
+        
+        //lets also create keys for date lookups
+        obj.put("lastPickupDate", null);
+        obj.put("lastDaysOfARVRefill", null);
+        obj.put("initialFirstLineRegimen", null);
+        obj.put("initialSecondLineRegimen", null);
+        obj.put("initialRegimen", null);
+        obj.put("currRegimen", null);
+        obj.put("currFirstLineRegimen", null);
+        obj.put("currSecondLineRegimen", null);
+        obj.put("pregnancyStatusDate", null);
+        obj.put("currVlDate", null);
+        obj.put("vlSampleCollectionDate", null);
+        obj.put("vlReportDate", null);
+        obj.put("vlIndicationDate", null);
+        //obj.put("currARTStatusDate", null);
+        obj.put("transferOutDate", null);
+        //obj.put("deathDate", null);
+        obj.put("currWeightDate", null);
+        obj.put("tbStatusDate", null);
+        obj.put("tbSt", null);
+        obj.put("inhStartDate", null);
+        obj.put("inhStopDate", null);
+        obj.put("tbTreatmentStartDate", null);
+        obj.put("tbTreatmentStopDate", null);
+        obj.put("lastVLSampleCollectionFormDate", null);
         ContainerController.lookupData.put(patientUUID, obj);
         
     }
@@ -66,7 +96,8 @@ public class Validator {
          Map<String, Map<String, String>> visitValData = ContainerController.visitValidationData.get(patientUUID);
          visitValData.put(patientUUID+"__"+visitUUID, visitValidationData);
         ContainerController.visitValidationData.put(patientUUID, visitValData);
-       
+        
+        
     }
     
     public static void setEncounterValidation(String patientUUID, EncounterType encounter)
@@ -312,6 +343,15 @@ public class Validator {
             if(!Misc.isInFuture(patientDemo.getBirthdate().toGregorianCalendar()))
             {
                 patientValidator.remove(Constant.BIRTHDATE_IN_FUTURE);
+                
+                //if patient birthdate is correct, then we can add this patient to patient and radet map
+                if(patientDemo.getVoided() == 0){
+                    Patient p = Patient.newInstance(patientDemo);
+                    Radet r = Radet.newInstance(patientDemo);
+                    ContainerController.allPatients.put(patientDemo.getPatientUuid(), p);
+                    ContainerController.allRadet.put(patientDemo.getPatientUuid(), r);
+                }
+                
             }
             if(!Misc.isGreaterThan200(patientDemo.getBirthdate().toGregorianCalendar()))
             {
@@ -330,14 +370,28 @@ public class Validator {
     }
     
     
-    public static void validateProgram(DemographicsType patientDemo, int programCount)
+    public static void validateProgram(DemographicsType patientDemo, List<PatientProgramType> allPrograms)
     {
         Map<String, String> patientValidator = ContainerController.validationData.get(patientDemo.getPatientUuid());
             
-        if(programCount > 0)
+        if(allPrograms.size() > 0)
         {
             patientValidator.remove(Constant.NO_PROGRAM);
+            //check if the art program is here
+            boolean onART = false;
+            for(int i=0; i<allPrograms.size(); i++)
+            {
+                if(allPrograms.get(i).getProgramId() == 1)
+                {
+                    onART = true;
+                }
+            }
+            if(!onART)
+            {
+                ContainerController.allRadet.get(patientDemo.getPatientUuid()).setCurrentArtStatus("Not on ART");
+            }
         }
+        
         ContainerController.validationData.put(patientDemo.getPatientUuid(), patientValidator);
     }
     
@@ -350,7 +404,19 @@ public class Validator {
             {
                 
                 patientValidator.remove(Constant.NO_PEPFAR_ID);
+                //lets also add the art number/pepfar id to the patient
+                ContainerController.allPatients.get(patientDemo.getPatientUuid()).setPatientUniqueID(identifiers.get(i).getIdentifier());
             }
+            if(identifiers.get(i).getIdentifierType() == 1)//omrs id
+            {
+                ContainerController.allPatients.get(patientDemo.getPatientUuid()).setPatientOMRSID(identifiers.get(i).getIdentifier());
+            }
+            if(identifiers.get(i).getIdentifierType() == 5)
+            {
+                ContainerController.allPatients.get(patientDemo.getPatientUuid()).setHospitalID(identifiers.get(i).getIdentifier());
+            }
+            
+            
         }
         ContainerController.validationData.put(patientDemo.getPatientUuid(), patientValidator);
     }
@@ -441,6 +507,9 @@ public class Validator {
             {
                 //since date time is not empty already, we can do
                 encounterValidator.remove(Constant.ENROLLMENT_DATE_MISSING);
+                //at least it is not missing. lets add it to the patients map
+                ContainerController.allPatients.get(patientDemo.getPatientUuid()).setEnrollmentDate(new DateTime(encounter.getEncounterDatetime().toGregorianCalendar()));
+                
                 if(!inFuture)
                 {
                     encounterValidator.remove(Constant.ENROLLMENT_DATE_IN_FUTURE);
@@ -507,6 +576,7 @@ public class Validator {
         else if(obs.getConceptId() == Constant.DATE_REPORTED_CONCEPT)
         {
             Validator.validateDateReported(obs);
+            Validator.saveVLReportDate(obs);
         }
         else if(obs.getConceptId() == Constant.DATE_ORDERED_CONCEPT)
         {
@@ -528,18 +598,232 @@ public class Validator {
         {
             Validator.validateWHOStaging(obs);
         }
+        else if(obs.getConceptId() == Constant.ADULT_FIRST_LINE_REGIMEN_CONCEPT || obs.getConceptId() == Constant.PED_FIRST_LINE_REGIMEN_CONCEPT)
+        {
+            //no validation at this point. Just save the initial and current first line regimen and dates
+            Validator.saveFirstLineRegimen(obs);
+        }
+        else if(obs.getConceptId() == Constant.ADULT_SECOND_LINE_REGIMEN_CONCEPT || obs.getConceptId() == Constant.PED_SECOND_LINE_REGIMEN_CONCEPT)
+        {
+            Validator.saveSecondLineRegimen(obs);
+        }
+        else if(obs.getConceptId() == Constant.PREGNANCY_STATUS_CONCEPT)
+        {
+            Validator.savePregnancyStatus(obs);
+        }
+        else if(obs.getConceptId() == Constant.VIRAL_LOAD_RESULT_CONCEPT)
+        {
+            Validator.saveCurrentVl(obs);
+        }else if(obs.getConceptId() == Constant.VL_SAMPLE_COLLECTION_DATE)
+        {
+            Validator.saveVLSampleCollectionDate(obs);
+        }
+        else if(obs.getConceptId() == Constant.INDICATION_FOR_VL)
+        {
+            Validator.saveVLindication(obs);
+        }
+        else if(obs.getConceptId() == Constant.TERMINATION_DATE)
+        {
+            Validator.saveDead(obs);
+        }else if(obs.getConceptId() == Constant.INH_DOSE_CONCEPT)
+        {
+            Validator.saveInhDates(obs);
+        }
+        
+    }
+   
+    public static void saveDead(ObsType obs)
+    {
+        ContainerController.allRadet.get(obs.getPatientUuid()).setDeathDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+    }
+    
+    
+    
+    public static void saveFirstLineRegimen(ObsType obs)
+    {
+        if(ContainerController.lookupData.get(obs.getPatientUuid()).get("initialFirstLineRegimen") == null)//this is the first time
+        {
+            //we will use this as the initial and current regimen line until another comes through
+           ContainerController.allRadet.get(obs.getPatientUuid()).setInitialFirstLineRegimen(obs.getVariableValue());
+           ContainerController.allRadet.get(obs.getPatientUuid()).setInitialFirstLineRegimenDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("initialFirstLineRegimen", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+
+           
+           ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentFirstLineRegimen(obs.getVariableValue());
+           ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentFirstLineRegimenDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("currFirstLineRegimen", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+
+        }
+        else{
+             DateTime initialRegimenDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("initialFirstLineRegimen");
+             DateTime currentRegimenDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("currFirstLineRegimen");
+             if(Misc.isBeforeDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), initialRegimenDate))
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("initialFirstLineRegimen", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setInitialFirstLineRegimenDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setInitialFirstLineRegimen(obs.getVariableValue());
+                 //ContainerController.allRadet.get(obs.getPatientUuid()).setDaysOfARVRefill(d);
+             }
+
+             if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), currentRegimenDate))
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("currFirstLineRegimen", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentFirstLineRegimen(obs.getVariableValue());
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentFirstLineRegimenDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+           
+                 //ContainerController.allRadet.get(obs.getPatientUuid()).setDaysOfARVRefill(d);
+             }
+        }
+    }
+
+    public static void saveSecondLineRegimen(ObsType obs)
+    {
+        if(ContainerController.lookupData.get(obs.getPatientUuid()).get("initialSecondLineRegimen") == null)//this is the first time
+        {
+            //we will use this as the initial and current regimen line until another comes through
+           ContainerController.allRadet.get(obs.getPatientUuid()).setInitialSecondLineRegimen(obs.getVariableValue());
+           ContainerController.allRadet.get(obs.getPatientUuid()).setInitialSecondLineRegimenDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("initialSecondLineRegimen", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+
+           
+           ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentSecondLineRegimen(obs.getVariableValue());
+           ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentSecondLineRegimenDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("currSecondLineRegimen", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+
+        }
+        else{
+             DateTime initialRegimenDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("initialSecondLineRegimen");
+             DateTime currentRegimenDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("currSecondLineRegimen");
+             if(Misc.isBeforeDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), initialRegimenDate))
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("initialSecondLineRegimen", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setInitialSecondLineRegimenDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setInitialSecondLineRegimen(obs.getVariableValue());
+                 //ContainerController.allRadet.get(obs.getPatientUuid()).setDaysOfARVRefill(d);
+             }
+
+             if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), currentRegimenDate))
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("currSecondLineRegimen", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentSecondLineRegimen(obs.getVariableValue());
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentSecondLineRegimenDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+           
+                 //ContainerController.allRadet.get(obs.getPatientUuid()).setDaysOfARVRefill(d);
+             }
+        }
+    }
+    
+    public static void savePregnancyStatus(ObsType obs)
+    {
+        if(ContainerController.lookupData.get(obs.getPatientUuid()).get("pregnancyStatusDate") == null)//this is the first time
+        {
+            //we will use this as the initial and current regimen line until another comes through
+           ContainerController.allRadet.get(obs.getPatientUuid()).setPregnancyStatus(obs.getVariableValue());
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("pregnancyStatusDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+        }
+        else{
+             DateTime prgnancyStatusDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("pregnancyStatusDate");
+           
+
+             if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), prgnancyStatusDate))//then use this one
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("pregnancyStatusDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setPregnancyStatus(obs.getVariableValue());
+             }
+        }
+    }
+    
+    public static void saveCurrentVl(ObsType obs)
+    {
+        if(ContainerController.lookupData.get(obs.getPatientUuid()).get("currVlDate") == null)//this is the first time
+        {
+            //we will use this as the initial and current regimen line until another comes through
+           ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentViralLoad(obs.getValueNumeric().floatValue());
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("currVlDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+        }
+        else{
+             DateTime currVlDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("currVlDate");
+           
+
+             if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), currVlDate))//then use this one
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("currVlDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentViralLoad(obs.getValueNumeric().floatValue());
+             }
+        }
+    }
+    
+    public static void saveVLReportDate(ObsType obs)
+    {
+        if(ContainerController.lookupData.get(obs.getPatientUuid()).get("vlReportDate") == null)//this is the first time
+        {
+            //we will use this as the initial and current regimen line until another comes through
+           ContainerController.allRadet.get(obs.getPatientUuid()).setViralLoadReportedDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("vlReportDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+        }
+        else{
+             DateTime currVlDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("vlReportDate");
+           
+
+             if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), currVlDate))//then use this one
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("vlReportDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setViralLoadReportedDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+             }
+        }
+    }
+    
+    
+    
+    public static void saveVLSampleCollectionDate(ObsType obs)
+    {
+        if(ContainerController.lookupData.get(obs.getPatientUuid()).get("vlSampleCollectionDate") == null)//this is the first time
+        {
+            //we will use this as the initial and current regimen line until another comes through
+           ContainerController.allRadet.get(obs.getPatientUuid()).setViralLoadSampleCollectionDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("vlSampleCollectionDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+        }
+        else{
+             DateTime currVlDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("vlSampleCollectionDate");
+           
+
+             if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), currVlDate))//then use this one
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("vlSampleCollectionDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setViralLoadSampleCollectionDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+             }
+        }
+    }
+
+    
+    public static void saveVLindication(ObsType obs)
+    {
+        if(ContainerController.lookupData.get(obs.getPatientUuid()).get("vlIndicationDate") == null)//this is the first time
+        {
+            //we will use this as the initial and current regimen line until another comes through
+           ContainerController.allRadet.get(obs.getPatientUuid()).setViralLoadIndication(obs.getValueText());
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("vlIndicationDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+        }
+        else{
+             DateTime currVlDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("vlIndicationDate");
+             if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), currVlDate))//then use this one
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("vlIndicationDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setViralLoadIndication(obs.getValueText());
+             }
+        }
     }
     
     public static void validateHIVDiagnosisDate(ObsType obs)
     {
         Map<String, Map<String, JSONObject>> patientEncounterValidator = ContainerController.encounterValidationData.get(obs.getPatientUuid());
-         
         Map<String, JSONObject> encounterValidator = patientEncounterValidator.get(obs.getPatientUuid()+"__"+obs.getEncounterUuid());
         //JSONObject errorData = encounterValidator.get(Constant);
         //System.out.println("validating diagnosis date "+obs.getValueDatetime());
         if(obs.getValueDatetime() != null)
         {
-           
+           //at least it is not empty
+            ContainerController.allPatients.get(obs.getPatientUuid()).setDateConfirmedPositive(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
             encounterValidator.remove(Constant.DIAGNOSIS_DATE_MISSING);  
             if(!Misc.isInFuture(obs.getValueDatetime().toGregorianCalendar()))
             {//remove the error
@@ -579,6 +863,11 @@ public class Validator {
     
     public static void validateEnrollmentMethod(ObsType obs)
     {
+        
+        //we can set the care entry point here
+        ContainerController.allRadet.get(obs.getPatientUuid()).setCareEntryPoint(obs.getVariableValue());
+        ContainerController.allRadet.get(obs.getPatientUuid()).setTransferInStatus(obs.getVariableValue());
+        
         //for us to get here, we can now check if the value has something
         Map<String, Map<String, JSONObject>> patientEncounterValidator = ContainerController.encounterValidationData.get(obs.getPatientUuid());
         Map<String, JSONObject> encounterValidator = patientEncounterValidator.get(obs.getPatientUuid()+"__"+obs.getEncounterUuid());
@@ -602,6 +891,8 @@ public class Validator {
             if(obs.getValueCoded() == Constant.TRANSFER_IN_WITH_RECORDS)
             {
                 Validator.setupPriorARTValidation(obs.getPatientUuid(), obs.getEncounterUuid());
+                 //set transferred in to yes
+                 ContainerController.allPatients.get(obs.getPatientUuid()).setTransferredIn("yes");
                 
             }
         }
@@ -613,6 +904,9 @@ public class Validator {
     
     public static void validateDateTransferred(ObsType obs)
     {
+        
+        //here, we can set date transferred in
+        ContainerController.allRadet.get(obs.getPatientUuid()).setTransferInDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
         Map<String, Map<String, JSONObject>> patientEncounterValidator = ContainerController.encounterValidationData.get(obs.getPatientUuid());
         Map<String, JSONObject> encounterValidator = patientEncounterValidator.get(obs.getPatientUuid()+"__"+obs.getEncounterUuid());
         if(obs.getValueDatetime() != null)
@@ -642,6 +936,8 @@ public class Validator {
         Map<String, Map<String, JSONObject>> patientEncounterValidator = ContainerController.encounterValidationData.get(obs.getPatientUuid());
         Map<String, JSONObject> encounterValidator = patientEncounterValidator.get(obs.getPatientUuid()+"__"+obs.getEncounterUuid());
         encounterValidator.remove(Constant.FAC_TRANSFERRED_FROM_MISSING);
+        
+        
         patientEncounterValidator.put(obs.getPatientUuid()+"__"+obs.getEncounterUuid(), encounterValidator);
         ContainerController.encounterValidationData.put(obs.getPatientUuid(), patientEncounterValidator);
     }
@@ -651,12 +947,21 @@ public class Validator {
         //System.out.println(obs.getValueDatetime());
         if(obs.getValueDatetime() != null)
         {//art start date is not missing
+            
+            
             encounterValidator.remove(Constant.ART_START_DATE_MISSING);
             
             //get the dob from lookup data 
             JSONObject patientLookupData = ContainerController.lookupData.get(obs.getPatientUuid());
             XMLGregorianCalendar dob = (patientLookupData.get(Constant.DOB) != null) ? (XMLGregorianCalendar)patientLookupData.get(Constant.DOB) : null;
             
+            ContainerController.allPatients.get(obs.getPatientUuid()).setArtStartDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+            //also lets set the date at art start date
+            int ageYearAtARTStart = Misc.getAge(dob.toGregorianCalendar(), obs.getValueDatetime().toGregorianCalendar());
+            int ageMonthAtARTStart = Misc.getAgeMonths(dob.toGregorianCalendar(), obs.getValueDatetime().toGregorianCalendar());
+            
+            ContainerController.allPatients.get(obs.getPatientUuid()).setAgeAtArtStartYears(ageYearAtARTStart);
+            ContainerController.allPatients.get(obs.getPatientUuid()).setAgeAtArtStartMonths(ageMonthAtARTStart);
             
             if(Misc.isAfterDate(obs.getValueDatetime().toGregorianCalendar(), dob.toGregorianCalendar()))
             {
@@ -715,7 +1020,34 @@ public class Validator {
                 encounterValidator.remove(Constant.ADULT_PED_REGIMEN_LINE_MISSING);
                // ContainerController.encounterValidationData.put(obs.getPatientUuid()+"__"+obs.getEncounterUuid(), encounterValidator); 
                 
-                
+               //we can collect the intial and current regimen line regimen
+                if(ContainerController.lookupData.get(obs.getPatientUuid()).get("initialRegimen") == null)//this is the first time
+                {
+                    //we will use this as the initial and current regimen line until another comes through
+                   ContainerController.allRadet.get(obs.getPatientUuid()).setInitialRegimenLine(obs.getVariableValue());
+                   ContainerController.lookupData.get(obs.getPatientUuid()).put("initialRegimen", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                   
+                   ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentRegimenLine(obs.getVariableValue());
+                   ContainerController.lookupData.get(obs.getPatientUuid()).put("currentRegimen", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                    
+                }
+                else{
+                     DateTime initialRegimenDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("initialRegimen");
+                     DateTime currentRegimenDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("currentRegimen");
+                     if(Misc.isBeforeDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), initialRegimenDate))
+                     {
+                         ContainerController.lookupData.get(obs.getPatientUuid()).put("initialRegimen", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                         ContainerController.allRadet.get(obs.getPatientUuid()).setInitialRegimenLine(obs.getVariableValue());
+                         //ContainerController.allRadet.get(obs.getPatientUuid()).setDaysOfARVRefill(d);
+                     }
+
+                     if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), currentRegimenDate))
+                     {
+                         ContainerController.lookupData.get(obs.getPatientUuid()).put("currentRegimen", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                         ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentRegimenLine(obs.getVariableValue());
+                         //ContainerController.allRadet.get(obs.getPatientUuid()).setDaysOfARVRefill(d);
+                     }
+                }
             }
         }
         
@@ -786,7 +1118,6 @@ public class Validator {
         System.out.println("drug regi and duration "+groupObj.get("regimen")+"__"+groupObj.get("drugDuration"));
         if(groupObj.containsKey("regimen") && groupObj.containsKey("drugDuration"))
         {
-             System.out.println("got here for duration"+obs.getEncounterUuid());
             //get the validation and validate
             //Map<String, JSONObject> encounterValidator = ContainerController.encounterValidationData.get(obs.getPatientUuid()+"__"+obs.getEncounterUuid());
             Float duration = Float.parseFloat(groupObj.get("drugDuration").toString());
@@ -798,6 +1129,28 @@ public class Validator {
                 if(duration <= 180)
                 {
                     encounterValidator.remove(Constant.MEDICATION_DURATION_MORE_THAN_180_DAYS);
+                    //if we got here, then we are good. we can compare the date of the encounter with the last saved encounter. if this is later, then use this
+                   //get the encounter for this obs
+                   JSONObject encounters = (JSONObject)ContainerController.lookupData.get(obs.getPatientUuid()).get("encounters");
+                    EncounterType obsEncounter = (EncounterType)encounters.get(obs.getEncounterUuid());
+                    DateTime pickupDate = new DateTime(obsEncounter.getEncounterDatetime().toGregorianCalendar());
+                    int d = Math.round(duration);
+                    if(ContainerController.lookupData.get(obs.getPatientUuid()).get("lastPickupDate") == null)
+                    {
+                       ContainerController.allRadet.get(obs.getPatientUuid()).setLastPickupDate(pickupDate);
+                       ContainerController.lookupData.get(obs.getPatientUuid()).put("lastPickupDate", pickupDate);
+                       ContainerController.allRadet.get(obs.getPatientUuid()).setDaysOfARVRefill(d);
+                    }
+                    else{
+                         DateTime lastPickupDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("lastPickupDate");
+                         if(Misc.isAfterDate(pickupDate, lastPickupDate))
+                         {
+                             ContainerController.lookupData.get(obs.getPatientUuid()).put("lastPickupDate", pickupDate);
+                             ContainerController.allRadet.get(obs.getPatientUuid()).setLastPickupDate(pickupDate);
+                             ContainerController.allRadet.get(obs.getPatientUuid()).setDaysOfARVRefill(d);
+                         }
+                    }
+                    
                 }
             }
             else{//it means the medication is inded empty
@@ -965,6 +1318,9 @@ public class Validator {
         if(obs.getValueNumeric().intValue() < 250)
         {
            patientEncounterValidator.get(obs.getPatientUuid()+"__"+obs.getEncounterUuid()).remove(Constant.WEIGHT_OUT_OF_RANGE);
+           
+           //we can save the weight
+           Validator.saveWeight(obs);
         }
         if(obs.getValueNumeric().intValue() < 10 && dob != null && Misc.getAge(dob.toGregorianCalendar()) > Constant.CHILD_AGE)//we are checking for 7 years
         {
@@ -975,6 +1331,28 @@ public class Validator {
         }
         ///patientEncounterValidator.put(obs.getPatientUuid()+"__"+obs.getEncounterUuid(), encounterValidator);
         ContainerController.encounterValidationData.put(obs.getPatientUuid(), patientEncounterValidator);
+    }
+    
+    public static void saveWeight(ObsType obs)
+    {
+        if(ContainerController.lookupData.get(obs.getPatientUuid()).get("currWeightDate") == null)//this is the first time
+        {
+            //we will use this as the initial and current regimen line until another comes through
+           ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentWeightDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+           ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentWeight(obs.getValueNumeric().floatValue());
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("currWeightDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+        }
+        else{
+             DateTime currVlDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("currWeightDate");
+           
+
+             if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), currVlDate))//then use this one
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("currWeightDate", new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentWeightDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentWeight(obs.getValueNumeric().floatValue());
+             }
+        }
     }
     
     public static void validateHeight(ObsType obs)
@@ -1012,6 +1390,64 @@ public class Validator {
         if(obs.getValueCoded() != 0)
         {
             ContainerController.encounterValidationData.get(obs.getPatientUuid()).get(obs.getPatientUuid()+"__"+obs.getEncounterUuid()).remove(Constant.TB_STATUS_MISSING);
+            Validator.saveTBStatus(obs);
+        }
+    }
+    
+    public static void saveTBStatus(ObsType obs)
+    {
+        if(ContainerController.lookupData.get(obs.getPatientUuid()).get("tbStatusDate") == null)//this is the first time
+        {
+            //we will use this as the initial and current regimen line until another comes through
+           ContainerController.allRadet.get(obs.getPatientUuid()).setTbStatusDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+           ContainerController.allRadet.get(obs.getPatientUuid()).setTbStatus(obs.getVariableValue());
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("tbStatusDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+        }
+        else{
+             DateTime currVlDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("tbStatusDate");
+           
+
+             if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), currVlDate))//then use this one
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("tbStatusDate", new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setTbStatusDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setTbStatus(obs.getVariableValue());
+             }
+        }
+    }
+    
+    public static void saveInhDates(ObsType obs)
+    {
+        if(ContainerController.lookupData.get(obs.getPatientUuid()).get("inhStartDate") == null)//this is the first time
+        {
+            
+           ContainerController.allRadet.get(obs.getPatientUuid()).setInhStartDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("inhStartDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+
+          
+           ContainerController.allRadet.get(obs.getPatientUuid()).setInhStopDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("inhStopDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+
+           
+        }
+        else{
+             DateTime inhStartDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("inhStartDate");
+             DateTime inhStopDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("inhStopDate");
+             if(Misc.isBeforeDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), inhStartDate))
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("inhStartDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setInhStartDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 //ContainerController.allRadet.get(obs.getPatientUuid()).setDaysOfARVRefill(d);
+             }
+
+             if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), inhStopDate))
+             {
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("inhStopDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setInhStopDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setLastInhDispensedDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+           
+                 //ContainerController.allRadet.get(obs.getPatientUuid()).setDaysOfARVRefill(d);
+             }
         }
     }
     

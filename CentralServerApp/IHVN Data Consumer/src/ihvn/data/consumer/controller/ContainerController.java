@@ -7,6 +7,7 @@ package ihvn.data.consumer.controller;
 
 import ihvn.data.consumer.model.dao.ErrorDAO;
 import ihvn.data.consumer.model.dao.FacilityDAO;
+import ihvn.data.consumer.model.dao.Misc;
 import ihvn.data.consumer.model.dao.PatientBiometricDAO;
 import ihvn.data.consumer.model.dao.PatientDAO;
 import ihvn.data.consumer.model.dao.PatientIdentifierDAO;
@@ -21,12 +22,15 @@ import ihvn.data.consumer.model.xml.PatientBiometricType;
 import ihvn.data.consumer.model.xml.PatientIdentifierType;
 import ihvn.data.consumer.model.xml.PatientProgramType;
 import ihvn.data.consumer.model.xml.VisitType;
+import ihvn.data.consumer.models.Patient;
+import ihvn.data.consumer.models.Radet;
 import ihvn.data.consumer.models.ValidationError;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 
 /**
@@ -48,6 +52,10 @@ public class ContainerController {
     //to solve this, we add an outer map whose index will be the patient uuid.
     public static Map<String, Map<String, Map<String, JSONObject>>> encounterValidationData = new HashMap<>();
     public static Map<String, Map<String, Map<String, String>>> visitValidationData = new HashMap<>();
+    
+    //list of patients and radet for analytic table
+    public static Map<String, Patient>allPatients = new HashMap<>();//key is patient uuid
+    public static Map<String, Radet>allRadet = new HashMap<>();//key is patient uuid
     //visit 
     public void saveContainer(Container cnt)
     {
@@ -71,14 +79,18 @@ public class ContainerController {
         
         //validate patient
         Validator.validatePatient(demo);
-        Validator.validateProgram(demo, messageData.getPatientPrograms().size());
+        Validator.validateProgram(demo, messageData.getPatientPrograms());
         Validator.validatePEPFARID(demo, messageData.getPatientIdentifiers());
         //Validate
         PatientDAO.insertOrUpdatePatient(demo, datimId, messageUUID);
         
         //save patient biometrics
-        if(this.container.getMessageData().getPatientBiometrics() != null){
+        if(this.container.getMessageData().getPatientBiometrics() != null && this.container.getMessageData().getPatientBiometrics().size() > 0){
              this.savePatientBiometrics();
+             
+             //that biometric is captured
+             ContainerController.allPatients.get(demo.getPatientUuid()).setBiometricCaptured("yes");
+             ContainerController.allPatients.get(demo.getPatientUuid()).setBiometricCaptureDate(new DateTime(this.container.getMessageData().getPatientBiometrics().get(0).getDateCreated().toGregorianCalendar()));
         }
        
         //save the patient identifiers
@@ -90,10 +102,18 @@ public class ContainerController {
         //save visits
         this.saveVisits();
         
+        //we can calculate the art status at this point
+        String artStatus = Misc.getARTStatus(ContainerController.allPatients.get(demo.getPatientUuid()), ContainerController.allRadet.get(demo.getPatientUuid()));
+        ContainerController.allRadet.get(demo.getPatientUuid()).setCurrentArtStatus(artStatus);
         //save any errors we might have noticed
         this.saveError();
         
+        // we can go ahead and save the patient and 
+        
+        
         //we need to nullify stuff for this patient
+        
+        
         
     }
     

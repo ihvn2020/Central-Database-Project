@@ -80,7 +80,7 @@ public class Constant {
     public static final int ADULT_INITIAL_EVAL_FORM = 26;
     
     public static final int HIV_DIAGNOSIS_DATE_CONCEPT = 160554;
-    public static final int ENROLLMENT_METHOD_CONCEPT = 160540;
+    public static final int ENROLLMENT_METHOD_CONCEPT = 160540;//this is the care entry point
     public static final int TRANSFER_IN_WITH_RECORDS = 160534;
     public static final int PRIOR_ART_CONCEPT = 165242;
     public static final int DATE_TRANSFERRED_CONCEPT = 160534;
@@ -97,6 +97,22 @@ public class Constant {
     public static final int HEIGHT_CONCEPT = 5090;
     public static final int WHO_CONCEPT = 5356;
     public static final int TB_STATUS_CONCEPT = 1659;
+    public static final int ADULT_FIRST_LINE_REGIMEN_CONCEPT = 164506;
+    public static final int ADULT_SECOND_LINE_REGIMEN_CONCEPT = 164513;
+    
+    public static final int PED_FIRST_LINE_REGIMEN_CONCEPT = 164507;
+    public static final int PED_SECOND_LINE_REGIMEN_CONCEPT = 164514;
+    public static final int PREGNANCY_STATUS_CONCEPT = 165050;
+    public static final int VIRAL_LOAD_RESULT_CONCEPT = 856;
+    public static final int VL_SAMPLE_COLLECTION_DATE = 159951;
+    //public static final int VL_REPORT_DATE_CONCEPT = 165414;
+    public static final int INDICATION_FOR_VL = 164980;
+    public static final int DEATH_CONCEPT = 165889;
+    public static final int TERMINATION_DATE = 165469;
+    public static final int INH_DOSE_CONCEPT = 165080;
+    
+    public static final int TB_TREATMENT_CONCEPT = 1662;
+    
     
     public static final int CHILD_AGE = 7;
     

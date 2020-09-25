@@ -5,6 +5,7 @@
  */
 package ihvn.data.consumer.model.dao;
 
+import ihvn.data.consumer.controller.ContainerController;
 import ihvn.data.consumer.controller.Validator;
 import ihvn.data.consumer.model.xml.DemographicsType;
 import ihvn.data.consumer.model.xml.EncounterType;
@@ -20,6 +21,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.joda.time.DateTime;
 
 /**
  *
@@ -93,6 +95,30 @@ public class VisitDAO {
             for(int i=0; i<visits.size(); i++)
             {
                 query.append("(?,?,?,?,?,?,?,?,?,?,?,?,?, ?, ?, ?, ?),");
+                
+                //setup first first and last date
+                //get the current first and last visit
+                DateTime currFirstVisit = ContainerController.allPatients.get(visits.get(i).getPatientUuid()).getFirstVisitDate();
+                DateTime currLastVisit = ContainerController.allPatients.get(visits.get(i).getPatientUuid()).getLastVisitDate();
+
+                if(currFirstVisit != null)
+                {
+                    if(Misc.isAfterDate(new DateTime(visits.get(i).getDateStarted().toGregorianCalendar()), currLastVisit))
+                    {
+                        ContainerController.allPatients.get(visits.get(i).getPatientUuid()).setLastVisitDate(new DateTime(visits.get(i).getDateStarted().toGregorianCalendar()));
+                    }
+                    if(Misc.isBeforeDate(new DateTime(visits.get(i).getDateStarted().toGregorianCalendar()), currLastVisit))
+                    {
+                        ContainerController.allPatients.get(visits.get(i).getPatientUuid()).setFirstVisitDate(new DateTime(visits.get(i).getDateStarted().toGregorianCalendar()));
+                    }
+                }
+                else{
+                    //that means this is the first time
+                    ContainerController.allPatients.get(visits.get(i).getPatientUuid()).setFirstVisitDate(new DateTime(visits.get(i).getDateStarted().toGregorianCalendar()));
+                    ContainerController.allPatients.get(visits.get(i).getPatientUuid()).setLastVisitDate(new DateTime(visits.get(i).getDateStarted().toGregorianCalendar()));
+                    
+                }
+                
             }
             query.setLength(query.length() - 1);//remove the last comma
             query.append(" ON DUPLICATE KEY UPDATE location_id=VALUES(location_id), visit_type_id=VALUES(visit_type_id), date_started=VALUES(date_started), date_stopped=VALUES(date_stopped),");

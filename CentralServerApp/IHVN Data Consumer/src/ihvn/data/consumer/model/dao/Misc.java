@@ -5,7 +5,10 @@
  */
 package ihvn.data.consumer.model.dao;
 
+import ihvn.data.consumer.controller.ContainerController;
 import ihvn.data.consumer.model.xml.ObsType;
+import ihvn.data.consumer.models.Patient;
+import ihvn.data.consumer.models.Radet;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -156,9 +159,9 @@ public class Misc {
         return destFile;
     }
     
-    public static int getAge(Calendar dob)
+    public static int getAge(Calendar dob, Calendar now)
     {
-        Calendar today = Calendar.getInstance();
+        Calendar today = now;
  
         int curYear = today.get(Calendar.YEAR);
         int dobYear = dob.get(Calendar.YEAR);
@@ -180,6 +183,47 @@ public class Misc {
         }
  
         return age;
+    }
+    
+    public static int getAge(Calendar dob)
+    {
+        Calendar today = Calendar.getInstance();
+        return getAge(dob, today);
+    }
+    
+    public static int getAgeMonths(Calendar dob, Calendar now)
+    {
+        Calendar today = now;
+ 
+        int curYear = today.get(Calendar.YEAR);
+        int dobYear = dob.get(Calendar.YEAR);
+ 
+        int age = curYear - dobYear;
+        
+        int noMonths = 0;
+        // if dob is month or day is behind today's month or day
+        // reduce age by 1
+        int curMonth = today.get(Calendar.MONTH);
+        int dobMonth = dob.get(Calendar.MONTH);
+        if (dobMonth > curMonth) { // this year can't be counted!
+            age--;
+            noMonths = dobMonth;
+        } else if (dobMonth == curMonth) { // same month? check for day
+            int curDay = today.get(Calendar.DAY_OF_MONTH);
+            int dobDay = dob.get(Calendar.DAY_OF_MONTH);
+            if (dobDay > curDay) { // this year can't be counted!
+                age--;
+            }
+        }
+        //at this point we have the years 
+        //lets get the number of months assuming the current month is less than
+        return (age * 12) + noMonths;
+    }
+    
+    public static int getAgeMonths(Calendar dob)
+    {
+        Calendar today = Calendar.getInstance();
+        return getAgeMonths(dob, today);
     }
     
     public static boolean isInFuture(Calendar cal)
@@ -284,5 +328,93 @@ public class Misc {
         }
     }
     
-   
+    public static int getCalendarYear(Calendar date)
+    {
+       return date.get(Calendar.YEAR);
+    }
+    public static int getCalendarQuarter(Calendar date)
+    {
+        int month = date.get(Calendar.MONTH);
+
+        if(month >= Calendar.JANUARY && month <= Calendar.MARCH)
+        {
+            return 1;
+        }
+        else if(month >= Calendar.APRIL && month <= Calendar.JUNE){
+            return 2;
+        }
+        else if( month >= Calendar.JULY && month <= Calendar.SEPTEMBER){
+            return 3;
+        }
+        else{
+            return 4;
+        }
+    }
+    
+    public static int getFinancialYear(Calendar date)
+    {
+        int month = date.get(Calendar.MONTH);
+
+        if(month >= Calendar.JANUARY && month <= Calendar.SEPTEMBER)
+        {
+            return date.get(Calendar.YEAR);
+        }
+        else{
+            return date.get(Calendar.YEAR) + 1;
+        }
+        
+    }
+    public static int getFinancialQuarter(Calendar date)
+    {
+        int month = date.get(Calendar.MONTH);
+
+        if(month >= Calendar.JANUARY && month <= Calendar.MARCH)
+        {
+            return 2;
+        }
+        else if(month >= Calendar.APRIL && month <= Calendar.JUNE){
+            return 3;
+        }
+        else if( month >= Calendar.JULY && month <= Calendar.SEPTEMBER){
+            return 4;
+        }
+        else{
+            return 1;
+        }
+    }
+    
+    public static String getARTStatus(Patient p, Radet r)
+    {
+        
+        if(p.getDateDeceased() != null)
+        {
+            return "Deceased";
+        }
+        else if(r.getTransferOutDate() != null)
+        {
+            return "Transferred out";
+        }
+        else {
+            DateTime lastPickupDate = r.getLastPickupDate();
+            if(lastPickupDate == null)
+            {
+                if(ContainerController.allRadet.get(p.getPatientUUID()).getCurrentArtStatus() != null)
+                {
+                    return ContainerController.allRadet.get(p.getPatientUUID()).getCurrentArtStatus();//the patient is most likely not on art
+                }
+                return "No pickup date";//the patient is probably on art but does not have any drug pickup
+            }
+            int drugDuration = r.getDaysOfARVRefill();
+            
+            DateTime maxAppointmentDate = lastPickupDate.plusDays(drugDuration+28);
+            if(Misc.isBeforeDate(maxAppointmentDate, new DateTime(Calendar.getInstance())))
+            {
+                return "LTFU";
+            }
+            else{
+                return "Active";
+            }
+            
+        }
+    }
 }

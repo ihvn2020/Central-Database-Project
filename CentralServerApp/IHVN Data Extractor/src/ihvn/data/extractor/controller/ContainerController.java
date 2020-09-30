@@ -69,6 +69,8 @@ public class ContainerController {
     private MessageDataType buildMessageData() {
         MessageDataType messageData = new MessageDataType();
         messageData.setDemographics(this.buildDemographics());
+        messageData.getPatientIdentifiers().addAll(this.buildPatienIdentifiers());
+        messageData.getPatientPrograms().addAll(this.buildPatientPrograms());
         messageData.getVisits().addAll(this.buildVisits());
         messageData.getEncounters().addAll(this.buildEncounters());
         messageData.getObs().addAll(this.buildObs());

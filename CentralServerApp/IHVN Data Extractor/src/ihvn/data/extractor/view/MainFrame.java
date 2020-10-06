@@ -21,6 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.JFileChooser;
+import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileSystemView;
 
@@ -47,7 +48,8 @@ public class MainFrame extends javax.swing.JFrame {
         myProgressBar.setStringPainted(true);
         myProgressBar.setValue(0);
         txtDbPassword.setVisible(false);
-        
+        mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        mainScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     }
     
     private void startSettingProgress()
@@ -80,7 +82,7 @@ public class MainFrame extends javax.swing.JFrame {
             
         }*/
         //this.openFolder(); this is throwing an error for now
-        MainFrame.this.txtPatientCount.setText("Zipping complete. The zipped file is at "+f.getParent()+File.separator+zipFileName);
+        MainFrame.this.txtPatientCount.setText("<html>Zipping complete. The zipped file is at <br>"+f.getParent()+File.separator+zipFileName+"</html>");
         
         
         
@@ -122,7 +124,7 @@ public class MainFrame extends javax.swing.JFrame {
                 System.out.println("total count"+MainFrame.totalPatient);
                 if(patientCount + 50 >= MainFrame.totalPatient && MainFrame.totalPatient != 1)//some times, the total processed files does not get to the total number of patients in the system due to errorneous data
                 {
-                    MainFrame.this.txtPatientCount.setText("Processed Patient "+MainFrame.this.totalPatient+" of "+MainFrame.totalPatient);
+                    MainFrame.this.txtPatientCount.setText("<html>Processed Patient "+MainFrame.this.totalPatient+" of "+MainFrame.totalPatient+"</html>");
                 
                     int progress = 100;
                     myProgressBar.setString( "Processed Patient "+MainFrame.this.totalPatient+" of "+MainFrame.this.totalPatient + ":  "+progress +" % complete");
@@ -205,22 +207,23 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         jpExtractionPanel = new javax.swing.JPanel();
         btnExtract = new javax.swing.JButton();
-        txtOutputFolder = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         myProgressBar = new javax.swing.JProgressBar();
+        txtOutputFolder = new javax.swing.JTextField();
         btnShowFolderChooser = new javax.swing.JButton();
+        mainScrollPane = new javax.swing.JScrollPane();
         txtPatientCount = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         jLabel1.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         jLabel1.setText("Database host");
 
         txtDbHost.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         txtDbHost.setText("localhost");
-        txtDbHost.setBorder(javax.swing.BorderFactory.createBevelBorder(1));
+        txtDbHost.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         txtDbHost.setMinimumSize(new java.awt.Dimension(100, 34));
 
         jLabel2.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
@@ -228,11 +231,12 @@ public class MainFrame extends javax.swing.JFrame {
 
         txtDbPort.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         txtDbPort.setText("3316");
-        txtDbPort.setBorder(javax.swing.BorderFactory.createBevelBorder(1));
+        txtDbPort.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         txtDbPort.setMinimumSize(new java.awt.Dimension(100, 34));
 
         txtDbUsername.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
-        txtDbUsername.setBorder(javax.swing.BorderFactory.createBevelBorder(1));
+        txtDbUsername.setText("openmrs");
+        txtDbUsername.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         txtDbUsername.setMinimumSize(new java.awt.Dimension(100, 34));
         txtDbUsername.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -244,7 +248,7 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel3.setText("Database username");
 
         txtDbPassword.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
-        txtDbPassword.setBorder(javax.swing.BorderFactory.createBevelBorder(1));
+        txtDbPassword.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         txtDbPassword.setMinimumSize(new java.awt.Dimension(100, 34));
 
         jLabel4.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
@@ -263,17 +267,24 @@ public class MainFrame extends javax.swing.JFrame {
 
         txtDbName.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         txtDbName.setText("openmrs");
-        txtDbName.setBorder(javax.swing.BorderFactory.createBevelBorder(1));
+        txtDbName.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         txtDbName.setMinimumSize(new java.awt.Dimension(100, 34));
+
+        jpDbPassword.setText("ck9RdGyz&jXR");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(txtDbPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnConnect))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(57, 57, 57)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
                             .addComponent(jLabel7)
@@ -282,17 +293,12 @@ public class MainFrame extends javax.swing.JFrame {
                             .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txtDbHost, javax.swing.GroupLayout.DEFAULT_SIZE, 307, Short.MAX_VALUE)
+                            .addComponent(txtDbHost, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtDbPort, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtDbName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtDbUsername, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jpDbPassword, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(txtDbPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnConnect)))
-                .addContainerGap())
+                            .addComponent(jpDbPassword, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(96, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -330,7 +336,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ihvn/data/extractor/resources/ihvnlogo.png"))); // NOI18N
 
-        jpExtractionPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(0));
+        jpExtractionPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jpExtractionPanel.setMaximumSize(new java.awt.Dimension(300, 400));
 
         btnExtract.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         btnExtract.setText("Start Extraction");
@@ -341,11 +348,11 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
-        txtOutputFolder.setEditable(false);
-        txtOutputFolder.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
-
         jLabel8.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
         jLabel8.setText("Output Location");
+
+        txtOutputFolder.setEditable(false);
+        txtOutputFolder.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
 
         btnShowFolderChooser.setText("...");
         btnShowFolderChooser.setEnabled(false);
@@ -355,6 +362,8 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        mainScrollPane.setViewportView(txtPatientCount);
+
         javax.swing.GroupLayout jpExtractionPanelLayout = new javax.swing.GroupLayout(jpExtractionPanel);
         jpExtractionPanel.setLayout(jpExtractionPanelLayout);
         jpExtractionPanelLayout.setHorizontalGroup(
@@ -363,35 +372,40 @@ public class MainFrame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jpExtractionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpExtractionPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel8)
-                        .addGap(18, 18, 18)
-                        .addComponent(txtOutputFolder, javax.swing.GroupLayout.PREFERRED_SIZE, 267, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnShowFolderChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGroup(jpExtractionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jpExtractionPanelLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnExtract))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jpExtractionPanelLayout.createSequentialGroup()
+                                .addComponent(jLabel8)
+                                .addGap(42, 42, 42)
+                                .addComponent(txtOutputFolder, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnShowFolderChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(13, 13, 13)))
+                        .addGap(35, 35, 35))
                     .addGroup(jpExtractionPanelLayout.createSequentialGroup()
                         .addGroup(jpExtractionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(txtPatientCount, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnExtract)
-                            .addComponent(myProgressBar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE))
-                        .addContainerGap(23, Short.MAX_VALUE))))
+                            .addComponent(mainScrollPane, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(myProgressBar, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 689, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jpExtractionPanelLayout.setVerticalGroup(
             jpExtractionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpExtractionPanelLayout.createSequentialGroup()
-                .addGap(46, 46, 46)
-                .addGroup(jpExtractionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(50, 50, 50)
+                .addGroup(jpExtractionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8)
                     .addGroup(jpExtractionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(txtOutputFolder, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel8))
-                    .addComponent(btnShowFolderChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(35, 35, 35)
+                        .addComponent(btnShowFolderChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(29, 29, 29)
                 .addComponent(myProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(txtPatientCount, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(28, 28, 28)
+                .addComponent(mainScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(111, 111, 111)
                 .addComponent(btnExtract)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -399,34 +413,32 @@ public class MainFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(64, 64, 64)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(29, 29, 29)
-                        .addComponent(jpExtractionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(30, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel6)
-                        .addGap(476, 476, 476))))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(382, 382, 382)
-                .addComponent(jLabel5)
-                .addGap(0, 0, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jpExtractionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(486, 486, 486)
+                        .addComponent(jLabel5))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(568, 568, 568)
+                        .addComponent(jLabel6)))
+                .addContainerGap(105, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(40, 40, 40)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel6)
-                .addGap(36, 36, 36)
+                .addGap(29, 29, 29)
                 .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jpExtractionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(60, 60, 60))
+                .addGap(44, 44, 44))
         );
 
         pack();
@@ -597,6 +609,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPasswordField jpDbPassword;
     private javax.swing.JPanel jpExtractionPanel;
+    private javax.swing.JScrollPane mainScrollPane;
     private javax.swing.JProgressBar myProgressBar;
     private javax.swing.JTextField txtDbHost;
     private javax.swing.JTextField txtDbName;

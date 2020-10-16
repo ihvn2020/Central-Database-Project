@@ -93,7 +93,7 @@ public class XMLGeneratorController {
                  
 
                 }
-                Thread.sleep(1000);
+                Thread.sleep(5000);
                 System.gc();
                 
                 allPatients.clear();

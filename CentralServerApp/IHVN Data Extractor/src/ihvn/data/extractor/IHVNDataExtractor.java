@@ -38,7 +38,7 @@ public class IHVNDataExtractor {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                    MainFrame frame = new MainFrame();
                     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    frame.setResizable(false);
+                    //frame.setResizable(false);
 
                     frame.setLocationRelativeTo(null);
                     frame.setVisible(true); 

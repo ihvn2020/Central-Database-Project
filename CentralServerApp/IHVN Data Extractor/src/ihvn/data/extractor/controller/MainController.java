@@ -92,7 +92,7 @@ public class MainController {
         
         XMLGeneratorController xmlGeneratorController = new XMLGeneratorController(this.mainFrame);
         int totalPatients = patientObj.getTotalPatients();
-        int limit = 100;
+        int limit = 2000;
         int totalPages = (int)Math.floor(totalPatients/limit);
         //some global stuff. Lets get them only once
         patientFacilityName = facilityObj.getGlobalProperty("Facility_Name");

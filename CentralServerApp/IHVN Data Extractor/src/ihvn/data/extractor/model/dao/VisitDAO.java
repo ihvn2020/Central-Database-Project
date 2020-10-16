@@ -5,6 +5,7 @@
  */
 package ihvn.data.extractor.model.dao;
 
+import com.mysql.jdbc.CommunicationsException;
 import ihvn.data.extractor.model.xml.EncounterProviderType;
 import ihvn.data.extractor.model.xml.EncounterType;
 import ihvn.data.extractor.model.xml.ObsType;
@@ -41,7 +42,7 @@ public class VisitDAO {
             con = Database.connectionPool.getConnection();
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 
-            stmt.setFetchSize(Integer.MIN_VALUE);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 VisitType visit = buildVisit(rs);
@@ -86,7 +87,7 @@ public class VisitDAO {
             con = Database.connectionPool.getConnection();
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 
-            stmt.setFetchSize(Integer.MIN_VALUE);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 encounterProvider = buildEncounterProvider(rs);
@@ -140,7 +141,7 @@ public class VisitDAO {
             con = Database.connectionPool.getConnection();
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 
-            stmt.setFetchSize(Integer.MIN_VALUE);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 encounter = buildEncounter(rs);
@@ -176,7 +177,7 @@ public class VisitDAO {
             con = Database.connectionPool.getConnection();
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 
-            stmt.setFetchSize(Integer.MIN_VALUE);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 encounter = buildEncounter(rs);
@@ -228,8 +229,10 @@ public class VisitDAO {
         //System.out.println("Connection list "+Database.connectionPool.totalConnections());
         try {
             con = Database.connectionPool.getConnection();
+            //ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-            stmt.setFetchSize(Integer.MIN_VALUE);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
+            //stmt.setFetchSize(Integer.MAX_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 obs = buildObs(rs);
@@ -241,11 +244,13 @@ public class VisitDAO {
             //stmt.close();
             return allObs;
         } catch (SQLException ex) {
-            //screen.updateStatus(ex.getMessage());
+            //screen.updateStatusfree(ex.getMessage());
             ex.printStackTrace();
             return null;
 
-        } finally {
+        }
+        
+        finally {
             cleanUp(rs, stmt, con);
         }
     }
@@ -262,7 +267,7 @@ public class VisitDAO {
             con = Database.connectionPool.getConnection();
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 
-            stmt.setFetchSize(Integer.MIN_VALUE);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 ObsType obs = buildObs(rs);

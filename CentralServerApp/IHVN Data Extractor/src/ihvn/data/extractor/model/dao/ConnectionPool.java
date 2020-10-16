@@ -147,7 +147,7 @@ public class ConnectionPool implements Runnable {
 			//Class.forName(driver);
 			// Establish network connection to database
 			//Connection connection = DriverManager.getConnection(url + "?useCursorFetch=true&defaultFetchSize=10000", username, password);
-			Connection connection = DriverManager.getConnection(url + "", username, password);
+			Connection connection = DriverManager.getConnection(url + "?useCursorFetch=true&defaultFetchSize=10000", username, password);
 			// Connection connection = ds.getConnection();
 			
 			return (connection);

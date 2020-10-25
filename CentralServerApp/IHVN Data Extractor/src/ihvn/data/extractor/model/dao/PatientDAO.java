@@ -22,7 +22,7 @@ import java.util.Map;
 public class PatientDAO {
 
     public int getTotalPatients() {
-        String query = "SELECT COUNT(patient_id) AS count  FROM patient where patient.voided=0";
+        String query = "SELECT COUNT(patient_id) AS count  FROM patient JOIN  person ON (person.person_id=patient.patient_id) where patient.voided=0";
         //String query = "SELECT COUNT(obs_id) AS count  FROM obs ";
         Statement stmt = null;
         ResultSet rs = null;
@@ -60,7 +60,7 @@ public class PatientDAO {
         query += " LEFT JOIN person_attribute ON  person_attribute.person_id=person.person_id AND person_attribute.person_attribute_type_id=8 ";
         //query += " WHERE person.voided=0  AND person.person_id IN (SELECT person_id FROM obs WHERE obs_datetime > '"+lastDate+"')LIMIT "+offset+", "+limit;
         //query += " WHERE person.voided=0 AND person.person_id=14121 LIMIT "+offset+", "+limit;  
-        query += " WHERE person.voided=0 LIMIT " + offset + ", " + limit;
+        query += " WHERE person.voided=0 GROUP BY patient.patient_id LIMIT " + offset + ", " + limit+" ";
 
         Statement stmt = null;
         ResultSet rs = null;

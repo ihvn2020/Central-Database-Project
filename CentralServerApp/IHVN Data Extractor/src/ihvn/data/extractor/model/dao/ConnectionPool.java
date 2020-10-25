@@ -32,6 +32,7 @@ public class ConnectionPool implements Runnable {
 	public Vector<Connection> availableConnections, busyConnections;
 	
 	private boolean connectionPending = false;
+        public static Connection connection;
 	
 	public ConnectionPool(String driver, String url, String username, String password, int initialConnections,
 	    int maxConnections, boolean waitIfBusy) throws SQLException {
@@ -147,7 +148,7 @@ public class ConnectionPool implements Runnable {
 			//Class.forName(driver);
 			// Establish network connection to database
 			//Connection connection = DriverManager.getConnection(url + "?useCursorFetch=true&defaultFetchSize=10000", username, password);
-			Connection connection = DriverManager.getConnection(url + "?useCursorFetch=true&defaultFetchSize=10000", username, password);
+			Connection connection = DriverManager.getConnection(url + "?useSSL=false&useCursorFetch=true&defaultFetchSize=10000&max_allowed_packet=512M&net_write_timeout=90000000000&wait_timeout=90000000000&interactive_timeout=90000000000&connect_timeout=90000000000", username, password);
 			// Connection connection = ds.getConnection();
 			
 			return (connection);
@@ -156,7 +157,13 @@ public class ConnectionPool implements Runnable {
 			// Simplify try/catch blocks of people using this by
 			// throwing only one exception type.
 			cnfe.printStackTrace();
-			throw new SQLException("ConnectionPool:: SQLException encountered:: " + cnfe.getMessage());
+                    try {
+                        Thread.sleep(3000);//sleep for about 3seconds
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(ConnectionPool.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                   return this.makeNewConnection();
+			//throw new SQLException("ConnectionPool:: SQLException encountered:: " + cnfe.getMessage());
 		}
 	}
         

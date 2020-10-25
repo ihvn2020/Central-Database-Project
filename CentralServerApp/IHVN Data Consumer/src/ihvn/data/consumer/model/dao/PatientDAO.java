@@ -170,18 +170,21 @@ public class PatientDAO {
         ResultSet rs = null;
         Connection con = null;
         
-        StringBuilder query = new StringBuilder("INSERT INTO  patient_dm(id, patient_uuid, patient_omrs_id, person_id, first_name, last_name, sex, date_of_birth, current_age_yrs, current_age_months, unique_id, patient_unique_id, patient_hospital_id, transferin_id, address_country, address_state, address_lga, address_ward, address_town, address_other, created_by, date_created, updated_by, enrollment_date, date_confirmed_positive, registration_phone, ");
-        query.append(" contact_phone_no, mark_as_deceased, mark_as_deceased_date, art_start_date, age_at_art_start_yrs, age_at_art_start_months, first_visit_date, last_visit_date, biometric_captured, biometric_capture_date, calendar_year, calendar_quarter, financial_year, financial_quarter, month)VALUES");
+        StringBuilder query = new StringBuilder("INSERT INTO  patient_dm(id, patient_uuid, patient_omrs_id, person_id, first_name, last_name, sex, date_of_birth, current_age_yrs, current_age_months,"
+                + " unique_id, patient_unique_id, patient_hospital_id, transferin_id, address_country, address_state, address_lga, address_ward, address_town, address_other, "
+                + "created_by, date_created, updated_by, enrollment_date, date_confirmed_positive, registration_phone, ");
+        query.append(" contact_phone_no, mark_as_deceased, mark_as_deceased_date, art_start_date, age_at_art_start_yrs, age_at_art_start_months, first_visit_date, last_visit_date, biometric_captured, biometric_capture_date,"
+                + " calendar_year, calendar_quarter, financial_year, financial_quarter, month, datim_id, current_art_status)VALUES");
         
             for(int i=0; i<allPatients.size(); i++)
             {
-                query.append("(?,?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?),");
+                query.append("(?, ?, ?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?),");
             }
           
         query.setLength(query.length() - 1);//remove the last comma 
         query.append(" ON DUPLICATE KEY UPDATE first_name=VALUES(first_name), last_name=VALUES(last_name), sex=VALUES(sex), date_of_birth=VALUES(date_of_birth),  current_age_yrs=VALUES(current_age_yrs), current_age_months=VALUES(current_age_months), unique_id=VALUES(unique_id), patient_unique_id=VALUES(patient_unique_id), patient_hospital_id=VALUES(patient_hospital_id), ");
         query.append(" transferin_id=VALUES(transferin_id), address_country=VALUES(address_country), address_state=VALUES(address_state), address_town=VALUES(address_town), address_ward=VALUES(address_ward), address_lga=VALUES(address_lga), address_town=VALUES(address_town), ");
-        query.append(" address_other=VALUES(address_other), created_by=VALUES(created_by), date_created=VALUES(date_created), updated_by=VALUES(updated_by), enrollment_date=VALUES(enrollment_date), date_confirmed_positive=VALUES(date_confirmed_positive), registration_phone=VALUES(registration_phone), contact_phone_no=VALUES(contact_phone_no), mark_as_deceased=VALUES(mark_as_deceased), mark_as_deceased_date=VALUES(mark_as_deceased_date), art_start_date=VALUES(art_start_date), age_at_art_start_yrs=VALUES(age_at_art_start_yrs), age_at_art_start_months=VALUES(age_at_art_start_months), first_visit_date=VALUES(first_visit_date), last_visit_date=VALUES(last_visit_date), biometric_captured=VALUES(biometric_captured), biometric_capture_date=VALUES(biometric_capture_date), calendar_year=VALUES(calendar_year), financial_year=VALUES(financial_year), financial_quarter=VALUES(financial_quarter), month=VALUES(month)");
+        query.append(" address_other=VALUES(address_other), created_by=VALUES(created_by), date_created=VALUES(date_created), updated_by=VALUES(updated_by), enrollment_date=VALUES(enrollment_date), date_confirmed_positive=VALUES(date_confirmed_positive), registration_phone=VALUES(registration_phone), contact_phone_no=VALUES(contact_phone_no), mark_as_deceased=VALUES(mark_as_deceased), mark_as_deceased_date=VALUES(mark_as_deceased_date), art_start_date=VALUES(art_start_date), age_at_art_start_yrs=VALUES(age_at_art_start_yrs), age_at_art_start_months=VALUES(age_at_art_start_months), first_visit_date=VALUES(first_visit_date), last_visit_date=VALUES(last_visit_date), biometric_captured=VALUES(biometric_captured), biometric_capture_date=VALUES(biometric_capture_date), calendar_year=VALUES(calendar_year), financial_year=VALUES(financial_year), financial_quarter=VALUES(financial_quarter), month=VALUES(month), datim_id=VALUES(datim_id), current_art_status=VALUES(current_art_status)");
         
         try {
                 con = Database.connectionPool.getConnection();
@@ -211,7 +214,7 @@ public class PatientDAO {
                     stmt.setString(index++, allPatients.get(i).getAddressTown());
                     stmt.setString(index++, allPatients.get(i).getAddressOther());
                     
-                    
+                 
                     stmt.setString(index++, allPatients.get(i).getCreatedBy());
                     stmt.setString(index++, allPatients.get(i).getDateCreated().toString("yyyy-MM-dd"));
                     stmt.setString(index++, allPatients.get(i).getUpdatedBy());
@@ -232,11 +235,16 @@ public class PatientDAO {
                     stmt.setInt(index++, allPatients.get(i).getCalendarQuarter());
                     stmt.setInt(index++, allPatients.get(i).getFinancialYear());
                     stmt.setInt(index++, allPatients.get(i).getFinancialQuarter());
+                    
+                    
                     stmt.setInt(index++, allPatients.get(i).getMonth());
+                    stmt.setString(index++, allPatients.get(i).getDatimId());
+                    stmt.setString(index++, allPatients.get(i).getCurrentARTStatus());
+                    
                     
                 }
                 
-                
+               
                if(allPatients.size() > 0)
                  stmt.executeUpdate();
                 
@@ -275,15 +283,15 @@ public class PatientDAO {
         Connection con = null;
         
         StringBuilder query = new StringBuilder("INSERT INTO  radet_fact(radet_id, financial_year, financial_quarter, calendar_year, calendar_quarter, month, datim_id, patient_uuid, transfer_in_status, transfer_in_date, care_entry_point, last_pickup_date, days_of_arv_refil, initial_regimen_line, initial_first_line_regimen, initial_first_line_regimen_date, initial_second_line_regimen, initial_second_line_regimen_date, current_regimen_line, current_first_line_regimen, current_first_line_regimen_date, current_second_line_regimen, current_second_line_regimen_date, ");
-        query.append(" pregnancy_status, current_viral_load, viral_load_sample_collection_date, viral_load_reported_date, viral_load_indication, current_art_status, transfer_out_date, death_date, current_weight_kg, current_weight_date, tb_status, tb_status_date, inh_start_date, inh_stop_date, last_inh_dispensed_date, tb_treatment_start_date, tb_treatment_stop_date, last_viral_load_sample_collection_form_date, otz_start_date, otz_stop_date)VALUES");
+        query.append(" pregnancy_status, current_viral_load, viral_load_sample_collection_date, viral_load_reported_date, viral_load_indication, current_art_status, transfer_out_date, death_date, current_weight_kg, current_weight_date, tb_status, tb_status_date, inh_start_date, inh_stop_date, last_inh_dispensed_date, tb_treatment_start_date, tb_treatment_stop_date, last_viral_load_sample_collection_form_date, otz_start_date, otz_stop_date, art_start_date)VALUES");
         
             for(int i=0; i<allRadet.size(); i++)
             {
-                query.append("(?,?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?),");
+                query.append("(?,?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?),");
             }
           
         query.setLength(query.length() - 1);//remove the last comma 
-        query.append(" ON DUPLICATE KEY UPDATE financial_year=VALUES(financial_year), financial_quarter=VALUES(financial_quarter), calendar_year=VALUES(calendar_year), calendar_quarter=VALUES(calendar_quarter),  month=VALUES(month), datim_id=VALUES(datim_id), patient_uuid=VALUES(patient_uuid), transfer_in_status=VALUES(transfer_in_status), transfer_in_date=VALUES(transfer_in_date), ");
+        query.append(" ON DUPLICATE KEY UPDATE financial_year=VALUES(financial_year), financial_quarter=VALUES(financial_quarter), calendar_year=VALUES(calendar_year), calendar_quarter=VALUES(calendar_quarter),  month=VALUES(month), datim_id=VALUES(datim_id), patient_uuid=VALUES(patient_uuid), transfer_in_status=VALUES(transfer_in_status), transfer_in_date=VALUES(transfer_in_date), art_start_date=VALUES(art_start_date),");
         query.append(" care_entry_point=VALUES(care_entry_point), last_pickup_date=VALUES(last_pickup_date), days_of_arv_refil=VALUES(days_of_arv_refil), initial_regimen_line=VALUES(initial_regimen_line), initial_first_line_regimen=VALUES(initial_first_line_regimen), initial_first_line_regimen_date=VALUES(initial_first_line_regimen_date), initial_second_line_regimen=VALUES(initial_second_line_regimen_date), current_regimen_line=VALUES(current_regimen_line), ");
         query.append(" current_first_line_regimen=VALUES(current_first_line_regimen), current_first_line_regimen_date=VALUES(current_first_line_regimen_date), current_second_line_regimen=VALUES(current_second_line_regimen), current_second_line_regimen_date=VALUES(current_second_line_regimen_date), pregnancy_status=VALUES(pregnancy_status), current_viral_load=VALUES(current_viral_load), viral_load_sample_collection_date=VALUES(viral_load_sample_collection_date), viral_load_indication=VALUES(viral_load_indication), current_art_status=VALUES(current_art_status), transfer_out_date=VALUES(transfer_out_date), death_date=VALUES(death_date), current_weight_kg=VALUES(current_weight_kg), current_weight_date=VALUES(current_weight_date),  tb_status=VALUES(tb_status), tb_status_date=VALUES(tb_status_date), inh_start_date=VALUES(inh_start_date), inh_stop_date=VALUES(inh_stop_date), tb_treatment_start_date=VALUES(tb_treatment_start_date), tb_treatment_stop_date=VALUES(tb_treatment_stop_date), last_viral_load_sample_collection_form_date=VALUES(last_viral_load_sample_collection_form_date), otz_start_date=VALUES(otz_start_date), otz_stop_date=VALUES(otz_stop_date)");
         
@@ -341,8 +349,7 @@ public class PatientDAO {
                     stmt.setString(index++, (allRadet.get(i).getLastvLSampleCollectionFormDate() != null) ?allRadet.get(i).getLastvLSampleCollectionFormDate().toString("yyyy-MM-dd") : null);
                     stmt.setString(index++, (allRadet.get(i).getOtzStartDate() != null) ?allRadet.get(i).getOtzStartDate().toString("yyyy-MM-dd") : null);
                     stmt.setString(index++, (allRadet.get(i).getOtzStopDate() != null) ?allRadet.get(i).getOtzStopDate().toString("yyyy-MM-dd") : null);
-                    
-                    
+                    stmt.setString(index++, (allRadet.get(i).getArtStartDate()!= null) ? allRadet.get(i).getArtStartDate().toString("yyyy-MM-dd") : null);
                 }
                 
                 

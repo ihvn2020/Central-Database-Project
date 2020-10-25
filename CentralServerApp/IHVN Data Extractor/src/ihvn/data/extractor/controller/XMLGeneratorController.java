@@ -45,10 +45,10 @@ public class XMLGeneratorController {
                 // define what thread will do here 
                 XMLGeneratorController.this.outputLocation = outputLocation;
                 PatientDAO patientObj = new PatientDAO();
-                
+               
 
                 List<Map<String, String>> allPatients = patientObj.getAllPatients(offset, limit);
-
+                System.out.println("patient counts: "+allPatients.size());
                 //set the total patients to the main frame
 
                 // ExecutorService executor = Executors.newFixedThreadPool(5);//creating a pool of 5 threads  
@@ -79,7 +79,7 @@ public class XMLGeneratorController {
                 for(Map<String,String> patient : allPatients)
                 {
                     //System.out.println("processing patient "+(MainController.counter++));
-                    
+
                     MainController.counter++;
                     MainController.atomicCounter.incrementAndGet();
                     containerController = new ContainerController(patient);
@@ -87,18 +87,13 @@ public class XMLGeneratorController {
                     Container container = containerController.buildContainer();
                     patient.clear();
                     XMLGeneratorController.this.saveContainerToXMLFile(container);
-                    
-                    
                     //publish(MainController.counter);
-                 
-
                 }
                 Thread.sleep(5000);
                 System.gc();
                 
                 allPatients.clear();
                 allPatients = null;
-
                 
                 String res = "Finished Execution"; 
                 return res; 
@@ -121,7 +116,7 @@ public class XMLGeneratorController {
             { 
                 // this method is called when the background
                 // thread finishes execution
-                System.out.println("Inside done function");
+                //System.out.println("Inside done function");
                 //mainFrame.setProgress(100); 
             } 
         }; 

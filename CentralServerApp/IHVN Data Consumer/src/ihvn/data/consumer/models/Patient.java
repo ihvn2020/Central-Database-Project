@@ -56,6 +56,9 @@ public class Patient {
     private int financialYear;
     private int financialQuarter;
     private int month;
+    private String datimId;
+    private String currentARTStatus;
+    
 
     /**
      * @return the patientUUID
@@ -630,6 +633,24 @@ public class Patient {
     public void setMonth(int month) {
         this.month = month;
     }
+
+    public String getDatimId() {
+        return datimId;
+    }
+
+    public void setDatimId(String datimId) {
+        this.datimId = datimId;
+    }
+
+    public String getCurrentARTStatus() {
+        return currentARTStatus;
+    }
+
+    public void setCurrentARTStatus(String currentARTStatus) {
+        this.currentARTStatus = currentARTStatus;
+    }
+    
+    
     
     
     public static Patient newInstance(DemographicsType demo)
@@ -668,6 +689,8 @@ public class Patient {
         p.setRegistrationPhone(demo.getPhoneNumber());
         p.setSex(demo.getGender());
         p.setUpdatedBy(demo.getChangedBy()+"");
+     
+        p.setDatimId(demo.getDatimId());
         
         return p;
     }

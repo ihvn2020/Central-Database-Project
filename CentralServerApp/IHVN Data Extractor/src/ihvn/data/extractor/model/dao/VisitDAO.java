@@ -99,7 +99,7 @@ public class VisitDAO {
             //rs.close();
             //stmt.close();
             return encounterProviderTypesList;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             //screen.updateStatus(ex.getMessage());
             ex.printStackTrace();
             return null;
@@ -153,7 +153,7 @@ public class VisitDAO {
             //rs.close();
             //stmt.close();
             return allEncounters;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             //screen.updateStatus(ex.getMessage());
             ex.printStackTrace();
             return null;
@@ -243,10 +243,13 @@ public class VisitDAO {
             //rs.close();
             //stmt.close();
             return allObs;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             //screen.updateStatusfree(ex.getMessage());
             ex.printStackTrace();
-            return null;
+            
+            System.out.println("started again");
+            return getAllObsByPatient(patient_id, patient_uuid, datim_id);
+            //return allObs;
 
         }
         

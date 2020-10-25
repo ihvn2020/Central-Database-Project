@@ -105,6 +105,7 @@ public class ContainerController {
         //we can calculate the art status at this point
         String artStatus = Misc.getARTStatus(ContainerController.allPatients.get(demo.getPatientUuid()), ContainerController.allRadet.get(demo.getPatientUuid()));
         ContainerController.allRadet.get(demo.getPatientUuid()).setCurrentArtStatus(artStatus);
+        ContainerController.allPatients.get(demo.getPatientUuid()).setCurrentARTStatus(artStatus);
         //save any errors we might have noticed
         this.saveError();
         

@@ -65,11 +65,8 @@ public class Database {
         public static void initConnection(String className, String connString, String username, String password) 
         {
             try {
-
-                 
                     Class.forName(className);
-                    connectionPool = new ConnectionPool(className, connString, username, password, 4, 50, true);
-
+                    connectionPool = new ConnectionPool(className, connString, username, password, 10, 50, true);
             }
             catch (Exception ex) {
                     ex.printStackTrace();

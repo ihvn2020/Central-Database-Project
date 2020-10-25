@@ -389,6 +389,7 @@ public class Validator {
             if(!onART)
             {
                 ContainerController.allRadet.get(patientDemo.getPatientUuid()).setCurrentArtStatus("Not on ART");
+                ContainerController.allPatients.get(patientDemo.getPatientUuid()).setCurrentARTStatus("Not on ART");
             }
         }
         
@@ -956,6 +957,8 @@ public class Validator {
             XMLGregorianCalendar dob = (patientLookupData.get(Constant.DOB) != null) ? (XMLGregorianCalendar)patientLookupData.get(Constant.DOB) : null;
             
             ContainerController.allPatients.get(obs.getPatientUuid()).setArtStartDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+            ContainerController.allRadet.get(obs.getPatientUuid()).setArtStartDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+            
             //also lets set the date at art start date
             int ageYearAtARTStart = Misc.getAge(dob.toGregorianCalendar(), obs.getValueDatetime().toGregorianCalendar());
             int ageMonthAtARTStart = Misc.getAgeMonths(dob.toGregorianCalendar(), obs.getValueDatetime().toGregorianCalendar());

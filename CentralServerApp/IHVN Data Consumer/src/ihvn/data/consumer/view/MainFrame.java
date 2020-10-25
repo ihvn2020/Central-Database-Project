@@ -50,16 +50,15 @@ public class MainFrame extends javax.swing.JFrame {
                  try {
                      System.out.println("no file to process. waiting for 3 seconds");
                      Thread.sleep(3000);//sleep for about 3seconds
-                      System.out.println("Searching for files");
+                     System.out.println("Searching for files");
                  } catch (InterruptedException ex) {
                     ex.printStackTrace();
                  }
-
                 
              }while(!main.newFilesExists());
             //once new files are found start processing
             MainFrame.currCount.set(0);
-             main.readXMLs();//check again
+            main.readXMLs();//check again
              
              //perform ETL
              

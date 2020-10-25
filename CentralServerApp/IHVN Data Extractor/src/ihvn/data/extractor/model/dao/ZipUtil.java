@@ -121,7 +121,7 @@ public class ZipUtil {
                         zipOut.write(bytes, 0, length);
                     }
                     fis.close();
-                    System.out.println("currently zipping "+srcFile);
+                    //System.out.println("currently zipping "+srcFile);
                 }
                 zipOut.close();
                 fos.close();

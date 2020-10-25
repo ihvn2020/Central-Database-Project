@@ -17,6 +17,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -24,6 +28,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileSystemView;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -35,8 +40,10 @@ public class MainFrame extends javax.swing.JFrame {
     JFileChooser jfc ;
     static int totalPatient = 1;
     String outPutFolder = "";
-    static boolean zipping = false;
-    ProgessSetter progressSetter = new ProgessSetter();
+    static AtomicBoolean zipping = new AtomicBoolean(false);
+    static boolean firstTime = true;
+    ProgessSetter progressSetter;
+    Timer timer = new Timer();
     /**
      * Creates new form MainFrame
      */
@@ -50,13 +57,16 @@ public class MainFrame extends javax.swing.JFrame {
         txtDbPassword.setVisible(false);
         mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         mainScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        
         //this.setResizable(true);
     }
     
-    private void startSettingProgress()
+    private void startSettingProgress(TimerTask progressSetter)
     {
-        Timer timer = new Timer();
+        
+        firstTime = false;
         timer.scheduleAtFixedRate(progressSetter, 100, 10);
+        
     
         
     }
@@ -66,14 +76,16 @@ public class MainFrame extends javax.swing.JFrame {
         System.out.println("started zipping");
        
         File f = new File(this.outPutFolder);
+      
         String zipFileName = "IHVN_"+MainController.datimId+"_STATE DATABASE_"+new Date().getTime()+".zip";
         ZipUtil.zipFolder(f.getParent()+File.separator+zipFileName, this.outPutFolder);
-        /*File toZIP = new File(this.outPutFolder);
-        if (!toZIP.exists() || toZIP.listFiles() == null || Objects.requireNonNull(toZIP.listFiles()).length == 0) {
-             JOptionPane.showMessageDialog(this, "An error occcured", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        else{
-             //Zip today's folder and name it with today's date
+        try {
+            /*File toZIP = new File(this.outPutFolder);
+            if (!toZIP.exists() || toZIP.listFiles() == null || Objects.requireNonNull(toZIP.listFiles()).length == 0) {
+            JOptionPane.showMessageDialog(this, "An error occcured", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            else{
+            //Zip today's folder and name it with today's date
             //String zipFileName = new SimpleDateFormat("dd-MM-yyyy").format(new Date()) + ".zip";
             ZipUtil appZip = new ZipUtil(this.outPutFolder);
             appZip.generateFileList(toZIP);
@@ -81,15 +93,28 @@ public class MainFrame extends javax.swing.JFrame {
             appZip.zipIt(Paths.get(toZIP.getParent(), zipFileName).toString());
             //zipping is complete. Open the folder
             
-        }*/
-        //this.openFolder(); this is throwing an error for now
+            }*/
+            //this.openFolder(); this is throwing an error for now
+            //delete the output folder
+            FileUtils.deleteDirectory(new File(this.outPutFolder));
+            btnExtract.setEnabled(true);//re-enable the extract button incase we want to extract again
+            System.out.println("deleted output folder");
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("deleting failed");
+        }
+        
+        //reset zipping to false
+        MainFrame.zipping.set(false);
+        
         MainFrame.this.txtPatientCount.setText("<html>Zipping complete. The zipped file is at <br>"+f.getParent()+File.separator+zipFileName+"</html>");
-        
-        
         
         
        
     }
+    
+    
     
     private void openFolder()
     {
@@ -121,9 +146,9 @@ public class MainFrame extends javax.swing.JFrame {
                // MainFrame.this.totalPatient = patientCount;
                 //MainFrame.this.txtPatientCount.setText("Processed Patient "+patientCount+" of "+MainFrame.this.totalPatient);
                 
-                System.out.println(MainController.atomicCounter.get());
-                System.out.println("total count"+MainFrame.totalPatient);
-                if(patientCount + 50 >= MainFrame.totalPatient && MainFrame.totalPatient != 1)//some times, the total processed files does not get to the total number of patients in the system due to errorneous data
+                //System.out.println(MainController.atomicCounter.get());
+                //System.out.println("total count"+MainFrame.totalPatient);
+                if(patientCount + 1 >= MainFrame.totalPatient && MainFrame.totalPatient != 1)//some times, the total processed files does not get to the total number of patients in the system due to errorneous data
                 {
                     MainFrame.this.txtPatientCount.setText("<html>Processed Patient "+MainFrame.this.totalPatient+" of "+MainFrame.totalPatient+"</html>");
                 
@@ -131,30 +156,36 @@ public class MainFrame extends javax.swing.JFrame {
                     myProgressBar.setString( "Processed Patient "+MainFrame.this.totalPatient+" of "+MainFrame.this.totalPatient + ":  "+progress +" % complete");
                     myProgressBar.setValue(progress);
                    
-                    //set a timer to zip the output folder
-                    Timer timer = new Timer();
-                    timer.schedule(new TimerTask() {
-                                   @Override
-                                   public void run() {
-                                     if(MainFrame.zipping == false)
-                                     {
-                                         MainFrame.this.txtPatientCount.setText("Extraction Complete. Currently zipping");
-                                         MainFrame.this.zipXMlFolder();
-                                         MainFrame.zipping = true; 
-                                        
-                                         
-                                     }
-                                    
-                                   }
-                                }, 3000);
-                    System.out.println("zipping");
-                     progressSetter.cancel();
+                    if(MainFrame.zipping.get() ==  false)
+                    {
+                         MainFrame.zipping.set(true); 
+                        //set a timer to zip the output folder
+                        Timer timer = new Timer();
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+
+
+                                  System.out.println("zipping started");
+
+                                  MainFrame.this.txtPatientCount.setText("Extraction Complete. Currently zipping");
+                                  MainFrame.this.zipXMlFolder();
+                                  MainFrame.zipping.set(false);
+                                  MainController.counter = 0;
+                                  //MainFrame.this.timer.cancel();
+                                  //MainFrame.this.timer.purge();
+
+                            }
+                         }, 5000);
+                        System.out.println("zipping");
+                        progressSetter.cancel();
+                    }
                     
                 }
                 else{
                      MainFrame.this.txtPatientCount.setText("Processed Patient "+patientCount+" of "+MainFrame.totalPatient);
                 
-                    int progress = (patientCount *100) / MainFrame.totalPatient;
+                    int progress = (patientCount * 100) / MainFrame.totalPatient;
                     myProgressBar.setString( "Processed Patient "+patientCount+" of "+MainFrame.this.totalPatient + ":  "+progress +" % complete");
                     myProgressBar.setValue(progress);
                 }
@@ -354,8 +385,10 @@ public class MainFrame extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Ubuntu", 0, 18)); // NOI18N
         jLabel8.setText("Output Location");
 
+        myProgressBar.setFont(new java.awt.Font("Ubuntu", 0, 14)); // NOI18N
+
         txtOutputFolder.setEditable(false);
-        txtOutputFolder.setFont(new java.awt.Font("Ubuntu", 0, 24)); // NOI18N
+        txtOutputFolder.setFont(new java.awt.Font("Ubuntu", 0, 14)); // NOI18N
 
         btnShowFolderChooser.setText("...");
         btnShowFolderChooser.setEnabled(false);
@@ -365,6 +398,7 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        txtPatientCount.setFont(new java.awt.Font("Ubuntu", 0, 14)); // NOI18N
         mainScrollPane.setViewportView(txtPatientCount);
 
         javax.swing.GroupLayout jpExtractionPanelLayout = new javax.swing.GroupLayout(jpExtractionPanel);
@@ -432,7 +466,7 @@ public class MainFrame extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jpExtractionPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         pack();
@@ -469,6 +503,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void btnExtractActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExtractActionPerformed
         // TODO add your handling code here:
         btnExtract.setEnabled(false);
+        MainController.atomicCounter = new AtomicInteger(0);
         Thread xmlThread = new Thread() {
                 public void run() {
                    if(outPutFolder.equalsIgnoreCase(""))
@@ -477,7 +512,18 @@ public class MainFrame extends javax.swing.JFrame {
                        btnExtract.setEnabled(true);
                    }
                    else{
-                       MainFrame.this.startSettingProgress();
+                       //lets check if the output folder has been created (if for any reason, it is not there, lets create it)
+                       File f = new File(outPutFolder);
+                       if(!f.exists())
+                       {
+                           f.mkdir();
+                       }
+                       //if(firstTime == true)
+                       //{
+                          progressSetter = new ProgessSetter();
+                          MainFrame.this.startSettingProgress(progressSetter);
+                       //}
+                       
                        mainController.generateXMLs();
                    }
                    
@@ -572,15 +618,15 @@ public class MainFrame extends javax.swing.JFrame {
         
         @Override
         public void run() {
-          // Your database code here
+          // Your database code hereTimerTask
           //MainFrame.this.setProgress(MainController.counter);
           MainFrame.this.setProgress(MainController.atomicCounter.get());
 
-          if(MainController.atomicCounter.get()+10 > MainFrame.totalPatient)
+          if(MainController.atomicCounter.get()+1 >= MainFrame.totalPatient && MainFrame.totalPatient != 1)
           {
               System.out.println(MainController.counter);
               MainFrame.this.setProgress(MainFrame.totalPatient);
-              btnExtract.setEnabled(true);
+             
           }
 
 

@@ -89,10 +89,9 @@ public class MainController {
         //initialize database connectino
         Database.initConnection(className, connString, username, password);
         
-        
         XMLGeneratorController xmlGeneratorController = new XMLGeneratorController(this.mainFrame);
         int totalPatients = patientObj.getTotalPatients();
-        int limit = 2000;
+        int limit = 200;
         int totalPages = (int)Math.floor(totalPatients/limit);
         //some global stuff. Lets get them only once
         patientFacilityName = facilityObj.getGlobalProperty("Facility_Name");
@@ -110,7 +109,7 @@ public class MainController {
             }
         }
        
-       
+      
         
        /*SwingUtilities.invokeLater(new Runnable(){
        

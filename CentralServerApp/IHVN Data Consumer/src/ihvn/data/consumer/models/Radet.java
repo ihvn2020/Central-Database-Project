@@ -61,6 +61,7 @@ public class Radet {
    private DateTime lastvLSampleCollectionFormDate;
    private DateTime otzStartDate;
    private DateTime otzStopDate;
+   private DateTime artStartDate;
 
     /**
      * @return the radetId
@@ -713,6 +714,16 @@ public class Radet {
     public void setInitialRegimenLine(String initialRegimenLine) {
         this.initialRegimenLine = initialRegimenLine;
     }
+
+    public DateTime getArtStartDate() {
+        return artStartDate;
+    }
+
+    public void setArtStartDate(DateTime artStartDate) {
+        this.artStartDate = artStartDate;
+    }
+    
+    
     
    
 }

@@ -82,7 +82,7 @@ public class MainFrame extends javax.swing.JFrame {
               
               if(MainFrame.currCount.get()+10 > MainFrame.fileCount)
               {
-                  System.out.println(MainFrame.currCount.get());
+                  ///System.out.println(MainFrame.currCount.get());
                    MainFrame.this.setProgress(MainFrame.currCount.get());
                   
               }

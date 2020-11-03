@@ -21,7 +21,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import org.joda.time.DateTime;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -328,7 +330,12 @@ public class VisitDAO {
              {
                  
                  //validate the obs
-                 Validator.ValidateObs(obsList.get(k));
+                 //ensure that this obs has an encounter before doing this
+                 Map<String, Map<String, JSONObject>> patientEncounterValidator = ContainerController.encounterValidationData.get(obsList.get(k).getPatientUuid());
+                 Map<String, JSONObject> encounterValidator = patientEncounterValidator.get(obsList.get(k).getPatientUuid()+"__"+obsList.get(k).getEncounterUuid());
+                 if(encounterValidator != null){
+                     Validator.ValidateObs(obsList.get(k));
+                 }
                  query.append("(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?),");
              }
         }

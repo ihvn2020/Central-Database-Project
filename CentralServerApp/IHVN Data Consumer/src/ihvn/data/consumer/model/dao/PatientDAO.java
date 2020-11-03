@@ -329,7 +329,13 @@ public class PatientDAO {
                     stmt.setString(index++, allRadet.get(i).getCurrentSecondLineRegimen());
                     stmt.setString(index++, (allRadet.get(i).getCurrentSecondLineRegimenDate() != null) ? allRadet.get(i).getCurrentSecondLineRegimenDate().toString("yyyy-MM-dd") : null);
                     stmt.setString(index++, allRadet.get(i).getPregnancyStatus());
-                    stmt.setDouble(index++, allRadet.get(i).getCurrentViralLoad());
+                    
+                    
+                    if(allRadet.get(i).getCurrentViralLoad() > -1) 
+                        stmt.setDouble(index++, allRadet.get(i).getCurrentViralLoad() ); 
+                    else
+                        stmt.setNull(index++, java.sql.Types.DOUBLE);
+                    
                     stmt.setString(index++, (allRadet.get(i).getViralLoadSampleCollectionDate() != null) ? allRadet.get(i).getViralLoadSampleCollectionDate().toString("yyyy-MM-dd") : null);
                     stmt.setString(index++, (allRadet.get(i).getViralLoadReportedDate() != null) ?allRadet.get(i).getViralLoadReportedDate().toString("yyyy-MM-dd") : null);
                     stmt.setString(index++, allRadet.get(i).getViralLoadIndication());

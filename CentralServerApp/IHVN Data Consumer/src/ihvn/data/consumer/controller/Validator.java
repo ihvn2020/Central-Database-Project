@@ -799,10 +799,12 @@ public class Validator {
     
     public static void saveVLindication(ObsType obs)
     {
+        
         if(ContainerController.lookupData.get(obs.getPatientUuid()).get("vlIndicationDate") == null)//this is the first time
         {
-            //we will use this as the initial and current regimen line until another comes through
-           ContainerController.allRadet.get(obs.getPatientUuid()).setViralLoadIndication(obs.getValueText());
+            System.out.println("VL INdication "+obs.getVariableValue());
+           //we will use this as the initial and current regimen line until another comes through
+           ContainerController.allRadet.get(obs.getPatientUuid()).setViralLoadIndication(obs.getVariableValue());
            ContainerController.lookupData.get(obs.getPatientUuid()).put("vlIndicationDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
         }
         else{
@@ -810,7 +812,7 @@ public class Validator {
              if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), currVlDate))//then use this one
              {
                  ContainerController.lookupData.get(obs.getPatientUuid()).put("vlIndicationDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
-                 ContainerController.allRadet.get(obs.getPatientUuid()).setViralLoadIndication(obs.getValueText());
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setViralLoadIndication(obs.getVariableValue());
              }
         }
     }
@@ -1020,7 +1022,8 @@ public class Validator {
             
             if(list.indexOf(obs.getValueCoded()) > -1)
             {
-                encounterValidator.remove(Constant.ADULT_PED_REGIMEN_LINE_MISSING);
+                //if(encounterValidator.containsKey(Constant.ADULT_PED_REGIMEN_LINE_MISSING))
+                    encounterValidator.remove(Constant.ADULT_PED_REGIMEN_LINE_MISSING);
                // ContainerController.encounterValidationData.put(obs.getPatientUuid()+"__"+obs.getEncounterUuid(), encounterValidator); 
                 
                //we can collect the intial and current regimen line regimen
@@ -1118,7 +1121,7 @@ public class Validator {
         JSONObject patientLookupData = ContainerController.lookupData.get(obs.getPatientUuid());
         JSONObject obj = (JSONObject) patientLookupData.get("duration");
         JSONObject groupObj = (JSONObject)obj.get(obs.getEncounterUuid()+"__"+obs.getObsGroupId());
-        System.out.println("drug regi and duration "+groupObj.get("regimen")+"__"+groupObj.get("drugDuration"));
+        //System.out.println("drug regi and duration "+groupObj.get("regimen")+"__"+groupObj.get("drugDuration"));
         if(groupObj.containsKey("regimen") && groupObj.containsKey("drugDuration"))
         {
             //get the validation and validate

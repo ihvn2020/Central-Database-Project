@@ -42,7 +42,7 @@ public class Radet {
    private String currentSecondLineRegimen;
    private DateTime currentSecondLineRegimenDate;
    private String pregnancyStatus;
-   private double currentViralLoad;
+   private double currentViralLoad = -1;
    private DateTime viralLoadSampleCollectionDate;
    private DateTime viralLoadReportedDate;
    private String viralLoadIndication;

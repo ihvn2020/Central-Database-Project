@@ -276,7 +276,7 @@ public class ContainerController {
          ContainerController.encounterValidationData.remove(patientUUID);
           
          //lets even see how many validation data we have at this point
-        System.out.println("Patient Error list "+errorList.size());
+       // System.out.println("Patient Error list "+errorList.size());
         //lets save the error
         ErrorDAO.saveErrors(patientUUID, datimId, messageUUID, errorList);
         

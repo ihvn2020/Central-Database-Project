@@ -32,6 +32,8 @@ public class Database {
 	//public static DBConnection openmrsConn2 = null;
 	
 	public static ConnectionPool connectionPool;
+        
+        
 	
 	/*public static void initConnection(DBConnection openmrsConn) {
             try {
@@ -68,7 +70,7 @@ public class Database {
 
                  
                     Class.forName(className);
-                    connectionPool = new ConnectionPool(className, connString, username, password, 20, 50, true);
+                    connectionPool = new ConnectionPool(className, connString, username, password, 1, 1, true);
 
             }
             catch (Exception ex) {

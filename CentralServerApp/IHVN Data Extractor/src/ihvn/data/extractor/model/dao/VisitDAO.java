@@ -429,7 +429,7 @@ public class VisitDAO extends MasterDAO {
             //stmt.setFetchSize(Integer.MIN_VALUE);
             ps=con.prepareStatement(sql_text);
             ps.setInt(1, patientID);
-            rs = ps.executeQuery(sql_text);
+            rs = ps.executeQuery();
             while (rs.next()) {
                 lastModifiedDate = rs.getDate("most_recent");
             }
@@ -456,7 +456,7 @@ public class VisitDAO extends MasterDAO {
             //stmt.setFetchSize(Integer.MIN_VALUE);
             ps=con.prepareStatement(sql_text);
             ps.setInt(1, patientID);
-            rs = ps.executeQuery(sql_text);
+            rs = ps.executeQuery();
             while (rs.next()) {
                 lastModifiedDate = rs.getDate("most_recent");
             }
@@ -483,7 +483,7 @@ public class VisitDAO extends MasterDAO {
             //stmt.setFetchSize(Integer.MIN_VALUE);
             ps=con.prepareStatement(sql_text);
             ps.setInt(1, patientID);
-            rs = ps.executeQuery(sql_text);
+            rs = ps.executeQuery();
             while (rs.next()) {
                 lastModifiedDate = rs.getDate("most_recent");
             }

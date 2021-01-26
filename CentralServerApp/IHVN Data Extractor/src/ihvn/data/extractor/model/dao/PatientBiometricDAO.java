@@ -35,7 +35,7 @@ public class PatientBiometricDAO {
             //  DBConnection connResult = Utils.getNmrsConnectionDetails();
             //connection = DriverManager.getConnection(connResult.getUrl(), connResult.getUsername(), connResult.getPassword());
             statement = con.createStatement();//Database.getConnection().createStatement();
-            String sqlStatement = ("SELECT patient_id, template, biometricinfo_id, imageHeight, imageWidth, imageDPI, imageQuality, serialNumber, model, manufacturer,  fingerPosition, date_created,creator FROM biometricinfo WHERE patient_Id = " + id);
+            String sqlStatement = ("SELECT patient_id, COALESCE(template,CONVERT(new_template USING utf8)) as template, biometricinfo_id, imageHeight, imageWidth, imageDPI, imageQuality, serialNumber, model, manufacturer,  fingerPosition, date_created,creator FROM biometricinfo WHERE patient_Id = " + id);
             result = statement.executeQuery(sqlStatement);
 
             XMLGregorianCalendar dataCaptured = null;

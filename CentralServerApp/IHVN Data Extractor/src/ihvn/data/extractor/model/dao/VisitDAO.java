@@ -437,7 +437,7 @@ public class VisitDAO extends MasterDAO {
         } catch (SQLException ex) {
             handleException(ex);
         } finally {
-            cleanUp(rs, stmt, con);
+            cleanUp(rs, ps, con);
         }
         return lastModifiedDate;
     }

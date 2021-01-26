@@ -24,6 +24,7 @@ import ihvn.data.extractor.model.xml.PatientIdentifierType;
 import ihvn.data.extractor.model.xml.PatientProgramType;
 import ihvn.data.extractor.model.xml.VisitType;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -215,7 +216,17 @@ public class ContainerController {
         */
         dateList.add(pidao.getPatientIdentifierTimestamp(patientID));
         dateList.add(prgDao.getPatientProgramTimestamp(patientID));
+        dateList.removeAll(Collections.singletonList(null));
         lastUpdateTimestamp=Collections.max(dateList);
+        if(lastUpdateTimestamp==null){
+            try{
+            lastUpdateTimestamp=new SimpleDateFormat("yyyyMMdd").parse("19900101");
+            }catch(ParseException pe)
+            {
+                pe.printStackTrace();
+            }
+        }
+        
         
         
         return lastUpdateTimestamp;

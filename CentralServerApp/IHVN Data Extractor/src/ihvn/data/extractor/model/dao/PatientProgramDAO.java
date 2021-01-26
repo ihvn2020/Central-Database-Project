@@ -8,17 +8,19 @@ package ihvn.data.extractor.model.dao;
 import ihvn.data.extractor.model.xml.PatientIdentifierType;
 import ihvn.data.extractor.model.xml.PatientProgramType;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  *
  * @author rsuth
  */
-public class PatientProgramDAO {
+public class PatientProgramDAO extends MasterDAO {
      public List<PatientProgramType> getAllPatientPrograms(int patientId)
     {
         String query = "SELECT patient_program.*, program.name AS program_name FROM patient_program "
@@ -97,5 +99,28 @@ public class PatientProgramDAO {
         
         return patientProgram;
         
+    }
+     public Date getPatientProgramTimestamp(int patientID){
+        Date lastModifiedDate = null;
+        String sql_text = "select MAX(GREATEST(patient_program.date_created,COALESCE(patient_program.date_changed,0),COALESCE(patient_program.date_voided,0))) as most_recent from patient_program where patient_id=?";
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = Database.connectionPool.getConnection();
+            ps = con.prepareStatement(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                lastModifiedDate = rs.getDate("most_recent");
+            }
+            cleanUp(rs, stmt, con);
+        } catch (SQLException ex) {
+            handleException(ex);
+        } finally {
+            cleanUp(rs, stmt, con);
+        }
+        return lastModifiedDate;
     }
 }

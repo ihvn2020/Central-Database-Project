@@ -14,7 +14,7 @@ import java.sql.Statement;
  *
  * @author rsuth
  */
-public class FacilityDAO {
+public class FacilityDAO extends MasterDAO {
     
     
     public static String getGlobalProperty(String propertyName) {

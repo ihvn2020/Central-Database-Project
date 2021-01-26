@@ -5,8 +5,10 @@
  */
 package ihvn.data.extractor.controller;
 
+import ihvn.data.extractor.model.dao.MasterDAO;
 import ihvn.data.extractor.model.dao.Misc;
 import ihvn.data.extractor.model.dao.PatientBiometricDAO;
+import ihvn.data.extractor.model.dao.PatientDAO;
 import ihvn.data.extractor.model.dao.PatientIdentifierDAO;
 import ihvn.data.extractor.model.dao.PatientProgramDAO;
 import ihvn.data.extractor.model.dao.VisitDAO;
@@ -24,6 +26,7 @@ import ihvn.data.extractor.model.xml.VisitType;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +65,7 @@ public class ContainerController {
         messageHeader.setMessageStatusCode("EXPORTED");
         messageHeader.setMessageUniqueID(UUID.randomUUID().toString());
         messageHeader.setMessageSource("NMRS");
+        messageHeader.setTouchTime(Misc.getXMLdateTime(buildTimestamp()));
         return messageHeader;
     }
 
@@ -177,6 +181,44 @@ public class ContainerController {
         List<PatientBiometricType> allBiometrics = biometricObj.getPatientBiometric(Integer.parseInt(patientDetails.get("patientId")));
 
         return allBiometrics;
+    }
+    private Date buildTimestamp(){
+        MasterDAO dao=new PatientDAO();
+        PatientDAO pdao=new PatientDAO();
+        VisitDAO vdao=new VisitDAO();
+        PatientBiometricDAO bdao=new PatientBiometricDAO();
+        PatientIdentifierDAO pidao=new PatientIdentifierDAO();
+        PatientProgramDAO prgDao=new PatientProgramDAO();
+        Date lastUpdateTimestamp=null;
+        List<Date> dateList=new ArrayList<Date>();
+        int patientID=Integer.parseInt(patientDetails.get("patientId"));
+        /*
+           This section of the code checks if there is a change in any of the tables
+           patient,person,person_address,person_name
+        */
+        
+        dateList.add(pdao.getPatientTimestamp(patientID));
+        dateList.add(pdao.getPersonAddressTimestamp(patientID));
+        dateList.add(pdao.getPersonNameTimestamp(patientID));
+        dateList.add(pdao.getPersonTimestamp(patientID));
+        
+        /*
+          This section of the code checks if there is change in
+          obs, encounter and visit
+        */
+        dateList.add(vdao.getEncounterTimestamp(patientID));
+        dateList.add(vdao.getObsTimestamp(patientID));
+        dateList.add(vdao.getVisitTimestamp(patientID));
+        
+        /*
+          Check if there is a change in identifier and program
+        */
+        dateList.add(pidao.getPatientIdentifierTimestamp(patientID));
+        dateList.add(prgDao.getPatientProgramTimestamp(patientID));
+        lastUpdateTimestamp=Collections.max(dateList);
+        
+        
+        return lastUpdateTimestamp;
     }
 
     //build patient programs

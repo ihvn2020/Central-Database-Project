@@ -11,18 +11,20 @@ import ihvn.data.extractor.model.xml.ObsType;
 import ihvn.data.extractor.model.xml.VisitType;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
  *
  * @author rsuth
  */
-public class VisitDAO {
+public class VisitDAO extends MasterDAO {
     
     private Integer[] confidentialConcepts={159635};//Phone no(159635)
     private List<Integer> confidentialConceptsList=new ArrayList<Integer>(Arrays.asList(confidentialConcepts));
@@ -412,5 +414,85 @@ public class VisitDAO {
 
         return obsType;
 
+    }
+    public Date getVisitTimestamp(int patientID) {
+        Date lastModifiedDate = null;
+        String sql_text = "select MAX(GREATEST(visit.date_created,COALESCE(visit.date_changed,0),COALESCE(visit.date_voided,0))) as most_recent from visit where patient_id=?";
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        PreparedStatement ps=null;
+        try {
+            con = Database.connectionPool.getConnection();
+            //stmt = Database.conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
+            ps=con.prepareStatement(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery(sql_text);
+            while (rs.next()) {
+                lastModifiedDate = rs.getDate("most_recent");
+            }
+            cleanUp(rs, stmt, con);
+        } catch (SQLException ex) {
+            handleException(ex);
+        } finally {
+            cleanUp(rs, stmt, con);
+        }
+        return lastModifiedDate;
+    }
+    
+    public Date getEncounterTimestamp(int patientID) {
+        Date lastModifiedDate = null;
+        String sql_text = "select MAX(GREATEST(encounter.date_created,COALESCE(encounter.date_changed,0),COALESCE(encounter.date_voided,0))) as most_recent from encounter where patient_id=?";
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        PreparedStatement ps=null;
+        try {
+            con = Database.connectionPool.getConnection();
+            //stmt = Database.conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
+            ps=con.prepareStatement(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery(sql_text);
+            while (rs.next()) {
+                lastModifiedDate = rs.getDate("most_recent");
+            }
+            cleanUp(rs, stmt, con);
+        } catch (SQLException ex) {
+            handleException(ex);
+        } finally {
+            cleanUp(rs, stmt, con);
+        }
+        return lastModifiedDate;
+    }
+    
+    public Date getObsTimestamp(int patientID) {
+        Date lastModifiedDate = null;
+        String sql_text = "select MAX(GREATEST(obs.date_created,COALESCE(obs.date_voided,0))) as most_recent from obs where person_id=?";
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        PreparedStatement ps=null;
+        try {
+            con = Database.connectionPool.getConnection();
+            //stmt = Database.conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
+            ps=con.prepareStatement(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery(sql_text);
+            while (rs.next()) {
+                lastModifiedDate = rs.getDate("most_recent");
+            }
+            cleanUp(rs, stmt, con);
+        } catch (SQLException ex) {
+            handleException(ex);
+        } finally {
+            cleanUp(rs, stmt, con);
+        }
+        return lastModifiedDate;
     }
 }

@@ -7,10 +7,12 @@ package ihvn.data.extractor.model.dao;
 
 import ihvn.data.extractor.model.xml.PatientBiometricType;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -19,7 +21,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *
  * @author rsuth
  */
-public class PatientBiometricDAO {
+public class PatientBiometricDAO extends MasterDAO{
     
     
     public List<PatientBiometricType> getPatientBiometric(int patientId) {
@@ -67,18 +69,34 @@ public class PatientBiometricDAO {
                 e.printStackTrace();
         }
         finally {
-                //cleanUp(resultSet, pStatement);
+             
 
-            try {
-                    result.close();
-                    statement.close();
-                    Database.connectionPool.free(con);
-            }
-            catch (SQLException ex) {
-                ex.printStackTrace();
-                    //Logger.getLogger(PatientDao.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            cleanUp(result, statement, con);
+            
         }
         return allPatientBiometric;
+    }
+    public Date getBiometricTimestamp(int patientID){
+        Date lastModifiedDate = null;
+        String sql_text = "select MAX(biometricinfo.date_created) as most_recent from biometricinfo where patient_Id=?";
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = Database.connectionPool.getConnection();
+            ps = con.prepareStatement(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                lastModifiedDate = rs.getDate("most_recent");
+            }
+            cleanUp(rs, stmt, con);
+        } catch (SQLException ex) {
+            handleException(ex);
+        } finally {
+            cleanUp(rs, stmt, con);
+        }
+        return lastModifiedDate;
     }
 }

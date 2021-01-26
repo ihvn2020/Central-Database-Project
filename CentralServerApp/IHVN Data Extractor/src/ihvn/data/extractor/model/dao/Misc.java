@@ -105,6 +105,11 @@ public class Misc {
         }
         return cal;
     }
+    public static String formatDate(Date date){
+        String dateString="";
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmss");
+        return df.format(date);
+    }
     
     //zip a folder 
    

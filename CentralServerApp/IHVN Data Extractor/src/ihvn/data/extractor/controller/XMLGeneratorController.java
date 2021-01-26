@@ -5,6 +5,7 @@
  */
 package ihvn.data.extractor.controller;
 
+import ihvn.data.extractor.model.dao.Misc;
 import ihvn.data.extractor.model.dao.PatientDAO;
 import ihvn.data.extractor.model.xml.Container;
 import ihvn.data.extractor.view.MainFrame;
@@ -162,15 +163,19 @@ public class XMLGeneratorController {
     private void saveContainerToXMLFile(Container container)
     {
         
-       
+        File file=null;
         Marshaller marshaller = null;
         try {
             marshaller = MainController.jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            String touchTimeString=Misc.formatDate(container.getMessageHeader().getTouchTime().toGregorianCalendar().getTime());
+            file=new File(this.outputLocation+"/"+container.getMessageData().getDemographics().getPatientUuid()+"_"+touchTimeString+"_patient.xml");
             //marshaller.marshal(container, new File("/home/rsuth/Documents/xmls/"+container.getMessageData().getDemographics().getPatientUUID()+"_patient.xml"));
-            String fileName=new File(this.outputLocation+"/"+container.getMessageData().getDemographics().getPatientUuid()+"_patient.xml").getName();
+            //String fileName=new File(this.outputLocation+"/"+container.getMessageData().getDemographics().getPatientUuid()+"_"+touchTimeString+"_patient.xml").getName();
+            String fileName=file.getName();
             container.getMessageHeader().setFileName(fileName);
-            marshaller.marshal(container, new File(this.outputLocation+"/"+container.getMessageData().getDemographics().getPatientUuid()+"_patient.xml"));
+            //marshaller.marshal(container, new File(this.outputLocation+"/"+container.getMessageData().getDemographics().getPatientUuid()+"_patient.xml"));
+            marshaller.marshal(container, file);
             marshaller = null;
             container = null;
             

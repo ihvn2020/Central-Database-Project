@@ -12,20 +12,22 @@ import ihvn.data.extractor.model.xml.ObsType;
 import ihvn.data.extractor.model.xml.VisitType;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
  *
  * @author rsuth
  */
-public class VisitDAO {
+public class VisitDAO extends MasterDAO{
 
-    private Integer[] confidentialConcepts={159635};//Phone no(159635)
+     private Integer[] confidentialConcepts={159635};//Phone no(159635)
     private List<Integer> confidentialConceptsList=new ArrayList<Integer>(Arrays.asList(confidentialConcepts));
     
     public List<VisitType> getAllVisits(int patientId, String patient_uuid, String datim_id) {
@@ -42,7 +44,7 @@ public class VisitDAO {
             con = Database.connectionPool.getConnection();
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 
-            //stmt.setFetchSize(Integer.MIN_VALUE);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 VisitType visit = buildVisit(rs);
@@ -87,7 +89,7 @@ public class VisitDAO {
             con = Database.connectionPool.getConnection();
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 
-            //stmt.setFetchSize(Integer.MIN_VALUE);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 encounterProvider = buildEncounterProvider(rs);
@@ -99,7 +101,7 @@ public class VisitDAO {
             //rs.close();
             //stmt.close();
             return encounterProviderTypesList;
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             //screen.updateStatus(ex.getMessage());
             ex.printStackTrace();
             return null;
@@ -141,7 +143,7 @@ public class VisitDAO {
             con = Database.connectionPool.getConnection();
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 
-            //stmt.setFetchSize(Integer.MIN_VALUE);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 encounter = buildEncounter(rs);
@@ -153,7 +155,7 @@ public class VisitDAO {
             //rs.close();
             //stmt.close();
             return allEncounters;
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             //screen.updateStatus(ex.getMessage());
             ex.printStackTrace();
             return null;
@@ -177,7 +179,7 @@ public class VisitDAO {
             con = Database.connectionPool.getConnection();
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 
-            //stmt.setFetchSize(Integer.MIN_VALUE);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 encounter = buildEncounter(rs);
@@ -229,13 +231,12 @@ public class VisitDAO {
         //System.out.println("Connection list "+Database.connectionPool.totalConnections());
         try {
             con = Database.connectionPool.getConnection();
-            //ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-            //stmt.setFetchSize(Integer.MIN_VALUE);
-            //stmt.setFetchSize(Integer.MAX_VALUE);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 obs = buildObs(rs);
+                
                 obs.setDatimId(datim_id);
                 obs.setPatientUuid(patient_uuid);
                 allObs.add(obs);
@@ -243,17 +244,12 @@ public class VisitDAO {
             //rs.close();
             //stmt.close();
             return allObs;
-        } catch (Exception ex) {
-            //screen.updateStatusfree(ex.getMessage());
+        } catch (SQLException ex) {
+            //screen.updateStatus(ex.getMessage());
             ex.printStackTrace();
-            
-            System.out.println("started again");
-            return getAllObsByPatient(patient_id, patient_uuid, datim_id);
-            //return allObs;
+            return null;
 
-        }
-        
-        finally {
+        } finally {
             cleanUp(rs, stmt, con);
         }
     }
@@ -270,7 +266,7 @@ public class VisitDAO {
             con = Database.connectionPool.getConnection();
             stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 
-            //stmt.setFetchSize(Integer.MIN_VALUE);
+            stmt.setFetchSize(Integer.MIN_VALUE);
             rs = stmt.executeQuery(query.toString());
             while (rs.next()) {
                 ObsType obs = buildObs(rs);
@@ -386,21 +382,20 @@ public class VisitDAO {
         obsType.setObsDatetime(Misc.getXMLdateTime(rs.getDate("obs_datetime")));
         obsType.setObsGroupId(rs.getInt("obs_group_id"));
         obsType.setValueCoded(rs.getInt("value_coded"));
-        obsType.setValueDatetime(Misc.getXMLdateTime(rs.getDate("obs_datetime")));
+        obsType.setValueDatetime(Misc.getXMLdateTime(rs.getDate("value_datetime")));
         obsType.setValueNumeric(BigDecimal.valueOf(rs.getDouble("value_numeric")));
-        //obsType.setValueText(rs.getString("value_text"));
         if(confidentialConceptsList.contains(obsType.getConceptId())){
             obsType.setValueText(Misc.encrypt(rs.getString("value_text")));
         }else{
             obsType.setValueText(rs.getString("value_text"));
         }
+        
         obsType.setEncounterUuid(rs.getString("encounter_uuid"));
         obsType.setCreator(rs.getInt("creator"));
         obsType.setDateCreated(Misc.getXMLdateTime(rs.getDate("date_created")));
         obsType.setPmmForm(rs.getString("pmm_form"));
         obsType.setFormId(rs.getInt("form_id"));
         obsType.setVariableName(rs.getString("variable_name"));
-        //obsType.setVariableValue(rs.getString("variable_value"));
         if(confidentialConceptsList.contains(obsType.getConceptId())){
             obsType.setVariableValue(Misc.encrypt(rs.getString("variable_value")));
         }else{
@@ -420,5 +415,85 @@ public class VisitDAO {
 
         return obsType;
 
+    }
+    public Date getVisitTimestamp(int patientID) {
+        Date lastModifiedDate = null;
+        String sql_text = "select MAX(GREATEST(visit.date_created,COALESCE(visit.date_changed,0),COALESCE(visit.date_voided,0))) as most_recent from visit where patient_id=?";
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        PreparedStatement ps=null;
+        try {
+            con = Database.connectionPool.getConnection();
+            //stmt = Database.conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
+            ps=con.prepareStatement(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                lastModifiedDate = rs.getDate("most_recent");
+            }
+            cleanUp(rs, ps, con);
+        } catch (SQLException ex) {
+            handleException(ex);
+        } finally {
+            cleanUp(rs, ps, con);
+        }
+        return lastModifiedDate;
+    }
+    
+    public Date getEncounterTimestamp(int patientID) {
+        Date lastModifiedDate = null;
+        String sql_text = "select MAX(GREATEST(encounter.date_created,COALESCE(encounter.date_changed,0),COALESCE(encounter.date_voided,0))) as most_recent from encounter where patient_id=?";
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        PreparedStatement ps=null;
+        try {
+            con = Database.connectionPool.getConnection();
+            //stmt = Database.conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
+            ps=con.prepareStatement(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                lastModifiedDate = rs.getDate("most_recent");
+            }
+            cleanUp(rs, ps, con);
+        } catch (SQLException ex) {
+            handleException(ex);
+        } finally {
+            cleanUp(rs, ps, con);
+        }
+        return lastModifiedDate;
+    }
+    
+    public Date getObsTimestamp(int patientID) {
+        Date lastModifiedDate = null;
+        String sql_text = "select MAX(GREATEST(obs.date_created,COALESCE(obs.date_voided,0))) as most_recent from obs where person_id=?";
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        PreparedStatement ps=null;
+        try {
+            con = Database.connectionPool.getConnection();
+            //stmt = Database.conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
+            ps=con.prepareStatement(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                lastModifiedDate = rs.getDate("most_recent");
+            }
+            cleanUp(rs, ps, con);
+        } catch (SQLException ex) {
+            handleException(ex);
+        } finally {
+            cleanUp(rs, ps, con);
+        }
+        return lastModifiedDate;
     }
 }

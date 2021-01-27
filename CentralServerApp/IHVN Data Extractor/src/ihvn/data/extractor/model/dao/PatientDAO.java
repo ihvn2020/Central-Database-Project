@@ -7,10 +7,12 @@ package ihvn.data.extractor.model.dao;
 
 import ihvn.data.extractor.model.xml.DemographicsType;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +21,10 @@ import java.util.Map;
  *
  * @author rsuth
  */
-public class PatientDAO {
+public class PatientDAO extends MasterDAO {
 
     public int getTotalPatients() {
-        String query = "SELECT COUNT(patient_id) AS count  FROM patient JOIN  person ON (person.person_id=patient.patient_id) where patient.voided=0";
+        String query = "SELECT COUNT(patient_id) AS count  FROM patient where patient.voided=0";
         //String query = "SELECT COUNT(obs_id) AS count  FROM obs ";
         Statement stmt = null;
         ResultSet rs = null;
@@ -60,7 +62,7 @@ public class PatientDAO {
         query += " LEFT JOIN person_attribute ON  person_attribute.person_id=person.person_id AND person_attribute.person_attribute_type_id=8 ";
         //query += " WHERE person.voided=0  AND person.person_id IN (SELECT person_id FROM obs WHERE obs_datetime > '"+lastDate+"')LIMIT "+offset+", "+limit;
         //query += " WHERE person.voided=0 AND person.person_id=14121 LIMIT "+offset+", "+limit;  
-        query += " WHERE person.voided=0 GROUP BY patient.patient_id LIMIT " + offset + ", " + limit+" ";
+        query += " WHERE person.voided=0 GROUP BY person.person_id LIMIT " + offset + ", " + limit+"  ";
 
         Statement stmt = null;
         ResultSet rs = null;
@@ -115,16 +117,106 @@ public class PatientDAO {
             cleanUp(rs, stmt, con);
         }
     }
-    public void handleException(Exception ex){
-        ex.printStackTrace();
-    }
-    public void cleanUp(ResultSet rs, Statement stmt, Connection con){
-        try{
-            rs.close();
-            stmt.close();
-            Database.connectionPool.free(con);
-        }catch(Exception ex){
+
+    
+    public Date getPersonNameTimestamp(int patientID){
+        Date lastModifiedDate = null;
+        String sql_text = "select MAX(GREATEST(person_name.date_created,COALESCE(person_name.date_changed,0),COALESCE(person_name.date_voided,0))) as most_recent from person_name where person_id=?";
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = Database.connectionPool.getConnection();
+            ps = con.prepareStatement(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                lastModifiedDate = rs.getDate("most_recent");
+            }
+            cleanUp(rs, ps, con);
+        } catch (SQLException ex) {
             handleException(ex);
+        } finally {
+            cleanUp(rs, ps, con);
         }
+        return lastModifiedDate;
     }
+    public Date getPersonAddressTimestamp(int patientID){
+        Date lastModifiedDate = null;
+        String sql_text = "select MAX(GREATEST(person_address.date_created,COALESCE(person_address.date_changed,0),COALESCE(person_address.date_voided,0))) as most_recent from person_address where person_id=?";
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = Database.connectionPool.getConnection();
+            ps = con.prepareStatement(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                lastModifiedDate = rs.getDate("most_recent");
+            }
+            cleanUp(rs, ps, con);
+        } catch (SQLException ex) {
+            handleException(ex);
+        } finally {
+            cleanUp(rs, ps, con);
+        }
+        return lastModifiedDate;
+    }
+   
+    public Date getPatientTimestamp(int patientID) {
+        Date lastModifiedDate = null;
+        String sql_text = "select MAX(GREATEST(patient.date_created,COALESCE(patient.date_changed,0),COALESCE(patient.date_voided,0))) as most_recent from patient where patient_id=?";
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        PreparedStatement ps = null;
+        try {
+            con = Database.connectionPool.getConnection();
+            ps = con.prepareStatement(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                lastModifiedDate = rs.getDate("most_recent");
+            }
+            cleanUp(rs, ps, con);
+        } catch (SQLException ex) {
+            handleException(ex);
+        } finally {
+            cleanUp(rs, ps, con);
+        }
+        return lastModifiedDate;
+    }
+
+    
+
+    public Date getPersonTimestamp(int patientID) {
+        Date lastModifiedDate = null;
+        String sql_text = "select MAX(GREATEST(person.date_created,COALESCE(person.date_changed,0),COALESCE(person.date_voided,0))) as most_recent from person where person_id=?";
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        PreparedStatement ps=null;
+        try {
+            con = Database.connectionPool.getConnection();
+            //stmt = Database.conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+            //stmt.setFetchSize(Integer.MIN_VALUE);
+            ps=con.prepareStatement(sql_text);
+            ps.setInt(1, patientID);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                lastModifiedDate = rs.getDate("most_recent");
+            }
+            cleanUp(rs, ps, con);
+        } catch (SQLException ex) {
+            handleException(ex);
+        } finally {
+            cleanUp(rs, ps, con);
+        }
+        return lastModifiedDate;
+    }
+
 }

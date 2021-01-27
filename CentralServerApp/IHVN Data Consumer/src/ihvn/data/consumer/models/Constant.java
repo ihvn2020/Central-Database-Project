@@ -110,9 +110,18 @@ public class Constant {
     public static final int DEATH_CONCEPT = 165889;
     public static final int TERMINATION_DATE = 165469;
     public static final int INH_DOSE_CONCEPT = 165080;
+    public static final int INH_START_DATE_CONCEPT = 164852;
+    public static final int INH_STOP_DATE_CONCEPT = 166096;
+    
+    public static final int TB_START_DATE_CONCEPT = 1113;
+    public static final int TB_STOP_DATE_CONCEPT = 159431;
+    
+    public static final int OTZ_START_DATE_CONCEPT = 166156;
+    public static final int OTZ_STOP_DATE_CONCEPT = 166158;
+    
     
     public static final int TB_TREATMENT_CONCEPT = 1662;
-    
+    public static final int OTZ_CONCEPT = 166156;
     
     public static final int CHILD_AGE = 7;
     

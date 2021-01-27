@@ -170,7 +170,7 @@ public class MainController {
                         String fileExtension = fileEntry.getAbsolutePath().substring(fileEntry.getAbsolutePath().lastIndexOf(".") + 1);
                         //if(fileExtension.equalsIgnoreCase("xml"))
                        // {
-                            System.out.println("processing patient "+patientCounter++);
+                            //System.out.println("processing patient "+patientCounter++);
                             XmlController xmlController = new XmlController(fileEntry);
                             xmlController.parseContainer();
                             MainFrame.currCount.getAndIncrement();
@@ -185,7 +185,7 @@ public class MainController {
                 ArrayList<Radet> radetList = new ArrayList<>(ContainerController.allRadet.values());
                 //lets save the patient and radet here
                 PatientDAO.savePatient(patientList);
-                System.out.println("Patient List:::"+patientList.size());
+                //System.out.println("Patient List:::"+patientList.size());
                 PatientDAO.saveRadet(radetList);
                 
                 //we can empty the patient list and radet list

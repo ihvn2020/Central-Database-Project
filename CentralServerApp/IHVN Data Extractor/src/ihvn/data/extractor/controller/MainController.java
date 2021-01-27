@@ -92,14 +92,15 @@ public class MainController {
         XMLGeneratorController xmlGeneratorController = new XMLGeneratorController(this.mainFrame);
         int totalPatients = patientObj.getTotalPatients();
         int limit = 200;
-        int totalPages = (int)Math.floor(totalPatients/limit);
+        int totalPages = (int)Math.ceil(totalPatients/limit);
         //some global stuff. Lets get them only once
         patientFacilityName = facilityObj.getGlobalProperty("Facility_Name");
 	datimId = facilityObj.getGlobalProperty("facility_datim_code");
         mainFrame.setTotalPatients(totalPatients);
-        for(int i=0; i<= totalPages; i++)
+        for(int i=0; i <= totalPages ; i++)
         //for(int i=0; i< 2; i++)
         {
+            //System.out.println("page count: "+i);
             xmlGeneratorController.startGenerating( this.outputLocation, i * limit, limit);
             try {
                 //if(i%)

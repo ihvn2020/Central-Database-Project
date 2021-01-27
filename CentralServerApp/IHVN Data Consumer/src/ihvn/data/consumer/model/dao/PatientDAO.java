@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -94,8 +95,8 @@ public class PatientDAO {
                 int i = 1;
                 stmt.setString(i++, patientDemo.getPatientUuid());
                 stmt.setLong(i++, patientDemo.getPatientId());
-                stmt.setString(i++,patientDemo.getFirstName());
-                stmt.setString(i++,patientDemo.getLastName());
+                stmt.setString(i++, Misc.decrypt(patientDemo.getFirstName()));
+                stmt.setString(i++,Misc.decrypt(patientDemo.getLastName()));
                 stmt.setString(i++,patientDemo.getMiddleName());
                 stmt.setString(i++,patientDemo.getGender());
                 stmt.setDate(i++, new java.sql.Date(patientDemo.getBirthdate().toGregorianCalendar().getTime().getTime()));
@@ -103,11 +104,11 @@ public class PatientDAO {
                 stmt.setInt(i++,patientDemo.getDead());
                 stmt.setDate(i++, (patientDemo.getDateChanged() != null) ? new java.sql.Date(patientDemo.getDeathDate().toGregorianCalendar().getTime().getTime()) : null);
                 stmt.setString(i++, patientDemo.getCauseOfDeath());//cause of death
-                stmt.setInt(i++,patientDemo.getCreator());
+                stmt.setInt(i++, patientDemo.getCreator());
                 stmt.setDate(i++, (patientDemo.getDateCreated() != null) ? new java.sql.Date(patientDemo.getDateCreated().toGregorianCalendar().getTime().getTime()) : null);
-                stmt.setString(i++,patientDemo.getPhoneNumber());
-                stmt.setString(i++,patientDemo.getAddress1());
-                stmt.setString(i++,patientDemo.getAddress2());
+                stmt.setString(i++, Misc.decrypt(patientDemo.getPhoneNumber()));
+                stmt.setString(i++, Misc.decrypt(patientDemo.getAddress1()));
+                stmt.setString(i++, Misc.decrypt(patientDemo.getAddress2()));
                 stmt.setString(i++,patientDemo.getCityVillage());
                 stmt.setString(i++,patientDemo.getStateProvince());
                 stmt.setString(i++,patientDemo.getCountry());
@@ -144,6 +145,97 @@ public class PatientDAO {
                 //screen.updateStatus(ex.getMessage());
                 ex.printStackTrace();
                 return patientDemo.getPatientUuid();
+        }
+        finally {
+                try {
+                        if (rs != null && stmt != null) {
+                                //rs.close();
+                                stmt.close();
+                                Database.connectionPool.free(con);
+                               // con.close();
+                        }
+
+                }
+                catch (Exception ex) {
+                        ex.printStackTrace();
+                        //Logger.getLogger(PatientDao.class.getName()).log(Level.SEVERE, null, ex);
+                }
+        }
+        
+    }
+    
+    public static List<JSONObject> getAddress()
+    {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        
+        String query = " SELECT * FROM demographics ";
+        List<JSONObject> data = new ArrayList<>();
+        try {
+                con = Database.connectionPool.getConnection();
+                stmt= con.prepareStatement(query.toString(), Statement.RETURN_GENERATED_KEYS);  
+                
+                int i = 1;
+                
+               
+                rs = stmt.executeQuery();
+                while(rs.next())
+                {
+                    String address1 = rs.getString("address1");
+                    String patientUUID = rs.getString("patient_uuid");
+                    JSONObject d = new JSONObject();
+                    d.put("address1", address1);
+                    d.put("patientUUID", patientUUID);
+                    data.add(d);
+                }
+               return data;
+        }
+        catch (SQLException ex) {
+                //screen.updateStatus(ex.getMessage());
+                ex.printStackTrace();
+                return null;
+        }
+        finally {
+                try {
+                        if (rs != null && stmt != null) {
+                                //rs.close();
+                                stmt.close();
+                                Database.connectionPool.free(con);
+                               // con.close();
+                        }
+
+                }
+                catch (Exception ex) {
+                        ex.printStackTrace();
+                        //Logger.getLogger(PatientDao.class.getName()).log(Level.SEVERE, null, ex);
+                }
+        }
+        
+    }
+    
+    
+    public static void fixAddress(String patientUUID, String address1)
+    {
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        
+        String query = " UPDATE  demographics SET address1=? WHERE patient_uuid=?";
+        try {
+                con = Database.connectionPool.getConnection();
+                stmt= con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);  
+                int index = 1;
+                stmt.setString(index++, address1);
+                stmt.setString(index++, patientUUID);
+               
+                stmt.executeUpdate();
+                
+        }
+        catch (SQLException ex) {
+                //screen.updateStatus(ex.getMessage());
+                ex.printStackTrace();
+                
         }
         finally {
                 try {
@@ -282,18 +374,18 @@ public class PatientDAO {
         ResultSet rs = null;
         Connection con = null;
         
-        StringBuilder query = new StringBuilder("INSERT INTO  radet_fact(radet_id, financial_year, financial_quarter, calendar_year, calendar_quarter, month, datim_id, patient_uuid, transfer_in_status, transfer_in_date, care_entry_point, last_pickup_date, days_of_arv_refil, initial_regimen_line, initial_first_line_regimen, initial_first_line_regimen_date, initial_second_line_regimen, initial_second_line_regimen_date, current_regimen_line, current_first_line_regimen, current_first_line_regimen_date, current_second_line_regimen, current_second_line_regimen_date, ");
-        query.append(" pregnancy_status, current_viral_load, viral_load_sample_collection_date, viral_load_reported_date, viral_load_indication, current_art_status, transfer_out_date, death_date, current_weight_kg, current_weight_date, tb_status, tb_status_date, inh_start_date, inh_stop_date, last_inh_dispensed_date, tb_treatment_start_date, tb_treatment_stop_date, last_viral_load_sample_collection_form_date, otz_start_date, otz_stop_date, art_start_date)VALUES");
+        StringBuilder query = new StringBuilder("INSERT INTO radet_fact(radet_id, financial_year, financial_quarter, calendar_year, calendar_quarter, month, datim_id, patient_uuid, transfer_in_status, transfer_in_date, care_entry_point, last_pickup_date, days_of_arv_refil, initial_regimen_line, initial_first_line_regimen, initial_first_line_regimen_date, initial_second_line_regimen, initial_second_line_regimen_date, current_regimen_line, current_first_line_regimen, current_first_line_regimen_date, current_second_line_regimen, current_second_line_regimen_date, ");
+        query.append(" pregnancy_status, current_viral_load, viral_load_sample_collection_date, viral_load_reported_date, viral_load_indication, current_art_status, transfer_out_date, death_date, current_weight_kg, current_weight_date, tb_status, tb_status_date, inh_start_date, inh_stop_date, last_inh_dispensed_date, tb_treatment_start_date, tb_treatment_stop_date, last_viral_load_sample_collection_form_date, otz_start_date, otz_stop_date, art_start_date, patient_unique_id)VALUES");
         
             for(int i=0; i<allRadet.size(); i++)
             {
-                query.append("(?,?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?),");
+                query.append("(?,?,?,?,?,?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?),");
             }
           
         query.setLength(query.length() - 1);//remove the last comma 
         query.append(" ON DUPLICATE KEY UPDATE financial_year=VALUES(financial_year), financial_quarter=VALUES(financial_quarter), calendar_year=VALUES(calendar_year), calendar_quarter=VALUES(calendar_quarter),  month=VALUES(month), datim_id=VALUES(datim_id), patient_uuid=VALUES(patient_uuid), transfer_in_status=VALUES(transfer_in_status), transfer_in_date=VALUES(transfer_in_date), art_start_date=VALUES(art_start_date),");
         query.append(" care_entry_point=VALUES(care_entry_point), last_pickup_date=VALUES(last_pickup_date), days_of_arv_refil=VALUES(days_of_arv_refil), initial_regimen_line=VALUES(initial_regimen_line), initial_first_line_regimen=VALUES(initial_first_line_regimen), initial_first_line_regimen_date=VALUES(initial_first_line_regimen_date), initial_second_line_regimen=VALUES(initial_second_line_regimen_date), current_regimen_line=VALUES(current_regimen_line), ");
-        query.append(" current_first_line_regimen=VALUES(current_first_line_regimen), current_first_line_regimen_date=VALUES(current_first_line_regimen_date), current_second_line_regimen=VALUES(current_second_line_regimen), current_second_line_regimen_date=VALUES(current_second_line_regimen_date), pregnancy_status=VALUES(pregnancy_status), current_viral_load=VALUES(current_viral_load), viral_load_sample_collection_date=VALUES(viral_load_sample_collection_date), viral_load_indication=VALUES(viral_load_indication), current_art_status=VALUES(current_art_status), transfer_out_date=VALUES(transfer_out_date), death_date=VALUES(death_date), current_weight_kg=VALUES(current_weight_kg), current_weight_date=VALUES(current_weight_date),  tb_status=VALUES(tb_status), tb_status_date=VALUES(tb_status_date), inh_start_date=VALUES(inh_start_date), inh_stop_date=VALUES(inh_stop_date), tb_treatment_start_date=VALUES(tb_treatment_start_date), tb_treatment_stop_date=VALUES(tb_treatment_stop_date), last_viral_load_sample_collection_form_date=VALUES(last_viral_load_sample_collection_form_date), otz_start_date=VALUES(otz_start_date), otz_stop_date=VALUES(otz_stop_date)");
+        query.append(" current_first_line_regimen=VALUES(current_first_line_regimen), current_first_line_regimen_date=VALUES(current_first_line_regimen_date), current_second_line_regimen=VALUES(current_second_line_regimen), current_second_line_regimen_date=VALUES(current_second_line_regimen_date), pregnancy_status=VALUES(pregnancy_status), current_viral_load=VALUES(current_viral_load), viral_load_sample_collection_date=VALUES(viral_load_sample_collection_date), viral_load_indication=VALUES(viral_load_indication), current_art_status=VALUES(current_art_status), transfer_out_date=VALUES(transfer_out_date), death_date=VALUES(death_date), current_weight_kg=VALUES(current_weight_kg), current_weight_date=VALUES(current_weight_date),  tb_status=VALUES(tb_status), tb_status_date=VALUES(tb_status_date), inh_start_date=VALUES(inh_start_date), inh_stop_date=VALUES(inh_stop_date), tb_treatment_start_date=VALUES(tb_treatment_start_date), tb_treatment_stop_date=VALUES(tb_treatment_stop_date), last_viral_load_sample_collection_form_date=VALUES(last_viral_load_sample_collection_form_date), otz_start_date=VALUES(otz_start_date), otz_stop_date=VALUES(otz_stop_date), patient_unique_id=VALUES(patient_unique_id)");
         
         try {
                 con = Database.connectionPool.getConnection();
@@ -356,8 +448,8 @@ public class PatientDAO {
                     stmt.setString(index++, (allRadet.get(i).getOtzStartDate() != null) ?allRadet.get(i).getOtzStartDate().toString("yyyy-MM-dd") : null);
                     stmt.setString(index++, (allRadet.get(i).getOtzStopDate() != null) ?allRadet.get(i).getOtzStopDate().toString("yyyy-MM-dd") : null);
                     stmt.setString(index++, (allRadet.get(i).getArtStartDate()!= null) ? allRadet.get(i).getArtStartDate().toString("yyyy-MM-dd") : null);
+                    stmt.setString(index++, allRadet.get(i).getPatientUniqueID());
                 }
-                
                 
                if(allRadet.size() > 0)
                  stmt.executeUpdate();

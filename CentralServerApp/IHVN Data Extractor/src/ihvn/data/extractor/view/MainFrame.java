@@ -176,7 +176,7 @@ public class MainFrame extends javax.swing.JFrame {
                                   //MainFrame.this.timer.purge();
 
                             }
-                         }, 5000);
+                         }, 7000);
                         System.out.println("zipping");
                         progressSetter.cancel();
                     }
@@ -622,7 +622,7 @@ public class MainFrame extends javax.swing.JFrame {
           //MainFrame.this.setProgress(MainController.counter);
           MainFrame.this.setProgress(MainController.atomicCounter.get());
 
-          if(MainController.atomicCounter.get()+1 >= MainFrame.totalPatient && MainFrame.totalPatient != 1)
+          if(MainController.atomicCounter.get()+100 >= MainFrame.totalPatient && MainFrame.totalPatient != 1)
           {
               System.out.println(MainController.counter);
               MainFrame.this.setProgress(MainFrame.totalPatient);

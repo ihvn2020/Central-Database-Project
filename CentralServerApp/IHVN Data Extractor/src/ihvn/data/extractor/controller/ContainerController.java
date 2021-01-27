@@ -5,8 +5,10 @@
  */
 package ihvn.data.extractor.controller;
 
+import ihvn.data.extractor.model.dao.MasterDAO;
 import ihvn.data.extractor.model.dao.Misc;
 import ihvn.data.extractor.model.dao.PatientBiometricDAO;
+import ihvn.data.extractor.model.dao.PatientDAO;
 import ihvn.data.extractor.model.dao.PatientIdentifierDAO;
 import ihvn.data.extractor.model.dao.PatientProgramDAO;
 import ihvn.data.extractor.model.dao.VisitDAO;
@@ -24,6 +26,7 @@ import ihvn.data.extractor.model.xml.VisitType;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -44,17 +47,17 @@ public class ContainerController {
 
     //build container
     public Container buildContainer() {
+         
         Container container = new Container();
         container.setMessageHeader(this.buildMessageHeader());
         container.setMessageData(this.buildMessageData());
-
         return container;
     }
 
     //build message header type
     private MessageHeaderType buildMessageHeader() {
 
-        MessageHeaderType messageHeader = new MessageHeaderType();
+         MessageHeaderType messageHeader = new MessageHeaderType();
         messageHeader.setFacilityDatimCode(MainController.datimId);
         messageHeader.setFacilityName(MainController.patientFacilityName);
         messageHeader.setMessageCreationDateTime(Misc.getXMLdateTime(new Date()));
@@ -62,12 +65,16 @@ public class ContainerController {
         messageHeader.setMessageStatusCode("EXPORTED");
         messageHeader.setMessageUniqueID(UUID.randomUUID().toString());
         messageHeader.setMessageSource("NMRS");
+        System.out.println("got here 1");
+        messageHeader.setTouchTime(Misc.getXMLdateTime(buildTimestamp()));
+        System.out.println("got here 2");
         return messageHeader;
     }
 
     //build message data
     private MessageDataType buildMessageData() {
         MessageDataType messageData = new MessageDataType();
+        messageData.setDemographics(this.buildDemographics());
          messageData.getVisits().addAll(this.buildVisits());
         messageData.getEncounters().addAll(this.buildEncounters());
         messageData.getObs().addAll(this.buildObs());
@@ -176,6 +183,52 @@ public class ContainerController {
         List<PatientBiometricType> allBiometrics = biometricObj.getPatientBiometric(Integer.parseInt(patientDetails.get("patientId")));
 
         return allBiometrics;
+    }
+    
+    private Date buildTimestamp(){
+       Date lastUpdateTimestamp=null;
+        try{
+            MasterDAO dao=new PatientDAO();
+            PatientDAO pdao=new PatientDAO();
+            VisitDAO vdao=new VisitDAO();
+            PatientBiometricDAO bdao=new PatientBiometricDAO();
+            PatientIdentifierDAO pidao=new PatientIdentifierDAO();
+            PatientProgramDAO prgDao=new PatientProgramDAO();
+            
+            List<Date> dateList=new ArrayList<Date>();
+            int patientID=Integer.parseInt(patientDetails.get("patientId"));
+            /*
+               This section of the code checks if there is a change in any of the tables
+               patient,person,person_address,person_name
+            */
+
+            dateList.add(pdao.getPatientTimestamp(patientID));
+            dateList.add(pdao.getPersonAddressTimestamp(patientID));
+            dateList.add(pdao.getPersonNameTimestamp(patientID));
+            dateList.add(pdao.getPersonTimestamp(patientID));
+
+            /*
+              This section of the code checks if there is change in
+              obs, encounter and visit
+            */
+            dateList.add(vdao.getEncounterTimestamp(patientID));
+            dateList.add(vdao.getObsTimestamp(patientID));
+            dateList.add(vdao.getVisitTimestamp(patientID));
+
+            /*
+              Check if there is a change in identifier and program
+            */
+            dateList.add(pidao.getPatientIdentifierTimestamp(patientID));
+            dateList.add(prgDao.getPatientProgramTimestamp(patientID));
+            lastUpdateTimestamp=Collections.max(dateList);
+        }catch(Exception e)
+        {
+            //e.printStackTrace();
+            //if for some reason, we get here, lets just set the lastUpdateTimestamp to now
+            lastUpdateTimestamp = new Date();
+        }
+        
+        return lastUpdateTimestamp;
     }
 
     //build patient programs

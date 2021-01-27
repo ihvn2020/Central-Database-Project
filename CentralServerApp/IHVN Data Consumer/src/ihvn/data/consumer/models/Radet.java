@@ -17,6 +17,7 @@ import org.joda.time.DateTime;
  */
 public class Radet {
    private int radetId;
+   private String patientUniqueID;
    private int finYear;
    private int finQuarter;
    private int calendarYear;
@@ -62,6 +63,18 @@ public class Radet {
    private DateTime otzStartDate;
    private DateTime otzStopDate;
    private DateTime artStartDate;
+
+   
+   
+    public String getPatientUniqueID() {
+        return patientUniqueID;
+    }
+
+    public void setPatientUniqueID(String patientUniqueID) {
+        this.patientUniqueID = patientUniqueID;
+    }
+   
+   
 
     /**
      * @return the radetId
@@ -697,6 +710,7 @@ public class Radet {
         Calendar today = Calendar.getInstance();
         int month = today.get(Calendar.MONTH);
         r.setMonth(month);
+        //r.setPatientUniqueID(demo.getPa);
         //r.se
         return r;
     }

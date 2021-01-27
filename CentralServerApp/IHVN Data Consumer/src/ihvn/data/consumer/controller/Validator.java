@@ -407,6 +407,7 @@ public class Validator {
                 patientValidator.remove(Constant.NO_PEPFAR_ID);
                 //lets also add the art number/pepfar id to the patient
                 ContainerController.allPatients.get(patientDemo.getPatientUuid()).setPatientUniqueID(identifiers.get(i).getIdentifier());
+                ContainerController.allRadet.get(patientDemo.getPatientUuid()).setPatientUniqueID(identifiers.get(i).getIdentifier());
             }
             if(identifiers.get(i).getIdentifierType() == 1)//omrs id
             {
@@ -631,6 +632,33 @@ public class Validator {
             Validator.saveInhDates(obs);
         }
         
+        else if(obs.getConceptId() == Constant.INH_START_DATE_CONCEPT)
+        {
+            Validator.saveInhStartDate(obs);
+        }
+        
+        else if(obs.getConceptId() == Constant.INH_STOP_DATE_CONCEPT)
+        {
+            Validator.saveInhStopDate(obs);
+        }
+        else if(obs.getConceptId() == Constant.OTZ_START_DATE_CONCEPT)
+        {
+            Validator.saveOTZStartDate(obs);
+        }
+        else if(obs.getConceptId() == Constant.OTZ_STOP_DATE_CONCEPT)
+        {
+            Validator.saveOTZStopDate(obs);
+        }
+        
+        else if(obs.getConceptId() == Constant.TB_START_DATE_CONCEPT)
+        {
+            Validator.saveTBStartDate(obs);
+        }
+        else if(obs.getConceptId() == Constant.TB_STOP_DATE_CONCEPT)
+        {
+            Validator.saveTBStopDate(obs);
+        }
+        
     }
    
     public static void saveDead(ObsType obs)
@@ -802,7 +830,7 @@ public class Validator {
         
         if(ContainerController.lookupData.get(obs.getPatientUuid()).get("vlIndicationDate") == null)//this is the first time
         {
-            System.out.println("VL INdication "+obs.getVariableValue());
+            //System.out.println("VL INdication "+obs.getVariableValue());
            //we will use this as the initial and current regimen line until another comes through
            ContainerController.allRadet.get(obs.getPatientUuid()).setViralLoadIndication(obs.getVariableValue());
            ContainerController.lookupData.get(obs.getPatientUuid()).put("vlIndicationDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
@@ -815,6 +843,43 @@ public class Validator {
                  ContainerController.allRadet.get(obs.getPatientUuid()).setViralLoadIndication(obs.getVariableValue());
              }
         }
+    }
+    
+    public static void saveOTZStartDate(ObsType obs)
+    {
+        
+        ContainerController.allRadet.get(obs.getPatientUuid()).setOtzStartDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+    }
+    
+    
+    public static void saveOTZStopDate(ObsType obs)
+    {
+        
+        ContainerController.allRadet.get(obs.getPatientUuid()).setOtzStopDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+    }
+    
+    public static void saveTBStartDate(ObsType obs)
+    {
+        
+        ContainerController.allRadet.get(obs.getPatientUuid()).setTbTreatmentStartDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+    }
+    
+    public static void saveTBStopDate(ObsType obs)
+    {
+        
+        ContainerController.allRadet.get(obs.getPatientUuid()).setTbTreatmentStartDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+    }
+    
+    public static void saveInhStartDate(ObsType obs)
+    {
+        
+        ContainerController.allRadet.get(obs.getPatientUuid()).setInhStartDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+    }
+    
+    public static void saveInhStopDate(ObsType obs)
+    {
+        
+        ContainerController.allRadet.get(obs.getPatientUuid()).setInhStopDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
     }
     
     public static void validateHIVDiagnosisDate(ObsType obs)
@@ -1243,13 +1308,16 @@ public class Validator {
     
     public static void validateDateOrdered(ObsType obs)
     {
+        
         Map<String, Map<String, JSONObject>> patientEncounterValidator = ContainerController.encounterValidationData.get(obs.getPatientUuid());
         Map<String, JSONObject> encounterValidator = patientEncounterValidator.get(obs.getPatientUuid()+"__"+obs.getEncounterUuid());
         JSONObject patientLookupData = ContainerController.lookupData.get(obs.getPatientUuid());
         JSONObject patientEncounters = (JSONObject)patientLookupData.get("encounters");
         EncounterType encounter = (EncounterType)patientEncounters.get(obs.getEncounterUuid());
+        
         if(encounter.getEncounterTypeId() == Constant.LAB_ORDER_AND_RESULT_FORM)
         {
+            
             if(obs.getValueDatetime() != null)
             {
                 patientEncounterValidator.remove(Constant.ORDER_DATE_MISSING);
@@ -1344,7 +1412,7 @@ public class Validator {
         if(ContainerController.lookupData.get(obs.getPatientUuid()).get("currWeightDate") == null)//this is the first time
         {
             //we will use this as the initial and current regimen line until another comes through
-           ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentWeightDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+           ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentWeightDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
            ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentWeight(obs.getValueNumeric().floatValue());
            ContainerController.lookupData.get(obs.getPatientUuid()).put("currWeightDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
         }
@@ -1354,8 +1422,8 @@ public class Validator {
 
              if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), currVlDate))//then use this one
              {
-                 ContainerController.lookupData.get(obs.getPatientUuid()).put("currWeightDate", new DateTime(obs.getValueDatetime().toGregorianCalendar()));
-                 ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentWeightDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("currWeightDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentWeightDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
                  ContainerController.allRadet.get(obs.getPatientUuid()).setCurrentWeight(obs.getValueNumeric().floatValue());
              }
         }
@@ -1405,7 +1473,7 @@ public class Validator {
         if(ContainerController.lookupData.get(obs.getPatientUuid()).get("tbStatusDate") == null)//this is the first time
         {
             //we will use this as the initial and current regimen line until another comes through
-           ContainerController.allRadet.get(obs.getPatientUuid()).setTbStatusDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+           ContainerController.allRadet.get(obs.getPatientUuid()).setTbStatusDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
            ContainerController.allRadet.get(obs.getPatientUuid()).setTbStatus(obs.getVariableValue());
            ContainerController.lookupData.get(obs.getPatientUuid()).put("tbStatusDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
         }
@@ -1415,8 +1483,8 @@ public class Validator {
 
              if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), currVlDate))//then use this one
              {
-                 ContainerController.lookupData.get(obs.getPatientUuid()).put("tbStatusDate", new DateTime(obs.getValueDatetime().toGregorianCalendar()));
-                 ContainerController.allRadet.get(obs.getPatientUuid()).setTbStatusDate(new DateTime(obs.getValueDatetime().toGregorianCalendar()));
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("tbStatusDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.allRadet.get(obs.getPatientUuid()).setTbStatusDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
                  ContainerController.allRadet.get(obs.getPatientUuid()).setTbStatus(obs.getVariableValue());
              }
         }
@@ -1424,34 +1492,20 @@ public class Validator {
     
     public static void saveInhDates(ObsType obs)
     {
-        if(ContainerController.lookupData.get(obs.getPatientUuid()).get("inhStartDate") == null)//this is the first time
+        if(ContainerController.lookupData.get(obs.getPatientUuid()).get("lastInhDate") == null)//this is the first time
         {
             
-           ContainerController.allRadet.get(obs.getPatientUuid()).setInhStartDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
-           ContainerController.lookupData.get(obs.getPatientUuid()).put("inhStartDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
-
-          
-           ContainerController.allRadet.get(obs.getPatientUuid()).setInhStopDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
-           ContainerController.lookupData.get(obs.getPatientUuid()).put("inhStopDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
-
+           ContainerController.allRadet.get(obs.getPatientUuid()).setLastInhDispensedDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+           ContainerController.lookupData.get(obs.getPatientUuid()).put("lastInhDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
            
         }
         else{
-             DateTime inhStartDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("inhStartDate");
-             DateTime inhStopDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("inhStopDate");
-             if(Misc.isBeforeDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), inhStartDate))
+             DateTime inhStartDate = (DateTime)ContainerController.lookupData.get(obs.getPatientUuid()).get("lastInhDate");
+             
+             if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), inhStartDate))
              {
-                 ContainerController.lookupData.get(obs.getPatientUuid()).put("inhStartDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
-                 ContainerController.allRadet.get(obs.getPatientUuid()).setInhStartDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
-                 //ContainerController.allRadet.get(obs.getPatientUuid()).setDaysOfARVRefill(d);
-             }
-
-             if(Misc.isAfterDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()), inhStopDate))
-             {
-                 ContainerController.lookupData.get(obs.getPatientUuid()).put("inhStopDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
-                 ContainerController.allRadet.get(obs.getPatientUuid()).setInhStopDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
+                 ContainerController.lookupData.get(obs.getPatientUuid()).put("lastInhDate", new DateTime(obs.getObsDatetime().toGregorianCalendar()));
                  ContainerController.allRadet.get(obs.getPatientUuid()).setLastInhDispensedDate(new DateTime(obs.getObsDatetime().toGregorianCalendar()));
-           
                  //ContainerController.allRadet.get(obs.getPatientUuid()).setDaysOfARVRefill(d);
              }
         }

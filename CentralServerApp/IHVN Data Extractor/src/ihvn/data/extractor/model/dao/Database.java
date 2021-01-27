@@ -66,7 +66,7 @@ public class Database {
         {
             try {
                     Class.forName(className);
-                    connectionPool = new ConnectionPool(className, connString, username, password, 10, 50, true);
+                    connectionPool = new ConnectionPool(className, connString, username, password, 1, 1, true);
             }
             catch (Exception ex) {
                     ex.printStackTrace();

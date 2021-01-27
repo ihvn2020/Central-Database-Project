@@ -5,6 +5,7 @@
  */
 package ihvn.data.extractor.controller;
 
+import ihvn.data.extractor.model.dao.Misc;
 import ihvn.data.extractor.model.dao.PatientDAO;
 import ihvn.data.extractor.model.xml.Container;
 import ihvn.data.extractor.view.MainFrame;
@@ -48,7 +49,10 @@ public class XMLGeneratorController {
                
 
                 List<Map<String, String>> allPatients = patientObj.getAllPatients(offset, limit);
-                System.out.println("patient counts: "+allPatients.size());
+               
+                if(offset == 3600)
+                    System.out.println("total Patients: "+offset+" total patients"+allPatients.size());
+               // System.out.println("patient counts: "+allPatients.size());
                 //set the total patients to the main frame
 
                 // ExecutorService executor = Executors.newFixedThreadPool(5);//creating a pool of 5 threads  
@@ -71,19 +75,22 @@ public class XMLGeneratorController {
                     
                    
                  
-
                 }*/
                 // executor.shutdown();  
 
+                int c = 1;
                 
                 for(Map<String,String> patient : allPatients)
                 {
                     //System.out.println("processing patient "+(MainController.counter++));
 
                     MainController.counter++;
-                    MainController.atomicCounter.incrementAndGet();
+                    int currCount = MainController.atomicCounter.incrementAndGet();
+                    //System.out.println("current count: "+currCount);
                     containerController = new ContainerController(patient);
-                   
+                    //if(offset == 3600)
+                        System.out.println("offset: "+offset+", count:"+c);
+                    c++;
                     Container container = containerController.buildContainer();
                     patient.clear();
                     XMLGeneratorController.this.saveContainerToXMLFile(container);
@@ -94,7 +101,8 @@ public class XMLGeneratorController {
                 
                 allPatients.clear();
                 allPatients = null;
-                
+                //if(offset == 3600)
+                    System.out.println("completed: "+offset+", c:"+c);
                 String res = "Finished Execution"; 
                 return res; 
             } 
@@ -154,7 +162,7 @@ public class XMLGeneratorController {
         
     }
     
-    private void saveContainerToXMLFile(Container container)
+    /*private void saveContainerToXMLFile(Container container)
     {
         
        
@@ -166,6 +174,36 @@ public class XMLGeneratorController {
             String fileName=new File(this.outputLocation+"/"+container.getMessageData().getDemographics().getPatientUuid()+"_patient.xml").getName();
             container.getMessageHeader().setFileName(fileName);
             marshaller.marshal(container, new File(this.outputLocation+"/"+container.getMessageData().getDemographics().getPatientUuid()+"_patient.xml"));
+            marshaller = null;
+            container = null;
+            
+            //marshaller.marshal(container, System.out);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+           
+        }
+    
+    }*/
+    private void saveContainerToXMLFile(Container container)
+    {
+        
+        File file=null;
+        Marshaller marshaller = null;
+        String touchTimeString,fileName,datimID="";
+        try {
+            marshaller = MainController.jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            touchTimeString=Misc.formatDate(container.getMessageHeader().getTouchTime().toGregorianCalendar().getTime());
+            datimID=container.getMessageHeader().getFacilityDatimCode();
+            file=new File(this.outputLocation+"/"+container.getMessageData().getDemographics().getPatientUuid()+"_"+touchTimeString+"_"+datimID+".xml");
+            //marshaller.marshal(container, new File("/home/rsuth/Documents/xmls/"+container.getMessageData().getDemographics().getPatientUUID()+"_patient.xml"));
+            //String fileName=new File(this.outputLocation+"/"+container.getMessageData().getDemographics().getPatientUuid()+"_"+touchTimeString+"_patient.xml").getName();
+            fileName=file.getName();
+            
+            container.getMessageHeader().setFileName(fileName);
+            //marshaller.marshal(container, new File(this.outputLocation+"/"+container.getMessageData().getDemographics().getPatientUuid()+"_patient.xml"));
+            marshaller.marshal(container, file);
             marshaller = null;
             container = null;
             

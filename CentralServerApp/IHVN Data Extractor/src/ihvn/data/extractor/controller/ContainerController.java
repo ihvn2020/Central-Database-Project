@@ -24,6 +24,7 @@ import ihvn.data.extractor.model.xml.PatientIdentifierType;
 import ihvn.data.extractor.model.xml.PatientProgramType;
 import ihvn.data.extractor.model.xml.VisitType;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -186,47 +187,60 @@ public class ContainerController {
     }
     
     private Date buildTimestamp(){
-       Date lastUpdateTimestamp=null;
-        try{
-            MasterDAO dao=new PatientDAO();
-            PatientDAO pdao=new PatientDAO();
-            VisitDAO vdao=new VisitDAO();
-            PatientBiometricDAO bdao=new PatientBiometricDAO();
-            PatientIdentifierDAO pidao=new PatientIdentifierDAO();
-            PatientProgramDAO prgDao=new PatientProgramDAO();
-            
-            List<Date> dateList=new ArrayList<Date>();
-            int patientID=Integer.parseInt(patientDetails.get("patientId"));
-            /*
-               This section of the code checks if there is a change in any of the tables
-               patient,person,person_address,person_name
-            */
-
-            dateList.add(pdao.getPatientTimestamp(patientID));
-            dateList.add(pdao.getPersonAddressTimestamp(patientID));
-            dateList.add(pdao.getPersonNameTimestamp(patientID));
-            dateList.add(pdao.getPersonTimestamp(patientID));
-
-            /*
-              This section of the code checks if there is change in
-              obs, encounter and visit
-            */
-            dateList.add(vdao.getEncounterTimestamp(patientID));
-            dateList.add(vdao.getObsTimestamp(patientID));
-            dateList.add(vdao.getVisitTimestamp(patientID));
-
-            /*
-              Check if there is a change in identifier and program
-            */
-            dateList.add(pidao.getPatientIdentifierTimestamp(patientID));
-            dateList.add(prgDao.getPatientProgramTimestamp(patientID));
-            lastUpdateTimestamp=Collections.max(dateList);
-        }catch(Exception e)
-        {
-            //e.printStackTrace();
-            //if for some reason, we get here, lets just set the lastUpdateTimestamp to now
-            lastUpdateTimestamp = new Date();
+         Date lastUpdateTimestamp=null;
+      try{
+         MasterDAO dao=new PatientDAO();
+        PatientDAO pdao=new PatientDAO();
+        VisitDAO vdao=new VisitDAO();
+        PatientBiometricDAO bdao=new PatientBiometricDAO();
+        PatientIdentifierDAO pidao=new PatientIdentifierDAO();
+        PatientProgramDAO prgDao=new PatientProgramDAO();
+       
+        List<Date> dateList=new ArrayList<Date>();
+        int patientID=Integer.parseInt(patientDetails.get("patientId"));
+        /*
+           This section of the code checks if there is a change in any of the tables
+           patient,person,person_address,person_name
+        */
+        
+        dateList.add(pdao.getPatientTimestamp(patientID));
+        dateList.add(pdao.getPersonAddressTimestamp(patientID));
+        dateList.add(pdao.getPersonNameTimestamp(patientID));
+        dateList.add(pdao.getPersonTimestamp(patientID));
+        
+        /*
+          This section of the code checks if there is change in
+          obs, encounter and visit
+        */
+        dateList.add(vdao.getEncounterTimestamp(patientID));
+        dateList.add(vdao.getObsTimestamp(patientID));
+        dateList.add(vdao.getVisitTimestamp(patientID));
+        
+        /*
+          Check if there is a change in identifier and program
+        */
+        dateList.add(pidao.getPatientIdentifierTimestamp(patientID));
+        dateList.add(prgDao.getPatientProgramTimestamp(patientID));
+        dateList.removeAll(Collections.singletonList(null));
+        lastUpdateTimestamp=Collections.max(dateList);
+        if(lastUpdateTimestamp==null){
+            try{
+            lastUpdateTimestamp=new SimpleDateFormat("yyyyMMdd").parse("19900101");
+            }catch(ParseException pe)
+            {
+                pe.printStackTrace();
+            }
         }
+      }catch(Exception e)
+      {
+          try{
+            lastUpdateTimestamp=new SimpleDateFormat("yyyyMMdd").parse("19900101");
+            }catch(ParseException pe)
+            {
+                pe.printStackTrace();
+            }
+      }
+        
         
         return lastUpdateTimestamp;
     }

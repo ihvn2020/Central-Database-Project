@@ -109,7 +109,7 @@ public class MainController {
                ex.printStackTrace();
             }
         }
-        Database.closeConnection();
+        //Database.closeConnection();
        
        
         

@@ -6,8 +6,11 @@
 package ihvn.data.extractor.view;
 
 import ihvn.data.extractor.controller.MainController;
+import ihvn.data.extractor.model.dao.Database;
 import ihvn.data.extractor.model.dao.ZipUtil;
 import java.awt.Desktop;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -31,11 +34,12 @@ import javax.swing.filechooser.FileSystemView;
 public class MainFrame extends javax.swing.JFrame {
 
     MainController mainController;
-    JFileChooser jfc ;
+    JFileChooser jfc;
     static int totalPatient = 1;
     String outPutFolder = "";
     static boolean zipping = false;
     ProgessSetter progressSetter = new ProgessSetter();
+
     /**
      * Creates new form MainFrame
      */
@@ -43,31 +47,35 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
         jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
         jfc.setDialogTitle("Choose a directory to save your file: ");
-	jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         myProgressBar.setStringPainted(true);
         myProgressBar.setValue(0);
         txtDbPassword.setVisible(false);
+        addWindowFocusListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+                Database.closeConnection();
+            }
+        });
         //jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/hvnlogo.png"))); // NOI18N
         //D:\'NMRS DEVELOPER\IHVNDataExtractor\src\main\resources\ihvnlogo.png'
         //jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("src/main/resources/images/ihvnlogo.png"))); 
-        
+
     }
-    
-    private void startSettingProgress()
-    {
+
+    private void startSettingProgress() {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(progressSetter, 100, 10);
-    
-        
+
     }
-    
-    private void zipXMlFolder()
-    {
+
+    private void zipXMlFolder() {
         System.out.println("started zipping");
-       
+
         File f = new File(this.outPutFolder);
-        String zipFileName = "IHVN_"+MainController.datimId+"_STATE DATABASE_"+new Date().getTime()+".zip";
-        ZipUtil.zipFolder(f.getParent()+File.separator+zipFileName, this.outPutFolder);
+        String zipFileName = "IHVN_" + MainController.datimId + "_STATE DATABASE_" + new Date().getTime() + ".zip";
+        ZipUtil.zipFolder(f.getParent() + File.separator + zipFileName, this.outPutFolder);
         /*File toZIP = new File(this.outPutFolder);
         if (!toZIP.exists() || toZIP.listFiles() == null || Objects.requireNonNull(toZIP.listFiles()).length == 0) {
              JOptionPane.showMessageDialog(this, "An error occcured", "Error", JOptionPane.ERROR_MESSAGE);
@@ -83,101 +91,85 @@ public class MainFrame extends javax.swing.JFrame {
             
         }*/
         //this.openFolder(); this is throwing an error for now
-        MainFrame.this.txtPatientCount.setText("Zipping complete. The zipped file is at "+f.getParent()+File.separator+zipFileName);
-        
-        
-        
-        
-       
+        MainFrame.this.txtPatientCount.setText("Zipping complete. The zipped file is at " + f.getParent() + File.separator + zipFileName);
+
     }
-    
-    private void openFolder()
-    {
+
+    private void openFolder() {
         Desktop desktop = null;
-    // on Windows, retrieve the path of the "Program Files" folder
+        // on Windows, retrieve the path of the "Program Files" folder
         File file = new File(this.outPutFolder);
 
         try {
-          if (Desktop.isDesktopSupported()) {
-             desktop = Desktop.getDesktop();
-             desktop.open(file.getParentFile());
-          }
-          else {
-             System.out.println("desktop is not supported");
-          }
-        }
-        catch (IOException e){  
+            if (Desktop.isDesktopSupported()) {
+                desktop = Desktop.getDesktop();
+                desktop.open(file.getParentFile());
+            } else {
+                System.out.println("desktop is not supported");
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    
-    public void setProgress(int patientCount)
-    {
-       
-        SwingUtilities.invokeLater(new Runnable(){
+
+    public void setProgress(int patientCount) {
+
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 //MainFrame
-               // MainFrame.this.totalPatient = patientCount;
+                // MainFrame.this.totalPatient = patientCount;
                 //MainFrame.this.txtPatientCount.setText("Processed Patient "+patientCount+" of "+MainFrame.this.totalPatient);
-                
+
                 System.out.println(MainController.atomicCounter.get());
-                System.out.println("total count"+MainFrame.totalPatient);
-                if(patientCount + 50 >= MainFrame.totalPatient && MainFrame.totalPatient != 1)//some times, the total processed files does not get to the total number of patients in the system due to errorneous data
+                System.out.println("total count" + MainFrame.totalPatient);
+                if (patientCount + 50 >= MainFrame.totalPatient && MainFrame.totalPatient != 1)//some times, the total processed files does not get to the total number of patients in the system due to errorneous data
                 {
-                    MainFrame.this.txtPatientCount.setText("Processed Patient "+MainFrame.this.totalPatient+" of "+MainFrame.totalPatient);
-                
+                    MainFrame.this.txtPatientCount.setText("Processed Patient " + MainFrame.this.totalPatient + " of " + MainFrame.totalPatient);
+
                     int progress = 100;
-                    myProgressBar.setString( "Processed Patient "+MainFrame.this.totalPatient+" of "+MainFrame.this.totalPatient + ":  "+progress +" % complete");
+                    myProgressBar.setString("Processed Patient " + MainFrame.this.totalPatient + " of " + MainFrame.this.totalPatient + ":  " + progress + " % complete");
                     myProgressBar.setValue(progress);
-                   
+
                     //set a timer to zip the output folder
                     Timer timer = new Timer();
                     timer.schedule(new TimerTask() {
-                                   @Override
-                                   public void run() {
-                                     if(MainFrame.zipping == false)
-                                     {
-                                         MainFrame.this.txtPatientCount.setText("Extraction Complete. Currently zipping");
-                                         MainFrame.this.zipXMlFolder();
-                                         MainFrame.zipping = true; 
-                                        
-                                         
-                                     }
-                                    
-                                   }
-                                }, 3000);
+                        @Override
+                        public void run() {
+                            if (MainFrame.zipping == false) {
+                                MainFrame.this.txtPatientCount.setText("Extraction Complete. Currently zipping");
+                                MainFrame.this.zipXMlFolder();
+                                MainFrame.zipping = true;
+
+                            }
+
+                        }
+                    }, 3000);
                     System.out.println("zipping");
-                     progressSetter.cancel();
-                    
-                }
-                else{
-                     MainFrame.this.txtPatientCount.setText("Processed Patient "+patientCount+" of "+MainFrame.totalPatient);
-                
-                    int progress = (patientCount *100) / MainFrame.totalPatient;
-                    myProgressBar.setString( "Processed Patient "+patientCount+" of "+MainFrame.this.totalPatient + ":  "+progress +" % complete");
+                    progressSetter.cancel();
+
+                } else {
+                    MainFrame.this.txtPatientCount.setText("Processed Patient " + patientCount + " of " + MainFrame.totalPatient);
+
+                    int progress = (patientCount * 100) / MainFrame.totalPatient;
+                    myProgressBar.setString("Processed Patient " + patientCount + " of " + MainFrame.this.totalPatient + ":  " + progress + " % complete");
                     myProgressBar.setValue(progress);
                 }
-               
+
                 //System.out.println("progress:"+progress);
                 //System.out.println("Patinet count:"+patientCount);
                 //System.out.println("total count:"+MainFrame.totalPatient);
                 jpExtractionPanel.repaint();
-               
+
             }
-            
-        
+
         });
-        
-        
-       // revalidate();
-       
-       // jpExtractionPanel.repaint();
-        
+
+        // revalidate();
+        // jpExtractionPanel.repaint();
     }
-    
-    public void setTotalPatients(int totalPatient)
-    {
+
+    public void setTotalPatients(int totalPatient) {
         MainFrame.totalPatient = totalPatient;
         System.out.println(MainFrame.totalPatient);
     }
@@ -433,92 +425,80 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
         // TODO add your handling code here:
-         SwingUtilities.invokeLater(new Runnable() {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-               MainFrame.this.txtPatientCount.setText("Processed Patient");
-               String host = txtDbHost.getText().trim();
-               String username = txtDbUsername.getText().trim();
-               String password = new String(jpDbPassword.getPassword());//txtDbPassword.getText().trim();
-               String port = txtDbPort.getText().trim();
-               String dbName = txtDbName.getText().trim();
-               mainController = new MainController(MainFrame.this, "com.mysql.jdbc.Driver", "jdbc:mysql://"+host+":"+port+"/"+dbName, username, password);
-               if(mainController.testConnection())
-               {
-                   JOptionPane.showMessageDialog(MainFrame.this, "Connection Established", "Success", JOptionPane.INFORMATION_MESSAGE);
-                   btnShowFolderChooser.setEnabled(true);
-                   btnExtract.setEnabled(true);
-               }
-               else{
-                    JOptionPane.showMessageDialog(MainFrame.this, "Connection Failed!",  "Error",  JOptionPane.ERROR_MESSAGE);
+                MainFrame.this.txtPatientCount.setText("Processed Patient");
+                String host = txtDbHost.getText().trim();
+                String username = txtDbUsername.getText().trim();
+                String password = new String(jpDbPassword.getPassword());//txtDbPassword.getText().trim();
+                String port = txtDbPort.getText().trim();
+                String dbName = txtDbName.getText().trim();
+                mainController = new MainController(MainFrame.this, "com.mysql.jdbc.Driver", "jdbc:mysql://" + host + ":" + port + "/" + dbName, username, password);
+                if (mainController.testConnection()) {
+                    JOptionPane.showMessageDialog(MainFrame.this, "Connection Established", "Success", JOptionPane.INFORMATION_MESSAGE);
+                    btnShowFolderChooser.setEnabled(true);
+                    btnExtract.setEnabled(true);
+                } else {
+                    JOptionPane.showMessageDialog(MainFrame.this, "Connection Failed!", "Error", JOptionPane.ERROR_MESSAGE);
                     btnShowFolderChooser.setEnabled(false);
-                   btnExtract.setEnabled(false);
-               }
+                    btnExtract.setEnabled(false);
+                }
             }
-        }); 
-        
+        });
+
     }//GEN-LAST:event_btnConnectActionPerformed
 
     private void btnExtractActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExtractActionPerformed
         // TODO add your handling code here:
         btnExtract.setEnabled(false);
         Thread xmlThread = new Thread() {
-                public void run() {
-                   if(outPutFolder.equalsIgnoreCase(""))
-                   {
-                       JOptionPane.showMessageDialog(MainFrame.this, "You have not selected an output folder", "Output folder not set", JOptionPane.ERROR_MESSAGE);
-                       btnExtract.setEnabled(true);
-                   }
-                   else{
-                       MainFrame.this.startSettingProgress();
-                       mainController.generateXMLs();
-                   }
-                   
-                   //btnExtract.setEnabled(true);
+            public void run() {
+                if (outPutFolder.equalsIgnoreCase("")) {
+                    JOptionPane.showMessageDialog(MainFrame.this, "You have not selected an output folder", "Output folder not set", JOptionPane.ERROR_MESSAGE);
+                    btnExtract.setEnabled(true);
+                } else {
+                    MainFrame.this.startSettingProgress();
+                    mainController.generateXMLs();
+                }
 
-                }  
-            };
+                //btnExtract.setEnabled(true);
+            }
+        };
 
-            xmlThread.start();
-        
-       
-       System.out.println("startinged");
-       
-       
-        
-       
+        xmlThread.start();
+
+        System.out.println("startinged");
+
+
     }//GEN-LAST:event_btnExtractActionPerformed
-    
+
     private void btnShowFolderChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnShowFolderChooserActionPerformed
         // TODO add your handling code here:
         jfc.setApproveButtonText("Select");
         int returnValue = jfc.showSaveDialog(null);
-        try{
+        try {
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 if (jfc.getSelectedFile().isDirectory()) {
                     Calendar now = Calendar.getInstance();
                     now.setTimeInMillis(new Date().getTime());
-                    
-                    outPutFolder= jfc.getSelectedFile().getAbsolutePath()+File.separator+""+now.get(Calendar.YEAR)+"_"+now.get(Calendar.MONTH)+"_"+now.get(Calendar.DATE)+"_"+now.get(Calendar.HOUR)+"_"+now.get(Calendar.MINUTE)+"_"+now.get(Calendar.SECOND);
+
+                    outPutFolder = jfc.getSelectedFile().getAbsolutePath() + File.separator + "" + now.get(Calendar.YEAR) + "_" + now.get(Calendar.MONTH) + "_" + now.get(Calendar.DATE) + "_" + now.get(Calendar.HOUR) + "_" + now.get(Calendar.MINUTE) + "_" + now.get(Calendar.SECOND);
                     File f = new File(outPutFolder);
                     f.mkdir();
                     System.out.println("You selected the directory: " + outPutFolder);
-                    txtOutputFolder.setText( outPutFolder);
+                    txtOutputFolder.setText(outPutFolder);
                     //System.out.println("You selected the directory: " + jfc.getSelectedFile().getCanonicalPath());
                     //System.out.println("You selected the directory: " + jfc.getSelectedFile().getPath());
                     //System.out.println("You selected the directory: " + jfc.getSelectedFile().getName());
                     mainController.setOutputLocation(outPutFolder);
-                    
-                    
-                    
+
                 }
             }
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
     }//GEN-LAST:event_btnShowFolderChooserActionPerformed
 
     private void txtDbUsernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtDbUsernameActionPerformed
@@ -559,26 +539,23 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
     }
-    
-    class ProgessSetter extends TimerTask
-    {
-        
+
+    class ProgessSetter extends TimerTask {
+
         @Override
         public void run() {
-          // Your database code here
-          //MainFrame.this.setProgress(MainController.counter);
-          MainFrame.this.setProgress(MainController.atomicCounter.get());
+            // Your database code here
+            //MainFrame.this.setProgress(MainController.counter);
+            MainFrame.this.setProgress(MainController.atomicCounter.get());
 
-          if(MainController.atomicCounter.get()+10 > MainFrame.totalPatient)
-          {
-              System.out.println(MainController.counter);
-              MainFrame.this.setProgress(MainFrame.totalPatient);
-              btnExtract.setEnabled(true);
-          }
-
+            if (MainController.atomicCounter.get() + 10 > MainFrame.totalPatient) {
+                System.out.println(MainController.counter);
+                MainFrame.this.setProgress(MainFrame.totalPatient);
+                btnExtract.setEnabled(true);
+            }
 
         }
-          
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

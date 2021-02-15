@@ -55,10 +55,15 @@ public class Misc {
     public static String encrypt(String strToEncrypt) {
         try
         {
-            setKey(SECRET);
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+            if(strToEncrypt != null){
+                setKey(SECRET);
+                Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+                return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+            }else{
+                return null;
+            }
+            
         } 
         catch (Exception e) 
         {
@@ -70,10 +75,15 @@ public class Misc {
     public static String decrypt(String strToDecrypt) {
         try
         {
-            setKey(SECRET);
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey);
-            return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
+            if(strToDecrypt != null){
+                setKey(SECRET);
+                Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+                cipher.init(Cipher.DECRYPT_MODE, secretKey);
+                return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
+            }else{
+                return null;
+            }
+            
         } 
         catch (Exception e) 
         {

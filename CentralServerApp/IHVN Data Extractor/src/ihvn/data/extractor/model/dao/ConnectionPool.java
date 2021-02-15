@@ -11,6 +11,8 @@
 
 package ihvn.data.extractor.model.dao;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -30,13 +32,15 @@ public class ConnectionPool implements Runnable {
 	private boolean waitIfBusy;
 	
 	public Vector<Connection> availableConnections, busyConnections;
+        private HikariDataSource dataSource;
 	
 	private boolean connectionPending = false;
         public static Connection connection;
 	
 	public ConnectionPool(String driver, String url, String username, String password, int initialConnections,
 	    int maxConnections, boolean waitIfBusy) throws SQLException {
-		this.driver = driver;
+            initializeDataSource(driver, url, username, password);
+		/*this.driver = driver;
 		this.url = url;
 		this.username = username;
 		this.password = password;
@@ -49,11 +53,23 @@ public class ConnectionPool implements Runnable {
 		busyConnections = new Vector<Connection>();
 		for (int i = 0; i < initialConnections; i++) {
 			availableConnections.addElement(makeNewConnection());
-		}
+		}*/
 	}
 	
+        private void initializeDataSource(String driver, String url, String username, String password) {
+            HikariConfig config = new HikariConfig();
+            config.setJdbcUrl(url);
+            config.setUsername(username);
+            config.setPassword(password);
+            config.setDriverClassName(driver);
+            config.addDataSourceProperty("cachePrepStmts", "true");
+            config.addDataSourceProperty("prepStmtCacheSize", "250");
+            config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+            dataSource = new HikariDataSource(config);
+        }
+        
 	public synchronized Connection getConnection() throws SQLException {
-		if (!availableConnections.isEmpty()) {
+		/*if (!availableConnections.isEmpty()) {
 			Connection existingConnection = (Connection) availableConnections.lastElement();
 			int lastIndex = availableConnections.size() - 1;
 			availableConnections.removeElementAt(lastIndex);
@@ -97,7 +113,9 @@ public class ConnectionPool implements Runnable {
 			catch (InterruptedException ie) {}
 			// Someone freed up a connection, so try again.
 			return (getConnection());
-		}
+		}*/
+                
+                return dataSource.getConnection();
 	}
 	
 	/**
@@ -148,7 +166,7 @@ public class ConnectionPool implements Runnable {
 			//Class.forName(driver);
 			// Establish network connection to database
 			//Connection connection = DriverManager.getConnection(url + "?useCursorFetch=true&defaultFetchSize=10000", username, password);
-			Connection connection = DriverManager.getConnection(url + "?useSSL=false&useCursorFetch=true&defaultFetchSize=10000&max_allowed_packet=512M&net_write_timeout=90000000000&wait_timeout=90000000000&interactive_timeout=90000000000&connect_timeout=90000000000", username, password);
+			Connection connection = DriverManager.getConnection(url + "?zeroDateTimeBehavior=convertToNull&useSSL=false&useCursorFetch=true&defaultFetchSize=10000&max_allowed_packet=512M&net_write_timeout=90000000000&wait_timeout=90000000000&interactive_timeout=90000000000&connect_timeout=90000000000", username, password);
 			// Connection connection = ds.getConnection();
 			
 			return (connection);
@@ -175,17 +193,13 @@ public class ConnectionPool implements Runnable {
 	 * Method to free the Connections
 	 */
 	public synchronized void free(Connection connection) {
-		try {
-			busyConnections.removeElement(connection);
-			availableConnections.addElement(connection);
-			connection.close();
-			connection = null;
-			// Wake up threads that are waiting for a connection
-			notifyAll();
-		}
-		catch (SQLException ex) {
-			ex.printStackTrace();//Logger.getLogger(ConnectionPool.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		try{
+            if(connection!=null){
+                connection.close();
+            }
+            }catch(SQLException e){
+                e.printStackTrace();
+            }
 	}
 	
 	public synchronized int totalConnections() {

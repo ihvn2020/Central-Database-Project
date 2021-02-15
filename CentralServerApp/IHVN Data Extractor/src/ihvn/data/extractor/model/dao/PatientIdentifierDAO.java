@@ -71,11 +71,11 @@ public class PatientIdentifierDAO {
         idType.setCreator(rs.getInt("creator"));
         idType.setPatientIdentifierUuid(rs.getString("uuid"));
         idType.setDateCreated(Misc.getXMLdateTime(rs.getDate("date_created")));
-        idType.setChangedBy(rs.getInt("changed_by"));
-        if(rs.getString("date_changed") != null)
+        idType.setChangedBy(0);
+        /*if(rs.getString("date_changed") != null)
         {
             idType.setDateChanged(Misc.getXMLdateTime(rs.getDate("date_changed")));
-        }
+        }*/
         idType.setVoided(rs.getInt("voided"));
         idType.setVoidedBy(rs.getInt("voided_by"));
         //idType.setVoidedByName("");

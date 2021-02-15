@@ -25,8 +25,47 @@ import java.util.List;
  */
 public class VisitDAO {
 
-    private Integer[] confidentialConcepts={159635};//Phone no(159635)
+    private Integer[] confidentialConcepts={159635, 97, 7778430, 1051,7777750, 1736,1070,1071,1073,1074};//Phone no(159635)
     private List<Integer> confidentialConceptsList=new ArrayList<Integer>(Arrays.asList(confidentialConcepts));
+    
+    public boolean tableExists(String tableName)
+    {
+        StringBuilder query = new StringBuilder("SHOW TABLES LIKE '"+tableName+"'");
+        
+        System.out.println(query.toString());
+        // String query = "SELECT visit.* FROM visit WHERE patient_id="+patientId;  
+
+        Statement stmt = null;
+        ResultSet rs = null;
+        Connection con = null;
+        //System.out.println("Connection list "+Database.connectionPool.totalConnections());
+        try {
+            con = Database.connectionPool.getConnection();
+            stmt = con.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+
+            //stmt.setFetchSize(Integer.MIN_VALUE);
+            rs = stmt.executeQuery(query.toString());
+           
+            rs.next();
+            System.out.println(rs.getString(1));
+            if(rs.getRow() > 0)
+            {
+                return true;
+            }
+            else {
+                return false;
+            }
+            
+        } catch (SQLException ex) {
+            //screen.updateStatus(ex.getMessage());
+            //ex.printStackTrace();
+            return false;
+
+        } finally {
+            cleanUp(rs, stmt, con);
+        }
+    }
+    
     
     public List<VisitType> getAllVisits(int patientId, String patient_uuid, String datim_id) {
         StringBuilder query = new StringBuilder("SELECT visit.* FROM visit WHERE patient_id=");
@@ -70,11 +109,10 @@ public class VisitDAO {
                 + "encounter.patient_id,\n"
                 + "encounter.uuid as encounter_uuid,\n"
                 + "encounter.location_id as location_id,\n"
-                + "visit.uuid as visit_uuid\n"
+                + "'' as visit_uuid\n"
                 + "from \n"
                 + "encounter_provider \n"
                 + "LEFT JOIN encounter on(encounter.encounter_id=encounter_provider.encounter_id)\n"
-                + "LEFT JOIN visit on(visit.visit_id=encounter.visit_id)\n"
                 + "where encounter.patient_id=";
         StringBuilder query = new StringBuilder(sql_text);
         query.append(patientId);
@@ -125,9 +163,8 @@ public class VisitDAO {
     }
 
     public List<EncounterType> getAllEncountersByPatient(int patientId, String patient_uuid, String datim_id) {
-        StringBuilder query = new StringBuilder("SELECT encounter.*,form.name as pmm_form,visit.uuid as visit_uuid  FROM encounter "
+        StringBuilder query = new StringBuilder("SELECT encounter.*,form.name as pmm_form, '' AS visit_id,  '' as visit_uuid  FROM encounter "
                 + "LEFT JOIN form on(form.form_id=encounter.form_id) "
-                + "LEFT JOIN visit on(visit.visit_id=encounter.visit_id) "
                 + "WHERE encounter.patient_id=");
         query.append(patientId);
 
@@ -207,13 +244,12 @@ public class VisitDAO {
                 + "encounter.form_id,\n"
                 + "encounter.encounter_type,\n"
                 + "form.name as pmm_form,\n"
-                + "visit.uuid as visit_uuid,\n"
+                + "'' as visit_uuid,\n"
                 + "cn1.name as variable_name,\n"
                 + "COALESCE(value_datetime,value_text,value_numeric,cn2.name) as variable_value,\n"
                 + "concept.datatype_id\n"
                 + "from obs \n"
                 + "LEFT JOIN encounter on(encounter.encounter_id=obs.encounter_id)\n"
-                + "LEFT JOIN visit on(visit.visit_id=encounter.visit_id)\n"
                 + "LEFT JOIN form on(encounter.form_id=form.form_id)\n"
                 + "LEFT JOIN concept_name cn1 on(cn1.concept_id=obs.concept_id and cn1.locale_preferred=1 and cn1.locale='en' and cn1.voided=0)\n"
                 + "LEFT JOIN concept_name cn2 on(cn2.concept_id=obs.value_coded and cn2.locale_preferred=1 and cn2.locale='en' and cn2.voided=0)\n"
@@ -313,7 +349,7 @@ public class VisitDAO {
             visit.setDateVoided(Misc.getXMLdateTime(rs.getDate("date_voided")));
         }
 
-        visit.setVisitUuid(rs.getString("uuid"));
+        visit.setVisitUuid("null");
         visit.setLocationId(rs.getInt("location_id"));
 
         //visit.getEncounter().addAll(this.getAllEncounters(visit.getVisitId()));
@@ -332,7 +368,7 @@ public class VisitDAO {
         encounterType.setFormId(rs.getInt("form_id"));
         encounterType.setLocationId(rs.getInt("location_id"));
         encounterType.setPmmForm(rs.getString("pmm_form"));
-        encounterType.setVisitUuid(rs.getString("visit_uuid"));
+        encounterType.setVisitUuid("null");
         encounterType.setEncounterDatetime(Misc.getXMLdateTime(rs.getDate("encounter_datetime")));
 
         encounterType.setCreator(rs.getInt("creator"));
@@ -369,7 +405,7 @@ public class VisitDAO {
         encounterProvider.setVoidedReason(rs.getString("void_reason"));
         encounterProvider.setEncounterProviderUuid(rs.getString("uuid"));
         encounterProvider.setEncounterUuid(rs.getString("encounter_uuid"));
-        encounterProvider.setVisitUuid(rs.getString("visit_uuid"));
+        encounterProvider.setVisitUuid("null");
         encounterProvider.setLocationId(rs.getInt("location_id"));
         return encounterProvider;
     }
@@ -386,7 +422,7 @@ public class VisitDAO {
         obsType.setObsDatetime(Misc.getXMLdateTime(rs.getDate("obs_datetime")));
         obsType.setObsGroupId(rs.getInt("obs_group_id"));
         obsType.setValueCoded(rs.getInt("value_coded"));
-        obsType.setValueDatetime(Misc.getXMLdateTime(rs.getDate("obs_datetime")));
+        obsType.setValueDatetime(Misc.getXMLdateTime(rs.getDate("value_datetime")));
         obsType.setValueNumeric(BigDecimal.valueOf(rs.getDouble("value_numeric")));
         //obsType.setValueText(rs.getString("value_text"));
         if(confidentialConceptsList.contains(obsType.getConceptId())){
@@ -396,7 +432,15 @@ public class VisitDAO {
         }
         obsType.setEncounterUuid(rs.getString("encounter_uuid"));
         obsType.setCreator(rs.getInt("creator"));
-        obsType.setDateCreated(Misc.getXMLdateTime(rs.getDate("date_created")));
+        try{
+            if(rs.getString("date_created") != null) 
+            obsType.setDateCreated(Misc.getXMLdateTime(rs.getDate("date_created")));
+        }catch(Exception e)
+        {
+            
+        }
+        
+        
         obsType.setPmmForm(rs.getString("pmm_form"));
         obsType.setFormId(rs.getInt("form_id"));
         obsType.setVariableName(rs.getString("variable_name"));
@@ -408,7 +452,7 @@ public class VisitDAO {
         }
         obsType.setDatatype(rs.getInt("datatype_id"));
         obsType.setEncounterType(rs.getInt("encounter_type"));
-        obsType.setVisitUuid(rs.getString("visit_uuid"));
+        obsType.setVisitUuid("null");
         obsType.setLocationId(rs.getInt("location_id"));
         obsType.setVoided(rs.getInt("voided"));
         obsType.setVoidedBy(rs.getInt("voided_by"));

@@ -49,9 +49,9 @@ public class PatientDAO {
     }
 
     public List<Map<String, String>> getAllPatients(int offset, int limit) {//we are supposed to get only patients who have had something done after the ndr last updated
-        String query = "SELECT person.person_id, person.birthdate, person.uuid, person.birthdate_estimated, person.gender, person.dead, person.death_date, ";
+        String query = "SELECT person.person_id, person.birthdate, person.uuid, '0' AS birthdate_estimated, person.gender, person.dead, person.death_date, ";
         query += " person.cause_of_death, person_name.given_name, person_name.middle_name, person_name.family_name,person_address.address1,person_address.city_village,";
-        query += " person.creator, person.date_created, person.changed_by, person.date_changed,person.voided,person.voided_by,person.date_voided,person.void_reason,person.deathdate_estimated,";
+        query += " person.creator, person.date_created, person.changed_by, person.date_changed,person.voided,person.voided_by,person.date_voided,person.void_reason, '0' AS deathdate_estimated,";
         query += " person_address.state_province,person_address.address2,person_address.country, ";
         query += " person_attribute.value AS phone FROM patient ";
         query += " JOIN  person ON (person.person_id=patient.patient_id) ";

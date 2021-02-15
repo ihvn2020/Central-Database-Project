@@ -95,9 +95,9 @@ public class MainController {
         int totalPages = (int)Math.floor(totalPatients/limit);
         //some global stuff. Lets get them only once
         patientFacilityName = facilityObj.getGlobalProperty("Facility_Name");
-	datimId = facilityObj.getGlobalProperty("facility_datim_code");
+	datimId = facilityObj.getGlobalProperty("datim_id");
         mainFrame.setTotalPatients(totalPatients);
-        for(int i=0; i<= totalPages; i++)
+        for(int i=0; i<= totalPages+1; i++)
         //for(int i=0; i< 2; i++)
         {
             xmlGeneratorController.startGenerating( this.outputLocation, i * limit, limit);

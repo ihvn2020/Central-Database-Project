@@ -2,11 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/home/lordmaul/openmodules/Central-Database-Project/CentralServerApp/IHVN%20Data%20Extractor/src/ihvn/data/extractor/controller/ContainerController.java</file>
-            <file>file:/home/lordmaul/openmodules/Central-Database-Project/CentralServerApp/IHVN%20Data%20Extractor/src/ihvn/data/extractor/controller/XMLGeneratorController.java</file>
-            <file>file:/home/lordmaul/openmodules/Central-Database-Project/CentralServerApp/IHVN%20Data%20Extractor/src/ihvn/data/extractor/model/dao/PatientProgramDAO.java</file>
-            <file>file:/home/lordmaul/openmodules/Central-Database-Project/CentralServerApp/IHVN%20Data%20Extractor/src/ihvn/data/extractor/model/dao/PatientIdentifierDAO.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

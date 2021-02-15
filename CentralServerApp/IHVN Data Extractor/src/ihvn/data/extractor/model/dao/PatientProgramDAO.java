@@ -68,14 +68,14 @@ public class PatientProgramDAO {
         
         patientProgram.setPatientProgramId(rs.getInt("patient_program_id"));
         patientProgram.setProgramId(rs.getInt("program_id"));
-        patientProgram.setProgramName("program_name");
+        patientProgram.setProgramName(rs.getString("program_name"));
         patientProgram.setDateEnrolled(Misc.getXMLdateTime(rs.getDate("date_enrolled")));
         if(rs.getString("date_completed") != null)
         {
             patientProgram.setDateCompleted(Misc.getXMLdateTime(rs.getDate("date_completed")));
         }
         
-        patientProgram.setOutcomeConceptId(rs.getInt("outcome_concept_id"));
+        patientProgram.setOutcomeConceptId(0);
         
         
         patientProgram.setCreator(rs.getInt("creator"));

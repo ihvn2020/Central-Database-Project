@@ -61,18 +61,26 @@ public class ContainerController {
         messageHeader.setMessageSchemaVersion(new BigDecimal("1.0"));
         messageHeader.setMessageStatusCode("EXPORTED");
         messageHeader.setMessageUniqueID(UUID.randomUUID().toString());
-        messageHeader.setMessageSource("NMRS");
+        messageHeader.setMessageSource("OpenMRS");
         return messageHeader;
     }
 
     //build message data
     private MessageDataType buildMessageData() {
         MessageDataType messageData = new MessageDataType();
-         messageData.getVisits().addAll(this.buildVisits());
+        
+        VisitDAO visitDao = new VisitDAO();
+        if(visitDao.tableExists("visit"))
+        {
+            //System.out.println("Exisits");
+             messageData.getVisits().addAll(this.buildVisits());
+        }
+       
+        messageData.setDemographics(this.buildDemographics());
         messageData.getEncounters().addAll(this.buildEncounters());
         messageData.getObs().addAll(this.buildObs());
-        messageData.getPatientBiometrics().addAll(this.buildPatientBiometrics());
-        messageData.getEncounterProviders().addAll(this.buildEncounterProviders());
+        //messageData.getPatientBiometrics().addAll(this.buildPatientBiometrics());
+       // messageData.getEncounterProviders().addAll(this.buildEncounterProviders());
         messageData.getPatientIdentifiers().addAll(this.buildPatienIdentifiers());
         messageData.getPatientPrograms().addAll(this.buildPatientPrograms());
         return messageData;

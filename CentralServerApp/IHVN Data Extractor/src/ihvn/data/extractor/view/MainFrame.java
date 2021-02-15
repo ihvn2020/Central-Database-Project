@@ -148,6 +148,7 @@ public class MainFrame extends javax.swing.JFrame {
                 
                 //System.out.println(MainController.atomicCounter.get());
                 //System.out.println("total count"+MainFrame.totalPatient);
+               System.out.println(patientCount);
                 if(patientCount + 1 >= MainFrame.totalPatient && MainFrame.totalPatient != 1)//some times, the total processed files does not get to the total number of patients in the system due to errorneous data
                 {
                     MainFrame.this.txtPatientCount.setText("<html>Processed Patient "+MainFrame.this.totalPatient+" of "+MainFrame.totalPatient+"</html>");
